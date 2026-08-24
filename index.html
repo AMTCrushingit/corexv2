@@ -958,6 +958,15 @@ function corexLock(){ gateClearAuth(); triggerAutoLock(); }
       if(document.getElementById('corex-app')?.style.display!=='none'){
         clearInterval(check);
         setTimeout(()=>{ corexRunCycle(); },2000);
+        // Auto-generate Opportunity Report at 7am
+        setTimeout(()=>{
+          if(typeof generateOpportunityReport==='function'){
+            generateOpportunityReport();
+            // Switch to report view so it's ready when you open COREX
+            showView('opportunity-report', document.querySelector('[data-view="opportunity-report"]'));
+            showToast('📘 Morning Opportunity Report ready');
+          }
+        },5000);
       }
       if(waited>=maxWait)clearInterval(check);
     },1000);
