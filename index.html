@@ -644,14 +644,14 @@
 <!-- Step 1 -->
 <div id="gate-step-1">
 <div class="gate-step-label">Step 1 of 2 — Access Passphrase</div>
-<input autocomplete="off" class="gate-input" id="gate-passphrase" onkeydown="if(event.key==='Enter')gateVerifyPassphrase()" placeholder="Enter passphrase" type="password"/>
+<input autocomplete="off" class="gate-input" id="gate-passphrase" onkeydown="if(event.key==='Enter')gateVerifyPassphrase()" placeholder="Enter passphrase" type="text"/>
 <div class="gate-error" id="gate-err-1"></div>
 <button class="gate-btn" onclick="gateVerifyPassphrase()">Continue →</button>
 </div>
 <!-- Step 2 -->
 <div id="gate-step-2" style="display:none;">
 <div class="gate-step-label">Step 2 of 2 — Security PIN</div>
-<input autocomplete="off" class="gate-input" id="gate-pin" inputmode="numeric" maxlength="6" onkeydown="if(event.key==='Enter')gateVerifyPIN()" placeholder="Enter PIN" type="password"/>
+<input autocomplete="off" class="gate-input" id="gate-pin" inputmode="numeric" maxlength="6" onkeydown="if(event.key==='Enter')gateVerifyPIN()" placeholder="Enter PIN" type="text"/>
 <div class="gate-error" id="gate-err-2"></div>
 <button class="gate-btn" onclick="gateVerifyPIN()">Unlock COREX →</button>
 </div>
