@@ -1119,6 +1119,97 @@ const CDSIA_DATA = [
   }
 ];
 
+
+// ================================================================
+// TIER 2 — AGENT LEADS (Smaller, accessible — for sales agents)
+// ================================================================
+const CDSIA_AGENT_LEADS = [
+  {
+    id:'AGT001', agent:'cdsia', tier:'agent', org:'Blueprint Caribbean',
+    country:'🇹🇹 Trinidad & Tobago', sector:'Founder Community / AI Cohort',
+    distressType:['CRM Need','Digital Gap'],
+    score:82, urgency:'High',
+    brands:['QLA','BLU'],
+    summary:'120+ Caribbean founders in an active WhatsApp community. Led by Melissa Pascal. 5-week AI cohort with verified graduates. Founders are actively building digital businesses and need client management tools.',
+    rootCause:'Growing founder community managing clients and cohort members without a CRM.',
+    whyItMatters:'Warm community — already digital-minded. Qualia CRM is the natural next step. BluWav Growth for visibility. Entry point: join the WhatsApp room.',
+    actionRequired:'Join Blueprint Caribbean WhatsApp room. Introduce Qualia as the CRM layer for cohort graduates.',
+    contact:{name:'Melissa Pascal (Founder)',email:'blueprintcaribbean.com',phone:'WhatsApp community'},
+    source:'Blueprint Caribbean', sourceUrl:'https://blueprintcaribbean.com/',
+    qualified:false
+  },
+  {
+    id:'AGT002', agent:'cdsia', tier:'agent', org:'Productive Business Solutions (PBS)',
+    country:'🇧🇧 Barbados', sector:'Management Consulting',
+    distressType:['CRM Need','Scaling'],
+    score:74, urgency:'Medium',
+    brands:['QLA','STR'],
+    summary:'Management consulting firm in Warrens, Bridgetown. Verified listing. Growing client base across Barbados. Likely managing clients manually without a CRM pipeline.',
+    rootCause:'Consulting firms at this size typically manage client relationships via email and spreadsheets.',
+    whyItMatters:'Direct Qualia CRM fit. Stratiix for internal governance. Accessible — phone contact available.',
+    actionRequired:'Call +1 246-417-5600. Introduce Qualia CRM for consulting client management.',
+    contact:{name:'PBS Management',email:'info@pbsbarbados.com',phone:'+1 246-417-5600'},
+    source:'Barbados Business Directory', sourceUrl:'https://www.barbadosindex.com/category/Business_management_consulting',
+    qualified:false
+  },
+  {
+    id:'AGT003', agent:'cdsia', tier:'agent', org:'Synergy Human Resource Services',
+    country:'🇧🇧 Barbados', sector:'HR & People Services',
+    distressType:['CRM Need','Digital Gap'],
+    score:72, urgency:'Medium',
+    brands:['QLA','STR'],
+    summary:'HR consulting firm at 2 Laynes Road, Maxwell, Barbados. Managing HR clients and candidates without a dedicated CRM pipeline.',
+    rootCause:'HR firms manage multiple client relationships simultaneously — CRM is essential for tracking placements and follow-ups.',
+    whyItMatters:'Qualia CRM for client and candidate pipeline. Stratiix for internal HR processes.',
+    actionRequired:'Call +1 246-420-2214. Position Qualia as a client + candidate tracking solution.',
+    contact:{name:'Synergy HR',email:'info@synergyhr.bb',phone:'+1 246-420-2214'},
+    source:'Barbados Business Directory', sourceUrl:'https://www.barbadosindex.com/category/Business_management_consulting',
+    qualified:false
+  },
+  {
+    id:'AGT004', agent:'cdsia', tier:'agent', org:'Axiom Technology Consulting',
+    country:'🇧🇧 Barbados', sector:'IT Consulting',
+    distressType:['CRM Need','Scaling'],
+    score:76, urgency:'Medium',
+    brands:['QLA','STR'],
+    summary:'IT consulting firm in Barbados. Growing regional client base. Technology consultants who sell transformation but likely lack their own CRM infrastructure.',
+    rootCause:'IT consultants managing client projects via email — no pipeline visibility.',
+    whyItMatters:'High conversion probability — tech-savvy, understands CRM value immediately. Peer positioning works well.',
+    actionRequired:'Contact via axiomtc.com. Lead with "you sell transformation — do you have your own?"',
+    contact:{name:'Axiom Technology Consulting',email:'info@axiomtc.com',phone:'axiomtc.com'},
+    source:'Caricom Business Hub', sourceUrl:'https://dir.caricombusiness.com/directory/category/services',
+    qualified:false
+  },
+  {
+    id:'AGT005', agent:'cdsia', tier:'agent', org:'AIM Business Development',
+    country:'🌊 Caribbean (Regional)', sector:'Business Development / Consulting Marketplace',
+    distressType:['CRM Need','Digital Gap'],
+    score:80, urgency:'High',
+    brands:['QLA','CRE'],
+    summary:'Caribbean business directory + certified consultant marketplace. AIM-verified businesses and consultants across the region. Every consultant on the platform needs a CRM to manage their client pipeline.',
+    rootCause:'Marketplace of consultants managing clients without standardized CRM tools.',
+    whyItMatters:'Partnership opportunity — recommend Qualia to all AIM-certified consultants. Credii for verification layer. One partnership = access to entire consultant network.',
+    actionRequired:'Contact AIM Business Development. Propose Qualia as the recommended CRM for AIM-certified consultants.',
+    contact:{name:'AIM Business Development',email:'aimbusinessdevelopment.com',phone:'aimbusinessdevelopment.com'},
+    source:'AIM Business Development', sourceUrl:'https://aimbusinessdevelopment.com/consultants',
+    qualified:false
+  },
+  {
+    id:'AGT006', agent:'cdsia', tier:'agent', org:'Caribbean Consultants Collective',
+    country:'🌊 Caribbean (Regional)', sector:'Consulting Marketplace',
+    distressType:['CRM Need'],
+    score:78, urgency:'Medium',
+    brands:['QLA'],
+    summary:'Vetted consulting marketplace for Caribbean consultants. Every listed consultant manages multiple client relationships — all need a CRM pipeline.',
+    rootCause:'Consultants on the platform managing clients via WhatsApp and email with no pipeline visibility.',
+    whyItMatters:'Warm market — consultants understand the value of systems. Qualia CRM is the exact fit.',
+    actionRequired:'Contact caribbeancollective.co. Propose Qualia as the official CRM partner for the collective.',
+    contact:{name:'Caribbean Consultants Collective',email:'caribbeancollective.co',phone:'caribbeancollective.co'},
+    source:'Caribbean Consultants Collective', sourceUrl:'https://www.caribbeancollective.co/',
+    qualified:false
+  }
+];
+
 // ================================================================
 // DATA — IFIN SIGNALS
 // ================================================================
@@ -1170,7 +1261,7 @@ const IFIN_DATA = [
 // ================================================================
 // RENDER FUNCTIONS
 // ================================================================
-const ALL_SIGNALS = [...COTIS_DATA, ...CDSIA_DATA, ...IFIN_DATA];
+const ALL_SIGNALS = [...COTIS_DATA, ...CDSIA_DATA, ...CDSIA_AGENT_LEADS, ...IFIN_DATA];
 let _queueFilter = 'all';
 
 function renderCommandStats(){
@@ -1192,7 +1283,7 @@ function renderCommandStats(){
 }
 
 function renderAllSignals(){
-  const filtered = _queueFilter==='all' ? ALL_SIGNALS : ALL_SIGNALS.filter(s=>s.agent===_queueFilter);
+  const filtered = _queueFilter==='all' ? ALL_SIGNALS : _queueFilter==='agent' ? ALL_SIGNALS.filter(s=>s.tier==='agent') : ALL_SIGNALS.filter(s=>s.agent===_queueFilter && s.tier!=='agent');
   const sorted = [...filtered].sort((a,b)=>b.score-a.score);
   document.getElementById('queue-count').textContent = sorted.length+' signals';
   document.getElementById('command-queue').innerHTML = sorted.length
@@ -1220,7 +1311,7 @@ function renderSignalCard(s){
     <div class="signal-header">
       <div>
         <div class="signal-org">${s.org}</div>
-        <div class="signal-meta">${s.country} · ${s.sector} · <span style="color:var(--cyan);font-family:var(--font-mono);font-size:9px;">${agentLabel}</span>${s.deadline?` · Deadline: ${s.deadline}`:''}</div>
+        <div class="signal-meta">${s.country} · ${s.sector} · <span style="color:var(--cyan);font-family:var(--font-mono);font-size:9px;">${agentLabel}</span>${s.tier==='agent'?' · <span style="background:rgba(247,200,115,0.15);color:#F5C842;padding:1px 6px;border-radius:2px;font-size:9px;font-weight:700;">AGENT LEAD</span>':''}${s.deadline?` · Deadline: ${s.deadline}`:''}</div>
       </div>
       <div class="signal-score">${s.score}</div>
     </div>
@@ -1252,7 +1343,7 @@ function filterQueue(filter, btn){
 
 function updateBadges(){
   document.getElementById('cotis-badge').textContent = COTIS_DATA.length;
-  document.getElementById('cdsia-badge').textContent = CDSIA_DATA.length;
+  document.getElementById('cdsia-badge').textContent = CDSIA_DATA.length + CDSIA_AGENT_LEADS.length;
   document.getElementById('ifin-badge').textContent = IFIN_DATA.length;
 }
 
