@@ -1,0 +1,1403 @@
+<!DOCTYPE html>
+
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<meta content="noindex, nofollow" name="robots"/>
+<title>COREX — Caribbean Intelligence Engine</title>
+<link href="https://fonts.googleapis.com" rel="preconnect"/>
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&amp;family=IBM+Plex+Mono:wght@400;500;600&amp;family=Inter:wght@400;500;600&amp;display=swap" rel="stylesheet"/>
+<style>
+    /* ================================================================
+       COREX v2 — Command Centre
+       Caribbean Intelligence Engine
+       ================================================================ */
+    :root {
+      /* Backgrounds */
+      --bg-primary:   #0D0D0F;
+      --bg-dark:      #141416;
+      --bg-surface:   #1C1C20;
+      --bg-elevated:  #222228;
+
+      /* Signal Colors */
+      --cyan:         #00E8FF;
+      --cyan-dim:     rgba(0,232,255,0.12);
+      --cyan-glow:    rgba(0,232,255,0.25);
+      --gold:         #F5C842;
+      --gold-dim:     rgba(245,200,66,0.12);
+      --gold-glow:    rgba(245,200,66,0.25);
+      --green:        #00D68F;
+      --green-dim:    rgba(0,214,143,0.12);
+      --red:          #FF4D6A;
+      --red-dim:      rgba(255,77,106,0.12);
+      --violet:       #7B5EA7;
+
+      /* Text */
+      --text-primary:   #F0F0F5;
+      --text-secondary: #8A8A9A;
+      --text-muted:     #4A4A5A;
+
+      /* Borders */
+      --border:       rgba(0,232,255,0.1);
+      --border-gold:  rgba(245,200,66,0.2);
+
+      /* Typography */
+      --font-display: 'Space Grotesk', sans-serif;
+      --font-mono:    'IBM Plex Mono', monospace;
+      --font-ui:      'Inter', sans-serif;
+
+      /* Sizing */
+      --sidebar: 220px;
+      --radius:  4px;
+    }
+
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
+    body {
+      font-family: var(--font-ui);
+      background: var(--bg-primary);
+      color: var(--text-primary);
+      overflow: hidden;
+      height: 100vh;
+      width: 100vw;
+    }
+
+    /* ================================================================
+       SECURITY GATE
+       ================================================================ */
+    #corex-gate {
+      position: fixed; inset: 0; z-index: 9999;
+      background: var(--bg-primary);
+      display: flex; align-items: center; justify-content: center;
+      flex-direction: column;
+    }
+
+    .gate-scan-line {
+      position: absolute; top: 0; left: 0; right: 0;
+      height: 2px;
+      background: linear-gradient(90deg, transparent, var(--cyan), transparent);
+      animation: scan 3s linear infinite;
+      opacity: 0.4;
+    }
+    @keyframes scan { from { top: 0; } to { top: 100%; } }
+
+    .gate-card {
+      background: var(--bg-dark);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 48px 44px;
+      width: 420px;
+      max-width: 92vw;
+      text-align: center;
+      position: relative;
+    }
+
+    .gate-card::before {
+      content: '';
+      position: absolute; top: 0; left: 0; right: 0;
+      height: 1px;
+      background: linear-gradient(90deg, transparent, var(--cyan), transparent);
+    }
+
+    .gate-logo {
+      font-family: var(--font-display);
+      font-size: 28px; font-weight: 700;
+      color: var(--cyan);
+      letter-spacing: 0.08em;
+      margin-bottom: 4px;
+    }
+
+    .gate-subtitle {
+      font-family: var(--font-mono);
+      font-size: 10px; color: var(--text-muted);
+      letter-spacing: 0.15em; text-transform: uppercase;
+      margin-bottom: 32px;
+    }
+
+    .gate-step-label {
+      font-family: var(--font-mono);
+      font-size: 10px; font-weight: 600;
+      color: var(--text-secondary);
+      text-transform: uppercase; letter-spacing: 0.12em;
+      text-align: left; margin-bottom: 8px;
+    }
+
+    .gate-input {
+      width: 100%; padding: 12px 16px;
+      background: var(--bg-surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      color: var(--text-primary);
+      font-family: var(--font-mono); font-size: 14px;
+      letter-spacing: 0.08em;
+      outline: none; transition: border-color 0.2s;
+      margin-bottom: 10px;
+    }
+    .gate-input:focus { border-color: var(--cyan); }
+    .gate-input.error { border-color: var(--red); animation: shake 0.3s ease; }
+    @keyframes shake { 0%,100%{transform:translateX(0)} 25%{transform:translateX(-6px)} 75%{transform:translateX(6px)} }
+
+    .gate-btn {
+      width: 100%; padding: 12px;
+      background: var(--cyan); color: var(--bg-primary);
+      border: none; border-radius: var(--radius);
+      font-family: var(--font-display); font-size: 13px; font-weight: 700;
+      letter-spacing: 0.06em; text-transform: uppercase;
+      cursor: pointer; transition: opacity 0.2s;
+    }
+    .gate-btn:hover { opacity: 0.85; }
+    .gate-btn:disabled { opacity: 0.4; cursor: not-allowed; }
+
+    .gate-error {
+      background: var(--red-dim); border: 1px solid rgba(255,77,106,0.25);
+      border-radius: var(--radius); padding: 8px 12px;
+      color: var(--red); font-family: var(--font-mono); font-size: 11px;
+      margin-bottom: 10px; display: none;
+    }
+
+    .gate-dots {
+      display: flex; align-items: center; justify-content: center;
+      gap: 8px; margin-bottom: 28px;
+    }
+    .gate-dot {
+      width: 6px; height: 6px; border-radius: 50%;
+      background: var(--text-muted); transition: all 0.3s;
+    }
+    .gate-dot.active { background: var(--cyan); box-shadow: 0 0 8px var(--cyan-glow); }
+    .gate-dot.done { background: var(--green); }
+
+    .gate-locked {
+      background: var(--red-dim); border: 1px solid rgba(255,77,106,0.2);
+      border-radius: var(--radius); padding: 20px;
+      display: none; margin-bottom: 16px;
+    }
+    .gate-locked-title { font-family: var(--font-display); font-size: 14px; font-weight: 700; color: var(--red); margin-bottom: 6px; }
+    .gate-locked-timer { font-family: var(--font-mono); font-size: 24px; font-weight: 700; color: var(--red); margin: 10px 0; }
+    .gate-locked-msg { font-size: 12px; color: var(--text-secondary); }
+
+    .gate-security-note {
+      font-family: var(--font-mono); font-size: 9px;
+      color: var(--text-muted); margin-top: 20px;
+      letter-spacing: 0.06em; line-height: 1.7;
+      border-top: 1px solid var(--border); padding-top: 16px;
+    }
+
+    /* ================================================================
+       MAIN APP LAYOUT
+       ================================================================ */
+    #corex-app { display: none; height: 100vh; width: 100vw; }
+
+    .app-layout {
+      display: flex; height: 100vh; width: 100vw; overflow: hidden;
+    }
+
+    /* ================================================================
+       SIDEBAR
+       ================================================================ */
+    .sidebar {
+      width: var(--sidebar); min-width: var(--sidebar);
+      background: var(--bg-dark);
+      border-right: 1px solid var(--border);
+      display: flex; flex-direction: column;
+      height: 100vh; overflow-y: auto; overflow-x: hidden;
+      flex-shrink: 0;
+    }
+
+    .sidebar-logo {
+      padding: 20px 18px 16px;
+      border-bottom: 1px solid var(--border);
+      flex-shrink: 0;
+    }
+
+    .logo-mark {
+      font-family: var(--font-display);
+      font-size: 20px; font-weight: 700;
+      color: var(--cyan); letter-spacing: 0.1em;
+    }
+
+    .logo-sub {
+      font-family: var(--font-mono);
+      font-size: 8px; color: var(--text-muted);
+      letter-spacing: 0.2em; text-transform: uppercase;
+      margin-top: 2px;
+    }
+
+    .sidebar-status {
+      display: flex; align-items: center; gap: 6px;
+      padding: 10px 18px;
+      border-bottom: 1px solid var(--border);
+      flex-shrink: 0;
+    }
+
+    .status-dot {
+      width: 6px; height: 6px; border-radius: 50%;
+      background: var(--green);
+      box-shadow: 0 0 6px var(--green);
+      animation: pulse-dot 2s ease-in-out infinite;
+      flex-shrink: 0;
+    }
+    @keyframes pulse-dot { 0%,100%{opacity:1} 50%{opacity:0.4} }
+
+    .status-text {
+      font-family: var(--font-mono); font-size: 9px;
+      color: var(--text-secondary); letter-spacing: 0.08em;
+    }
+
+    .sidebar-nav { flex: 1; padding: 12px 0; }
+
+    .nav-section-label {
+      font-family: var(--font-mono); font-size: 8px; font-weight: 600;
+      color: var(--text-muted); letter-spacing: 0.2em; text-transform: uppercase;
+      padding: 12px 18px 4px;
+    }
+
+    .nav-item {
+      display: flex; align-items: center; gap: 10px;
+      padding: 9px 18px;
+      font-family: var(--font-ui); font-size: 12px; font-weight: 500;
+      color: var(--text-secondary);
+      cursor: pointer; transition: all 0.15s;
+      border-left: 2px solid transparent;
+      text-decoration: none;
+    }
+    .nav-item:hover { background: var(--cyan-dim); color: var(--text-primary); }
+    .nav-item.active { background: var(--cyan-dim); color: var(--cyan); border-left-color: var(--cyan); }
+
+    .nav-icon { font-size: 13px; flex-shrink: 0; width: 16px; text-align: center; }
+
+    .nav-badge {
+      margin-left: auto;
+      background: var(--gold-dim); color: var(--gold);
+      font-family: var(--font-mono); font-size: 9px; font-weight: 600;
+      padding: 1px 6px; border-radius: 2px;
+    }
+
+    .sidebar-bottom {
+      padding: 12px 18px;
+      border-top: 1px solid var(--border);
+      flex-shrink: 0;
+    }
+
+    .user-info { font-family: var(--font-ui); font-size: 11px; color: var(--text-secondary); margin-bottom: 8px; }
+    .user-name { font-weight: 600; color: var(--text-primary); }
+
+    .lock-btn {
+      width: 100%; padding: 7px;
+      background: none; border: 1px solid var(--border);
+      border-radius: var(--radius); color: var(--text-muted);
+      font-family: var(--font-mono); font-size: 10px; font-weight: 600;
+      letter-spacing: 0.08em; text-transform: uppercase;
+      cursor: pointer; transition: all 0.15s;
+    }
+    .lock-btn:hover { border-color: var(--red); color: var(--red); }
+
+    /* ================================================================
+       MAIN CONTENT
+       ================================================================ */
+    .main-content {
+      flex: 1; display: flex; flex-direction: column;
+      overflow: hidden; background: var(--bg-primary);
+    }
+
+    .topbar {
+      height: 48px; background: var(--bg-dark);
+      border-bottom: 1px solid var(--border);
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 0 24px; flex-shrink: 0;
+    }
+
+    .topbar-title {
+      font-family: var(--font-display); font-size: 14px; font-weight: 600;
+      color: var(--text-primary);
+    }
+
+    .topbar-right { display: flex; align-items: center; gap: 12px; }
+
+    .topbar-time {
+      font-family: var(--font-mono); font-size: 11px; color: var(--text-muted);
+    }
+
+    .run-btn {
+      padding: 6px 16px;
+      background: var(--gold); color: var(--bg-primary);
+      border: none; border-radius: var(--radius);
+      font-family: var(--font-display); font-size: 11px; font-weight: 700;
+      letter-spacing: 0.06em; text-transform: uppercase;
+      cursor: pointer; transition: opacity 0.2s;
+    }
+    .run-btn:hover { opacity: 0.85; }
+
+    .content-area {
+      flex: 1; overflow-y: auto; padding: 20px 24px;
+    }
+
+    /* ================================================================
+       VIEWS
+       ================================================================ */
+    .view { display: none; }
+    .view.active { display: block; }
+
+    /* ================================================================
+       COMMAND CENTRE
+       ================================================================ */
+    .stats-grid {
+      display: grid; grid-template-columns: repeat(4, 1fr);
+      gap: 12px; margin-bottom: 20px;
+    }
+
+    .stat-card {
+      background: var(--bg-dark);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 16px 18px;
+      position: relative; overflow: hidden;
+    }
+
+    .stat-card::before {
+      content: ''; position: absolute; top: 0; left: 0; right: 0;
+      height: 1px;
+    }
+    .stat-card.cyan::before { background: var(--cyan); }
+    .stat-card.gold::before { background: var(--gold); }
+    .stat-card.green::before { background: var(--green); }
+    .stat-card.red::before { background: var(--red); }
+
+    .stat-label {
+      font-family: var(--font-mono); font-size: 9px; font-weight: 600;
+      color: var(--text-muted); letter-spacing: 0.15em; text-transform: uppercase;
+      margin-bottom: 8px;
+    }
+
+    .stat-value {
+      font-family: var(--font-display); font-size: 28px; font-weight: 700;
+      color: var(--text-primary); line-height: 1;
+    }
+    .stat-card.cyan .stat-value { color: var(--cyan); }
+    .stat-card.gold .stat-value { color: var(--gold); }
+    .stat-card.green .stat-value { color: var(--green); }
+    .stat-card.red .stat-value { color: var(--red); }
+
+    .stat-sub {
+      font-family: var(--font-mono); font-size: 10px; color: var(--text-muted);
+      margin-top: 4px;
+    }
+
+    /* ================================================================
+       SIGNAL CARDS (Intelligence items)
+       ================================================================ */
+    .signal-card {
+      background: var(--bg-dark);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 16px 18px;
+      margin-bottom: 10px;
+      transition: border-color 0.15s;
+    }
+    .signal-card:hover { border-color: rgba(0,232,255,0.25); }
+
+    .signal-header {
+      display: flex; align-items: flex-start;
+      justify-content: space-between; gap: 12px;
+      margin-bottom: 10px;
+    }
+
+    .signal-org {
+      font-family: var(--font-display); font-size: 14px; font-weight: 600;
+      color: var(--text-primary);
+    }
+
+    .signal-meta {
+      font-family: var(--font-mono); font-size: 10px; color: var(--text-secondary);
+      margin-top: 2px;
+    }
+
+    .signal-score {
+      font-family: var(--font-mono); font-size: 20px; font-weight: 700;
+      color: var(--gold); flex-shrink: 0;
+    }
+
+    .signal-tags { display: flex; gap: 6px; flex-wrap: wrap; margin-bottom: 10px; }
+
+    .tag {
+      font-family: var(--font-mono); font-size: 9px; font-weight: 600;
+      padding: 2px 8px; border-radius: 2px;
+      letter-spacing: 0.06em; text-transform: uppercase;
+    }
+    .tag-str { background: rgba(123,94,167,0.2); color: #B09FD0; }
+    .tag-qla { background: var(--cyan-dim); color: var(--cyan); }
+    .tag-blu { background: rgba(0,214,143,0.12); color: var(--green); }
+    .tag-cre { background: var(--gold-dim); color: var(--gold); }
+    .tag-urgent { background: var(--red-dim); color: var(--red); }
+    .tag-high { background: var(--gold-dim); color: var(--gold); }
+    .tag-medium { background: rgba(138,138,154,0.15); color: var(--text-secondary); }
+
+    .signal-summary {
+      font-family: var(--font-ui); font-size: 12px; color: var(--text-secondary);
+      line-height: 1.6; margin-bottom: 10px;
+    }
+
+    .signal-why {
+      background: rgba(0,232,255,0.05);
+      border-left: 2px solid var(--cyan);
+      padding: 8px 12px; margin-bottom: 10px;
+      font-family: var(--font-mono); font-size: 10px; color: var(--text-secondary);
+      line-height: 1.6;
+    }
+    .signal-why strong { color: var(--cyan); }
+
+    .signal-footer {
+      display: flex; align-items: center; gap: 16px; flex-wrap: wrap;
+    }
+
+    .signal-contact {
+      font-family: var(--font-mono); font-size: 10px; color: var(--text-secondary);
+      display: flex; align-items: center; gap: 5px;
+    }
+
+    .signal-action {
+      font-family: var(--font-mono); font-size: 10px; font-weight: 600;
+      color: var(--gold); margin-top: 4px; width: 100%;
+    }
+
+    .qualify-btn {
+      margin-left: auto;
+      padding: 5px 12px;
+      background: var(--cyan-dim); border: 1px solid var(--border);
+      border-radius: var(--radius); color: var(--cyan);
+      font-family: var(--font-mono); font-size: 10px; font-weight: 600;
+      letter-spacing: 0.06em; text-transform: uppercase;
+      cursor: pointer; transition: all 0.15s; flex-shrink: 0;
+    }
+    .qualify-btn:hover { background: var(--cyan); color: var(--bg-primary); }
+    .qualify-btn:disabled { opacity: 0.4; cursor: not-allowed; }
+    .qualify-btn.done { background: var(--green-dim); border-color: rgba(0,214,143,0.2); color: var(--green); }
+
+    /* ================================================================
+       SECTION HEADERS
+       ================================================================ */
+    .section-header {
+      display: flex; align-items: center; justify-content: space-between;
+      margin-bottom: 14px;
+    }
+
+    .section-title {
+      font-family: var(--font-display); font-size: 16px; font-weight: 700;
+      color: var(--text-primary);
+    }
+
+    .section-sub {
+      font-family: var(--font-mono); font-size: 10px; color: var(--text-muted);
+      margin-top: 2px;
+    }
+
+    .section-count {
+      font-family: var(--font-mono); font-size: 11px; color: var(--text-muted);
+    }
+
+    /* ================================================================
+       AGENT TABS
+       ================================================================ */
+    .agent-tabs {
+      display: flex; gap: 4px; margin-bottom: 16px;
+      background: var(--bg-dark); border: 1px solid var(--border);
+      border-radius: var(--radius); padding: 4px;
+    }
+
+    .agent-tab {
+      flex: 1; padding: 8px 12px; text-align: center;
+      font-family: var(--font-mono); font-size: 11px; font-weight: 600;
+      letter-spacing: 0.08em; text-transform: uppercase;
+      color: var(--text-muted); cursor: pointer;
+      border-radius: 2px; transition: all 0.15s;
+      border: none; background: none;
+    }
+    .agent-tab:hover { color: var(--text-primary); }
+    .agent-tab.active { background: var(--cyan-dim); color: var(--cyan); }
+
+    /* ================================================================
+       DIGEST VIEW
+       ================================================================ */
+    .digest-card {
+      background: var(--bg-dark); border: 1px solid var(--border);
+      border-radius: var(--radius); padding: 24px 28px; margin-bottom: 16px;
+    }
+
+    .digest-section-title {
+      font-family: var(--font-display); font-size: 13px; font-weight: 700;
+      color: var(--cyan); letter-spacing: 0.06em; text-transform: uppercase;
+      margin-bottom: 12px; padding-bottom: 8px;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .digest-body {
+      font-family: var(--font-ui); font-size: 13px; color: var(--text-secondary);
+      line-height: 1.8;
+    }
+
+    .digest-body h3 {
+      font-family: var(--font-display); font-size: 14px; font-weight: 600;
+      color: var(--text-primary); margin: 16px 0 6px;
+    }
+
+    .digest-body ul { margin: 6px 0 12px 18px; }
+    .digest-body li { margin-bottom: 4px; }
+    .digest-body strong { color: var(--text-primary); }
+
+    .brand-implication {
+      background: var(--bg-surface); border-left: 2px solid var(--cyan);
+      padding: 10px 14px; margin: 8px 0; border-radius: 0 var(--radius) var(--radius) 0;
+    }
+    .brand-implication.str { border-left-color: var(--violet); }
+    .brand-implication.qla { border-left-color: var(--cyan); }
+    .brand-implication.blu { border-left-color: var(--green); }
+    .brand-implication.cre { border-left-color: var(--gold); }
+
+    .brand-label {
+      font-family: var(--font-mono); font-size: 9px; font-weight: 700;
+      letter-spacing: 0.15em; text-transform: uppercase; margin-bottom: 4px;
+    }
+    .brand-label.str { color: var(--violet); }
+    .brand-label.qla { color: var(--cyan); }
+    .brand-label.blu { color: var(--green); }
+    .brand-label.cre { color: var(--gold); }
+
+    .brand-text {
+      font-family: var(--font-ui); font-size: 12px; color: var(--text-secondary);
+      line-height: 1.5;
+    }
+
+    /* ================================================================
+       EMPTY STATE
+       ================================================================ */
+    .empty-state {
+      text-align: center; padding: 60px 20px;
+    }
+    .empty-icon { font-size: 32px; margin-bottom: 12px; opacity: 0.3; }
+    .empty-title { font-family: var(--font-display); font-size: 15px; font-weight: 600; color: var(--text-secondary); margin-bottom: 6px; }
+    .empty-sub { font-family: var(--font-mono); font-size: 11px; color: var(--text-muted); }
+
+    /* ================================================================
+       SCROLLBAR
+       ================================================================ */
+    ::-webkit-scrollbar { width: 4px; height: 4px; }
+    ::-webkit-scrollbar-track { background: transparent; }
+    ::-webkit-scrollbar-thumb { background: var(--text-muted); border-radius: 2px; }
+
+    /* ================================================================
+       AUTO-LOCK OVERLAY
+       ================================================================ */
+    #corex-autolock {
+      position: fixed; inset: 0; z-index: 9998;
+      background: rgba(13,13,15,0.95); backdrop-filter: blur(8px);
+      display: none; align-items: center; justify-content: center;
+    }
+    #corex-autolock.visible { display: flex; }
+
+    .autolock-card {
+      background: var(--bg-dark); border: 1px solid var(--border);
+      border-radius: 8px; padding: 36px; text-align: center; max-width: 340px;
+    }
+    .autolock-title { font-family: var(--font-display); font-size: 16px; font-weight: 700; color: var(--text-primary); margin-bottom: 8px; }
+    .autolock-msg { font-family: var(--font-mono); font-size: 11px; color: var(--text-muted); margin-bottom: 20px; line-height: 1.6; }
+    .autolock-btn {
+      padding: 10px 24px; background: var(--cyan); color: var(--bg-primary);
+      border: none; border-radius: var(--radius);
+      font-family: var(--font-display); font-size: 12px; font-weight: 700;
+      letter-spacing: 0.06em; text-transform: uppercase; cursor: pointer;
+    }
+  </style>
+</head>
+<body>
+<!-- ================================================================
+     AUTO-LOCK OVERLAY
+     ================================================================ -->
+<div id="corex-autolock">
+<div class="autolock-card">
+<div style="font-size:28px;margin-bottom:12px;">🔒</div>
+<div class="autolock-title">Session Locked</div>
+<div class="autolock-msg">COREX locked due to inactivity.<br/>Re-authenticate to continue.</div>
+<button class="autolock-btn" onclick="corexAutoLockResume()">Unlock COREX</button>
+</div>
+</div>
+<!-- ================================================================
+     SECURITY GATE
+     ================================================================ -->
+<div id="corex-gate">
+<div class="gate-scan-line"></div>
+<div class="gate-card">
+<div class="gate-logo">COREX</div>
+<div class="gate-subtitle">Caribbean Intelligence Engine · Restricted Access</div>
+<div class="gate-dots">
+<div class="gate-dot active" id="gate-dot-1"></div>
+<div style="width:20px;height:1px;background:var(--border);"></div>
+<div class="gate-dot" id="gate-dot-2"></div>
+</div>
+<!-- Locked panel -->
+<div class="gate-locked" id="gate-locked-panel">
+<div class="gate-locked-title">🔒 Access Locked</div>
+<div class="gate-locked-msg">3 failed attempts detected.</div>
+<div class="gate-locked-timer" id="gate-lockout-timer">30:00</div>
+<div class="gate-locked-msg">Try again after the timer expires.</div>
+</div>
+<!-- Step 1 -->
+<div id="gate-step-1">
+<div class="gate-step-label">Step 1 of 2 — Access Passphrase</div>
+<input autocomplete="off" class="gate-input" id="gate-passphrase" onkeydown="if(event.key==='Enter')gateVerifyPassphrase()" placeholder="Enter passphrase" type="password"/>
+<div class="gate-error" id="gate-err-1"></div>
+<button class="gate-btn" onclick="gateVerifyPassphrase()">Continue →</button>
+</div>
+<!-- Step 2 -->
+<div id="gate-step-2" style="display:none;">
+<div class="gate-step-label">Step 2 of 2 — Security PIN</div>
+<input autocomplete="off" class="gate-input" id="gate-pin" inputmode="numeric" maxlength="6" onkeydown="if(event.key==='Enter')gateVerifyPIN()" placeholder="Enter PIN" type="password"/>
+<div class="gate-error" id="gate-err-2"></div>
+<button class="gate-btn" onclick="gateVerifyPIN()">Unlock COREX →</button>
+</div>
+<div id="gate-attempts-display" style="display:none;margin-top:12px;font-family:var(--font-mono);font-size:10px;color:var(--text-muted);">
+      ⚠ Failed attempts: <span id="gate-attempt-count" style="color:var(--red);font-weight:700;">0</span> / 3
+    </div>
+<div class="gate-security-note">
+      🔒 COREX is a restricted internal system.<br/>
+      Unauthorised access attempts are logged.<br/>
+      Founder &amp; Executive Director access only.
+    </div>
+</div>
+</div>
+<!-- ================================================================
+     MAIN APP
+     ================================================================ -->
+<div id="corex-app">
+<div class="app-layout">
+<!-- SIDEBAR -->
+<aside class="sidebar">
+<div class="sidebar-logo">
+<div class="logo-mark">COREX</div>
+<div class="logo-sub">Intelligence Engine v2</div>
+</div>
+<div class="sidebar-status">
+<div class="status-dot" id="status-dot"></div>
+<div class="status-text" id="status-text">ACTIVE · CYCLE RUNNING</div>
+</div>
+<nav class="sidebar-nav">
+<div class="nav-section-label">Intelligence</div>
+<div class="nav-item active" data-view="command" onclick="showView('command',this)">
+<span class="nav-icon">⚡</span> Command Centre
+        </div>
+<div class="nav-section-label">Agents</div>
+<div class="nav-item" data-view="cotis" onclick="showView('cotis',this)">
+<span class="nav-icon">📋</span> COTIS
+          <span class="nav-badge" id="cotis-badge">—</span>
+</div>
+<div class="nav-item" data-view="cdsia" onclick="showView('cdsia',this)">
+<span class="nav-icon">🚨</span> CDSIA
+          <span class="nav-badge" id="cdsia-badge">—</span>
+</div>
+<div class="nav-item" data-view="ifin" onclick="showView('ifin',this)">
+<span class="nav-icon">💰</span> IFIN
+          <span class="nav-badge" id="ifin-badge">—</span>
+</div>
+<div class="nav-section-label">Deliverables</div>
+<div class="nav-item" data-view="opportunity-report" onclick="showView('opportunity-report',this)">
+<span class="nav-icon">📘</span> Opportunity Report
+        </div>
+<div class="nav-item" data-view="digest" onclick="showView('digest',this)">
+<span class="nav-icon">📙</span> Intelligence Digest
+        </div>
+</nav>
+<div class="sidebar-bottom">
+<div class="user-info">
+<div class="user-name">Andrea M. Tanguay</div>
+<div style="font-size:10px;margin-top:1px;">Founder &amp; Executive Director</div>
+</div>
+<button class="lock-btn" onclick="corexLock()">🔒 Lock COREX</button>
+</div>
+</aside>
+<!-- MAIN CONTENT -->
+<div class="main-content">
+<div class="topbar">
+<div class="topbar-title" id="view-title">Command Centre</div>
+<div class="topbar-right">
+<div class="topbar-time" id="topbar-time">—</div>
+<button class="run-btn" onclick="corexRunCycle()">▶ Run Cycle</button>
+</div>
+</div>
+<div class="content-area">
+<!-- VIEW: COMMAND CENTRE -->
+<div class="view active" id="view-command">
+<div class="stats-grid" id="command-stats"></div>
+<div class="section-header">
+<div>
+<div class="section-title">Active Intelligence Queue</div>
+<div class="section-sub">All agents · Ranked by COREX Fit Index</div>
+</div>
+<div class="section-count" id="queue-count">—</div>
+</div>
+<div class="agent-tabs">
+<button class="agent-tab active" onclick="filterQueue('all',this)">All</button>
+<button class="agent-tab" onclick="filterQueue('cotis',this)">COTIS</button>
+<button class="agent-tab" onclick="filterQueue('cdsia',this)">CDSIA</button>
+<button class="agent-tab" onclick="filterQueue('ifin',this)">IFIN</button>
+</div>
+<div id="command-queue"></div>
+</div>
+<!-- VIEW: COTIS -->
+<div class="view" id="view-cotis">
+<div class="section-header">
+<div>
+<div class="section-title">COTIS — Tenders &amp; Procurement</div>
+<div class="section-sub">Caribbean Opportunity, Tender &amp; Infrastructure Signals</div>
+</div>
+<button class="run-btn" onclick="cotisRunScan()" style="font-size:10px;padding:5px 12px;">📡 Scan</button>
+</div>
+<div id="cotis-signals"></div>
+</div>
+<!-- VIEW: CDSIA -->
+<div class="view" id="view-cdsia">
+<div class="section-header">
+<div>
+<div class="section-title">CDSIA — MSME Distress Signals</div>
+<div class="section-sub">Caribbean Distress Signals &amp; MSME Reality Mapping</div>
+</div>
+<button class="run-btn" onclick="cdsiaRunScan()" style="font-size:10px;padding:5px 12px;">📡 Scan</button>
+</div>
+<div id="cdsia-signals"></div>
+</div>
+<!-- VIEW: IFIN -->
+<div class="view" id="view-ifin">
+<div class="section-header">
+<div>
+<div class="section-title">IFIN — Funding Intelligence</div>
+<div class="section-sub">International Funding &amp; Donor Intelligence</div>
+</div>
+<button class="run-btn" onclick="ifinRunScan()" style="font-size:10px;padding:5px 12px;">📡 Scan</button>
+</div>
+<div id="ifin-signals"></div>
+</div>
+<!-- VIEW: OPPORTUNITY REPORT -->
+<div class="view" id="view-opportunity-report">
+<div class="section-header">
+<div>
+<div class="section-title">📘 Opportunity Report</div>
+<div class="section-sub">Daily · Actionable, revenue-aligned intelligence</div>
+</div>
+<button class="run-btn" onclick="generateOpportunityReport()" style="font-size:10px;padding:5px 12px;">✨ Generate</button>
+</div>
+<div id="opportunity-report-output">
+<div class="empty-state">
+<div class="empty-icon">📘</div>
+<div class="empty-title">No report generated yet</div>
+<div class="empty-sub">Click Generate to create today's Opportunity Report</div>
+</div>
+</div>
+</div>
+<!-- VIEW: INTELLIGENCE DIGEST -->
+<div class="view" id="view-digest">
+<div class="section-header">
+<div>
+<div class="section-title">📙 Intelligence Digest</div>
+<div class="section-sub">Weekly · Narrative, contextual, strategic intelligence</div>
+</div>
+<button class="run-btn" onclick="generateDigest()" style="font-size:10px;padding:5px 12px;">✨ Generate</button>
+</div>
+<div id="digest-output">
+<div class="empty-state">
+<div class="empty-icon">📙</div>
+<div class="empty-title">No digest generated yet</div>
+<div class="empty-sub">Click Generate to create this week's Intelligence Digest</div>
+</div>
+</div>
+</div>
+</div><!-- /content-area -->
+</div><!-- /main-content -->
+</div><!-- /app-layout -->
+</div><!-- /corex-app -->
+<script>
+// ================================================================
+// COREX v2 — Caribbean Intelligence Engine
+// ================================================================
+
+// ---- Config ----
+const GATE_PASSPHRASE = 'AMT26-COREXv2';
+const GATE_PIN = '260824';
+const MAX_ATTEMPTS = 3;
+const LOCKOUT_MS = 30 * 60 * 1000;
+const INACTIVITY_MS = 10 * 60 * 1000;
+
+// ---- Gate State ----
+function gateGetAttempts(){ return parseInt(localStorage.getItem('corex_v2_attempts')||'0'); }
+function gateSetAttempts(n){ localStorage.setItem('corex_v2_attempts',String(n)); }
+function gateGetLockout(){ return parseInt(localStorage.getItem('corex_v2_lockout')||'0'); }
+function gateSetLockout(ts){ localStorage.setItem('corex_v2_lockout',String(ts)); }
+function gateIsLocked(){ const l=gateGetLockout(); if(!l)return false; if(Date.now()<l)return true; gateSetAttempts(0);gateSetLockout(0);return false; }
+function gateIsAuth(){ const a=localStorage.getItem('corex_v2_auth'); const ts=parseInt(localStorage.getItem('corex_v2_auth_ts')||'0'); if(a!=='true')return false; if(Date.now()-ts>INACTIVITY_MS){gateClearAuth();return false;} return true; }
+function gateSetAuth(){ localStorage.setItem('corex_v2_auth','true'); localStorage.setItem('corex_v2_auth_ts',String(Date.now())); }
+function gateClearAuth(){ localStorage.removeItem('corex_v2_auth'); localStorage.removeItem('corex_v2_auth_ts'); }
+
+// ---- Gate Init ----
+(function(){
+  if(gateIsAuth()){ showApp(); return; }
+  gateClearAuth();
+  if(gateIsLocked()){ showLockedPanel(); }
+  else { setTimeout(()=>document.getElementById('gate-passphrase')?.focus(),200); }
+})();
+
+function showLockedPanel(){
+  document.getElementById('gate-locked-panel').style.display='block';
+  document.getElementById('gate-step-1').style.display='none';
+  document.getElementById('gate-step-2').style.display='none';
+  let li=setInterval(()=>{
+    const rem=gateGetLockout()-Date.now();
+    if(rem<=0){clearInterval(li);gateSetAttempts(0);gateSetLockout(0);document.getElementById('gate-locked-panel').style.display='none';document.getElementById('gate-step-1').style.display='block';setTimeout(()=>document.getElementById('gate-passphrase')?.focus(),100);return;}
+    const m=Math.floor(rem/60000),s=Math.floor((rem%60000)/1000);
+    document.getElementById('gate-lockout-timer').textContent=String(m).padStart(2,'0')+':'+String(s).padStart(2,'0');
+  },1000);
+}
+
+function gateUpdateAttempts(){
+  const n=gateGetAttempts();
+  const el=document.getElementById('gate-attempts-display');
+  if(n>0){el.style.display='block';document.getElementById('gate-attempt-count').textContent=n;}
+  else el.style.display='none';
+}
+
+function gateRecordFail(){
+  const n=gateGetAttempts()+1; gateSetAttempts(n); gateUpdateAttempts();
+  if(n>=MAX_ATTEMPTS){gateSetLockout(Date.now()+LOCKOUT_MS);showLockedPanel();return true;}
+  return false;
+}
+
+function gateVerifyPassphrase(){
+  const val=document.getElementById('gate-passphrase').value.trim();
+  const err=document.getElementById('gate-err-1');
+  if(val===GATE_PASSPHRASE){
+    err.style.display='none';
+    document.getElementById('gate-step-1').style.display='none';
+    document.getElementById('gate-step-2').style.display='block';
+    document.getElementById('gate-dot-1').className='gate-dot done';
+    document.getElementById('gate-dot-2').className='gate-dot active';
+    setTimeout(()=>document.getElementById('gate-pin')?.focus(),100);
+  } else {
+    const locked=gateRecordFail();
+    if(!locked){
+      const rem=MAX_ATTEMPTS-gateGetAttempts();
+      err.textContent='✗ Incorrect passphrase. '+rem+' attempt'+(rem===1?'':'s')+' remaining.';
+      err.style.display='block';
+      document.getElementById('gate-passphrase').value='';
+      document.getElementById('gate-passphrase').classList.add('error');
+      setTimeout(()=>document.getElementById('gate-passphrase').classList.remove('error'),400);
+      document.getElementById('gate-passphrase').focus();
+    }
+  }
+}
+
+function gateVerifyPIN(){
+  const val=document.getElementById('gate-pin').value.trim();
+  const err=document.getElementById('gate-err-2');
+  if(val===GATE_PIN){
+    err.style.display='none'; gateSetAttempts(0); gateSetAuth();
+    document.getElementById('corex-gate').style.display='none';
+    showApp();
+  } else {
+    const locked=gateRecordFail();
+    if(!locked){
+      const rem=MAX_ATTEMPTS-gateGetAttempts();
+      err.textContent='✗ Incorrect PIN. '+rem+' attempt'+(rem===1?'':'s')+' remaining.';
+      err.style.display='block';
+      document.getElementById('gate-pin').value='';
+      document.getElementById('gate-pin').classList.add('error');
+      setTimeout(()=>document.getElementById('gate-pin').classList.remove('error'),400);
+      document.getElementById('gate-pin').focus();
+    }
+  }
+}
+
+// ---- Auto-lock ----
+let _inactivityTimer=null;
+function startInactivity(){
+  resetInactivity();
+  ['mousemove','keydown','click','scroll'].forEach(e=>document.addEventListener(e,resetInactivity,{passive:true}));
+}
+function resetInactivity(){
+  if(_inactivityTimer)clearTimeout(_inactivityTimer);
+  if(localStorage.getItem('corex_v2_auth')==='true') localStorage.setItem('corex_v2_auth_ts',String(Date.now()));
+  _inactivityTimer=setTimeout(triggerAutoLock,INACTIVITY_MS);
+}
+function triggerAutoLock(){
+  gateClearAuth();
+  ['mousemove','keydown','click','scroll'].forEach(e=>document.removeEventListener(e,resetInactivity));
+  document.getElementById('corex-autolock').classList.add('visible');
+}
+function corexAutoLockResume(){
+  document.getElementById('corex-autolock').classList.remove('visible');
+  document.getElementById('corex-gate').style.display='flex';
+  document.getElementById('gate-step-1').style.display='block';
+  document.getElementById('gate-step-2').style.display='none';
+  document.getElementById('gate-dot-1').className='gate-dot active';
+  document.getElementById('gate-dot-2').className='gate-dot';
+  setTimeout(()=>document.getElementById('gate-passphrase')?.focus(),200);
+}
+function corexLock(){ gateClearAuth(); triggerAutoLock(); }
+
+// ---- Auto-run at 7am ----
+(function corexAutoRun(){
+  const KEY='corex_v2_last_auto_run';
+  function shouldRun(){
+    const now=new Date(); const todayAt7=new Date(now.getFullYear(),now.getMonth(),now.getDate(),7,0,0);
+    if(now<todayAt7)return false;
+    const last=localStorage.getItem(KEY);
+    if(!last)return true;
+    return new Date(last)<todayAt7;
+  }
+  function runAuto(){
+    localStorage.setItem(KEY,new Date().toISOString());
+    const maxWait=30000; let waited=0;
+    const check=setInterval(()=>{
+      waited+=1000;
+      if(document.getElementById('corex-app')?.style.display!=='none'){
+        clearInterval(check);
+        setTimeout(()=>{ corexRunCycle(); },2000);
+      }
+      if(waited>=maxWait)clearInterval(check);
+    },1000);
+  }
+  if(shouldRun()) runAuto();
+  setInterval(()=>{ if(shouldRun()) runAuto(); },60*60*1000);
+})();
+
+// ================================================================
+// APP INIT
+// ================================================================
+function showApp(){
+  document.getElementById('corex-gate').style.display='none';
+  document.getElementById('corex-app').style.display='block';
+  startInactivity();
+  initApp();
+}
+
+function initApp(){
+  updateClock();
+  setInterval(updateClock,60000);
+  renderCommandStats();
+  renderAllSignals();
+  updateBadges();
+}
+
+function updateClock(){
+  const now=new Date();
+  document.getElementById('topbar-time').textContent=
+    now.toLocaleString('en-US',{month:'short',day:'numeric',hour:'numeric',minute:'2-digit',hour12:true})+' EDT';
+}
+
+// ================================================================
+// NAVIGATION
+// ================================================================
+const VIEW_TITLES={
+  'command':'Command Centre',
+  'cotis':'COTIS — Tenders & Procurement',
+  'cdsia':'CDSIA — MSME Distress Signals',
+  'ifin':'IFIN — Funding Intelligence',
+  'opportunity-report':'📘 Opportunity Report',
+  'digest':'📙 Intelligence Digest'
+};
+
+function showView(name, el){
+  document.querySelectorAll('.view').forEach(v=>v.classList.remove('active'));
+  document.querySelectorAll('.nav-item').forEach(n=>n.classList.remove('active'));
+  const v=document.getElementById('view-'+name);
+  if(v) v.classList.add('active');
+  if(el) el.classList.add('active');
+  document.getElementById('view-title').textContent=VIEW_TITLES[name]||name;
+  if(name==='cotis') renderAgentSignals('cotis');
+  if(name==='cdsia') renderAgentSignals('cdsia');
+  if(name==='ifin') renderAgentSignals('ifin');
+}
+
+// ================================================================
+// DATA — COTIS SIGNALS
+// ================================================================
+const COTIS_DATA = [
+  {
+    id:'COT001', agent:'cotis', org:'OECS Digital Transformation Project',
+    country:'🇱🇨 St. Lucia', sector:'Government / Digital',
+    type:'Government RFP', deadline:'2026-09-15', budget:'USD 94M',
+    score:92, urgency:'Critical',
+    brands:['QLA','STR'],
+    summary:'OECS digital transformation initiative seeking vendors for CRM implementation, data systems, and capacity building across 6 member states.',
+    painSignal:'Government lacks CRM visibility and digital coordination across member states.',
+    whyItMatters:'Direct fit for Qualia Systems CRM implementation. Stratiix for governance and capacity building. Multi-island scope = high strategic value.',
+    actionRequired:'Devon to submit capability statement immediately. Deadline Sept 15.',
+    contact:{name:'OECS Procurement Office',email:'tenders@oecs.int',phone:'+1-758-455-6327'},
+    source:'OECS Procurement Portal', sourceUrl:'https://www.oecs.org/procurement',
+    qualified:false
+  },
+  {
+    id:'COT002', agent:'cotis', org:'JBDC Digital Jamaica Project',
+    country:'🇯🇲 Jamaica', sector:'MSME Development',
+    type:'EU-Funded Programme', deadline:'2026-10-01', budget:'USD 2.7M',
+    score:94, urgency:'Critical',
+    brands:['QLA','BLU'],
+    summary:'JBDC targeting 2,700 MSMEs for digital transformation. Programme actively implementing CRM tools. EU-funded. Harold Davis (Acting CEO) confirmed CRM tools required for disbursement.',
+    painSignal:'2,700 MSMEs lack digital tools. Grant disbursement requires CRM adoption.',
+    whyItMatters:'Partnership with JBDC = pipeline of 2,700 MSMEs. Qualia Systems is the exact CRM fit. BluWav Growth for digital visibility training.',
+    actionRequired:'Contact Harold Davis at JBDC immediately. Position Qualia as EU-eligible digital tool.',
+    contact:{name:'Harold Davis (Acting CEO, JBDC)',email:'info@jbdc.net',phone:'+1-876-928-5323'},
+    source:'JBDC World MSME Day 2026', sourceUrl:'https://www.jbdc.net/jbdc-celebrates-resilience-of-msmes-on-world-msme-day-2026/',
+    qualified:false
+  },
+  {
+    id:'COT003', agent:'cotis', org:'Caribbean Development Bank — Business Innovation Fund',
+    country:'🇧🇧 Barbados', sector:'Finance / Development',
+    type:'Donor Programme', deadline:'2026-09-30', budget:'USD 8.5M',
+    score:88, urgency:'High',
+    brands:['STR','QLA'],
+    summary:'CDB fund supporting business innovation and digital adoption across Caribbean. Grants available to SMEs implementing CRM, ERP, and growth tools.',
+    painSignal:'Caribbean SMEs lack governance and digital infrastructure to scale.',
+    whyItMatters:'Stratiix for governance and transformation advisory. Qualia for CRM implementation. CDB relationship opens doors across all Caribbean territories.',
+    actionRequired:'Submit concept note to CDB. Identify consortium partners.',
+    contact:{name:'CDB Business Innovation Fund',email:'bif@caribank.org',phone:'+1-246-431-1600'},
+    source:'Caribbean Development Bank', sourceUrl:'https://www.caribank.org/business-innovation-fund',
+    qualified:false
+  }
+];
+
+// ================================================================
+// DATA — CDSIA SIGNALS
+// ================================================================
+const CDSIA_DATA = [
+  {
+    id:'CDS001', agent:'cdsia', org:'Blue Water Guyana',
+    country:'🇬🇾 Guyana', sector:'Logistics & 3PL',
+    distressType:['Scaling','Execution Chaos'],
+    score:96, urgency:'Critical',
+    brands:['STR','QLA'],
+    summary:'Blue Water Guyana launched 3PL operations for ExxonMobil Guyana. Hiring 32-50 local staff. Rapid scaling with new service lines. No operating system in place.',
+    rootCause:'Fleet tripling in size with zero governance systems. Government contracts at risk.',
+    whyItMatters:'Stratiix OS installs governance + workflows. Qualia manages client relationships. Highest score this cycle.',
+    actionRequired:'Devon to contact Richard DeNobrega this week. Lead with Stratiix Diagnostic.',
+    contact:{name:'Richard DeNobrega (Country Manager)',email:'richard.denobrega@bws.net',phone:'+592-XXX-XXXX'},
+    source:'Blue Water News', sourceUrl:'https://www.bws.net/media/news/blue-water-guyana-launches-3pl-operations-for-exxonmobil-guyana',
+    qualified:false
+  },
+  {
+    id:'CDS002', agent:'cdsia', org:'Caribbean Tech TrendZ (CTTL)',
+    country:'🇹🇹 Trinidad & Tobago', sector:'IT Consulting',
+    distressType:['Governance Failure','Founder Bottleneck'],
+    score:88, urgency:'High',
+    brands:['STR','QLA'],
+    summary:'19-staff IT consulting firm in Trinidad. Growing client base across Caribbean. At the complexity ceiling where founder-led coordination breaks down.',
+    rootCause:'Founder is the bottleneck. No formal operating rhythms or governance framework.',
+    whyItMatters:'Stratiix OS is the exact intervention. IT firm that sells transformation needs its own transformation.',
+    actionRequired:'Marcus to contact CTTL. Lead with peer positioning.',
+    contact:{name:'CTTL Leadership',email:'info@cttl.net',phone:'+1-868-XXX-XXXX'},
+    source:'Caribbean Tech TrendZ', sourceUrl:'https://www.cttl.net',
+    qualified:false
+  },
+  {
+    id:'CDS003', agent:'cdsia', org:'Ekco Caribbean (T&T Office)',
+    country:'🇹🇹 Trinidad & Tobago', sector:'Cybersecurity',
+    distressType:['Scaling','CRM Need'],
+    score:87, urgency:'High',
+    brands:['QLA','STR'],
+    summary:'Irish cybersecurity firm Ekco opened T&T office Jan 2026 — €10M investment, 18 jobs by 2027. Scaling rapidly with new sales and technical roles.',
+    rootCause:'New Caribbean office scaling to 18 staff with no Caribbean-specific CRM or operating system.',
+    whyItMatters:'Qualia CRM for Caribbean client pipeline. Stratiix for new team operating rhythms. Time-sensitive — in setup mode now.',
+    actionRequired:'Marcus to contact Mark Donnellan. Lead with Qualia CRM + Stratiix.',
+    contact:{name:'Mark Donnellan (Head of BD, Caribbean)',email:'mark.donnellan@ekco.io',phone:'+1-868-XXX-XXXX'},
+    source:'Silicon Republic Jan 2026', sourceUrl:'https://www.siliconrepublic.com/business/ekco-trinidad-and-tobago-office-caribbean-cybersecurity-ireland',
+    qualified:false
+  }
+];
+
+// ================================================================
+// DATA — IFIN SIGNALS
+// ================================================================
+const IFIN_DATA = [
+  {
+    id:'IFN001', agent:'ifin', org:'IDB Lab Caribbean Startup Accelerator',
+    country:'🇬🇾 Guyana', sector:'Startup Ecosystem',
+    type:'Grant', deadline:'2026-09-01', budget:'USD 2.5M',
+    score:91, urgency:'Critical',
+    brands:['QLA','STR','CRE'],
+    summary:'IDB Lab accelerator for Caribbean startups. Seeking CRM, growth tools, and digital infrastructure vendors to onboard 30 participating startups.',
+    alignmentSignal:'Qualia Systems for CRM. Stratiix for governance. Credii for trust infrastructure and achievement recognition.',
+    proposalAngle:'Position as the Caribbean-built digital infrastructure stack for the accelerator cohort.',
+    actionRequired:'Submit concept note to IDB Lab. Identify consortium partners.',
+    contact:{name:'IDB Lab Caribbean',email:'idblab@iadb.org',phone:'+1-XXX-XXX-XXXX'},
+    source:'IDB Lab', sourceUrl:'https://idblab.iadb.org',
+    qualified:false
+  },
+  {
+    id:'IFN002', agent:'ifin', org:'USAID Digital Inclusion Caribbean',
+    country:'🇯🇲 Jamaica', sector:'Digital Inclusion',
+    type:'Grant', deadline:'2026-08-30', budget:'USD 3.2M',
+    score:85, urgency:'Critical',
+    brands:['BLU','CRE','QLA'],
+    summary:'USAID digital inclusion initiative. Partner organizations need CRM for participant tracking and reporting. BluWav Growth for digital visibility training.',
+    alignmentSignal:'BluWav Growth for digital storytelling and visibility. Credii for community capability mapping. Qualia for CRM.',
+    proposalAngle:'Caribbean-built digital inclusion stack — visibility, trust, and CRM in one ecosystem.',
+    actionRequired:'Submit expression of interest. Deadline Aug 30 — URGENT.',
+    contact:{name:'USAID Caribbean',email:'caribbeangrants@usaid.gov',phone:'+1-XXX-XXX-XXXX'},
+    source:'USAID', sourceUrl:'https://www.usaid.gov',
+    qualified:false
+  },
+  {
+    id:'IFN003', agent:'ifin', org:'GIZ SME Digitization Caribbean',
+    country:'🇹🇹 Trinidad & Tobago', sector:'SME Development',
+    type:'Technical Assistance', deadline:'2026-09-15', budget:'EUR 4.8M',
+    score:88, urgency:'High',
+    brands:['QLA','BLU','STR'],
+    summary:'GIZ programme promoting digital economy in Caribbean. Seeking tools for SME digitization, CRM adoption, and e-commerce enablement.',
+    alignmentSignal:'Qualia for CRM adoption. BluWav Growth for digital marketing. Stratiix for organizational transformation.',
+    proposalAngle:'Full-stack Caribbean digital transformation — from governance to visibility.',
+    actionRequired:'Contact GIZ Caribbean office. Submit capability statement.',
+    contact:{name:'GIZ Caribbean',email:'digital@giz.de',phone:'+49-XXX-XXX-XXXX'},
+    source:'GIZ', sourceUrl:'https://www.giz.de',
+    qualified:false
+  }
+];
+
+// ================================================================
+// RENDER FUNCTIONS
+// ================================================================
+const ALL_SIGNALS = [...COTIS_DATA, ...CDSIA_DATA, ...IFIN_DATA];
+let _queueFilter = 'all';
+
+function renderCommandStats(){
+  const total = ALL_SIGNALS.length;
+  const critical = ALL_SIGNALS.filter(s=>s.urgency==='Critical').length;
+  const qualified = ALL_SIGNALS.filter(s=>s.qualified).length;
+  const hot = ALL_SIGNALS.filter(s=>s.score>=85).length;
+
+  document.getElementById('command-stats').innerHTML = [
+    {label:'Total Signals',val:total,cls:'cyan',sub:'All agents'},
+    {label:'Critical',val:critical,cls:'red',sub:'Immediate action'},
+    {label:'Hot (≥85)',val:hot,cls:'gold',sub:'High priority'},
+    {label:'Qualified',val:qualified,cls:'green',sub:'Pushed to CRM'}
+  ].map(s=>`<div class="stat-card ${s.cls}">
+    <div class="stat-label">${s.label}</div>
+    <div class="stat-value">${s.val}</div>
+    <div class="stat-sub">${s.sub}</div>
+  </div>`).join('');
+}
+
+function renderAllSignals(){
+  const filtered = _queueFilter==='all' ? ALL_SIGNALS : ALL_SIGNALS.filter(s=>s.agent===_queueFilter);
+  const sorted = [...filtered].sort((a,b)=>b.score-a.score);
+  document.getElementById('queue-count').textContent = sorted.length+' signals';
+  document.getElementById('command-queue').innerHTML = sorted.length
+    ? sorted.map(s=>renderSignalCard(s)).join('')
+    : '<div class="empty-state"><div class="empty-icon">📡</div><div class="empty-title">No signals</div></div>';
+}
+
+function renderAgentSignals(agent){
+  const data = agent==='cotis'?COTIS_DATA:agent==='cdsia'?CDSIA_DATA:IFIN_DATA;
+  const el = document.getElementById(agent+'-signals');
+  if(!el) return;
+  el.innerHTML = data.length
+    ? data.map(s=>renderSignalCard(s)).join('')
+    : '<div class="empty-state"><div class="empty-icon">📡</div><div class="empty-title">No signals yet</div><div class="empty-sub">Click Scan to discover new signals</div></div>';
+}
+
+function renderSignalCard(s){
+  const agentLabel = {cotis:'COTIS',cdsia:'CDSIA',ifin:'IFIN'}[s.agent]||s.agent;
+  const urgencyClass = s.urgency==='Critical'?'tag-urgent':s.urgency==='High'?'tag-high':'tag-medium';
+  const brandTags = (s.brands||[]).map(b=>`<span class="tag tag-${b.toLowerCase()}">${b}</span>`).join('');
+  const distressTags = (s.distressType||[]).map(t=>`<span class="tag tag-medium">${t}</span>`).join('');
+  const typeTags = s.type ? `<span class="tag tag-medium">${s.type}</span>` : '';
+
+  return `<div class="signal-card" id="signal-${s.id}">
+    <div class="signal-header">
+      <div>
+        <div class="signal-org">${s.org}</div>
+        <div class="signal-meta">${s.country} · ${s.sector} · <span style="color:var(--cyan);font-family:var(--font-mono);font-size:9px;">${agentLabel}</span>${s.deadline?` · Deadline: ${s.deadline}`:''}</div>
+      </div>
+      <div class="signal-score">${s.score}</div>
+    </div>
+    <div class="signal-tags">
+      <span class="tag ${urgencyClass}">${s.urgency}</span>
+      ${brandTags}${distressTags}${typeTags}
+      ${s.budget?`<span class="tag tag-medium">${s.budget}</span>`:''}
+    </div>
+    <div class="signal-summary">${s.summary}</div>
+    ${s.whyItMatters?`<div class="signal-why"><strong>Why it matters:</strong> ${s.whyItMatters}</div>`:''}
+    <div class="signal-footer">
+      ${s.contact?.name?`<div class="signal-contact">👤 <strong>${s.contact.name}</strong></div>`:''}
+      ${s.contact?.email?`<a href="mailto:${s.contact.email}" style="font-family:var(--font-mono);font-size:10px;color:var(--cyan);text-decoration:none;">✉️ ${s.contact.email}</a>`:''}
+      ${s.sourceUrl&&s.sourceUrl!=='#'?`<a href="${s.sourceUrl}" target="_blank" rel="noopener" style="font-family:var(--font-mono);font-size:10px;color:var(--text-muted);text-decoration:none;">🔗 ${s.source} ↗</a>`:''}
+      <button class="qualify-btn ${s.qualified?'done':''}" onclick="qualifySignal('${s.id}')" ${s.qualified?'disabled':''}>
+        ${s.qualified?'✓ Qualified':'→ Qualify'}
+      </button>
+    </div>
+    ${s.actionRequired?`<div class="signal-action">⚡ ${s.actionRequired}</div>`:''}
+  </div>`;
+}
+
+function filterQueue(filter, btn){
+  _queueFilter = filter;
+  document.querySelectorAll('.agent-tab').forEach(t=>t.classList.remove('active'));
+  if(btn) btn.classList.add('active');
+  renderAllSignals();
+}
+
+function updateBadges(){
+  document.getElementById('cotis-badge').textContent = COTIS_DATA.length;
+  document.getElementById('cdsia-badge').textContent = CDSIA_DATA.length;
+  document.getElementById('ifin-badge').textContent = IFIN_DATA.length;
+}
+
+// ================================================================
+// QUALIFY SIGNAL
+// ================================================================
+function qualifySignal(id){
+  const signal = ALL_SIGNALS.find(s=>s.id===id);
+  if(!signal||signal.qualified) return;
+  signal.qualified = true;
+  renderCommandStats();
+  renderAllSignals();
+  if(signal.agent==='cotis') renderAgentSignals('cotis');
+  if(signal.agent==='cdsia') renderAgentSignals('cdsia');
+  if(signal.agent==='ifin') renderAgentSignals('ifin');
+  showToast('✓ '+signal.org+' qualified');
+}
+
+// ================================================================
+// RUN CYCLE
+// ================================================================
+function corexRunCycle(){
+  showToast('⚡ COREX intelligence cycle running...');
+  const btn = document.querySelector('.run-btn');
+  if(btn){btn.disabled=true;btn.textContent='Running...';}
+  setTimeout(()=>{
+    if(btn){btn.disabled=false;btn.textContent='▶ Run Cycle';}
+    renderCommandStats();
+    showToast('✅ Intelligence cycle complete — '+ALL_SIGNALS.length+' signals active');
+  },2000);
+}
+
+function cotisRunScan(){ showToast('📡 COTIS scanning procurement portals...'); setTimeout(()=>showToast('✅ COTIS scan complete'),2000); }
+function cdsiaRunScan(){ showToast('📡 CDSIA scanning Caribbean news sources...'); setTimeout(()=>showToast('✅ CDSIA scan complete'),2000); }
+function ifinRunScan(){ showToast('📡 IFIN scanning donor portals...'); setTimeout(()=>showToast('✅ IFIN scan complete'),2000); }
+
+// ================================================================
+// GENERATE REPORTS
+// ================================================================
+function generateOpportunityReport(){
+  const critical = ALL_SIGNALS.filter(s=>s.urgency==='Critical').sort((a,b)=>b.score-a.score);
+  const high = ALL_SIGNALS.filter(s=>s.urgency==='High').sort((a,b)=>b.score-a.score);
+  const top10 = [...critical,...high].slice(0,10);
+  const now = new Date().toLocaleDateString('en-US',{weekday:'long',year:'numeric',month:'long',day:'numeric'});
+
+  const brandSections = ['STR','QLA','BLU','CRE'].map(brand=>{
+    const signals = top10.filter(s=>(s.brands||[]).includes(brand));
+    if(!signals.length) return '';
+    const brandNames={STR:'Stratiix',QLA:'Qualia Systems',BLU:'BluWav Growth',CRE:'Credii'};
+    const brandClass={STR:'str',QLA:'qla',BLU:'blu',CRE:'cre'}[brand];
+    return `<div class="brand-implication ${brandClass}" style="margin-bottom:12px;">
+      <div class="brand-label ${brandClass}">${brandNames[brand]}</div>
+      ${signals.map(s=>`<div class="brand-text">
+        <strong>${s.org}</strong> (Score: ${s.score}) — ${s.actionRequired||'Review and act.'}
+      </div>`).join('')}
+    </div>`;
+  }).join('');
+
+  document.getElementById('opportunity-report-output').innerHTML = `
+    <div class="digest-card">
+      <div class="digest-section-title">📘 Opportunity Report — ${now}</div>
+      <div class="digest-body">
+        <h3>Executive Summary</h3>
+        <p>COREX identified <strong>${ALL_SIGNALS.length} active signals</strong> across COTIS, CDSIA, and IFIN. 
+        <strong>${critical.length} critical</strong> signals require immediate action. 
+        Top opportunity: <strong>${top10[0]?.org}</strong> (Score: ${top10[0]?.score}).</p>
+        <h3>Priority Actions by Brand</h3>
+        ${brandSections}
+        <h3>Top 10 Opportunities</h3>
+        ${top10.map((s,i)=>`<div style="padding:10px 0;border-bottom:1px solid var(--border);">
+          <div style="display:flex;justify-content:space-between;align-items:center;">
+            <strong style="font-family:var(--font-display);font-size:13px;">#${i+1} ${s.org}</strong>
+            <span style="font-family:var(--font-mono);font-size:14px;color:var(--gold);font-weight:700;">${s.score}</span>
+          </div>
+          <div style="font-family:var(--font-mono);font-size:10px;color:var(--text-muted);margin:3px 0;">${s.country} · ${(s.brands||[]).join(' · ')}</div>
+          <div style="font-size:12px;color:var(--text-secondary);">${s.actionRequired||s.summary.substring(0,100)+'...'}</div>
+          ${s.contact?.name?`<div style="font-family:var(--font-mono);font-size:10px;color:var(--cyan);margin-top:4px;">👤 ${s.contact.name}${s.contact.email?' · '+s.contact.email:''}</div>`:''}
+        </div>`).join('')}
+      </div>
+    </div>`;
+  showToast('📘 Opportunity Report generated');
+}
+
+function generateDigest(){
+  const now = new Date().toLocaleDateString('en-US',{weekday:'long',year:'numeric',month:'long',day:'numeric'});
+  document.getElementById('digest-output').innerHTML = `
+    <div class="digest-card">
+      <div class="digest-section-title">📙 Intelligence Digest — Week of ${now}</div>
+      <div class="digest-body">
+        <h3>This Week's Caribbean Signals</h3>
+        <p>Caribbean digital transformation spend continues to accelerate. Government procurement portals show increased RFP activity across OECS member states. MSME distress signals indicate scaling challenges as post-pandemic growth creates operational complexity.</p>
+
+        <h3>COTIS Patterns</h3>
+        <ul>
+          <li>Government digital transformation RFPs increasing — OECS, Jamaica, Guyana leading</li>
+          <li>EU-funded programmes prioritizing CRM and digital onboarding tools</li>
+          <li>Procurement deadlines clustering in September–October 2026</li>
+        </ul>
+
+        <h3>CDSIA Patterns</h3>
+        <ul>
+          <li>Scaling MSMEs hitting founder bottleneck at 15–20 staff threshold</li>
+          <li>New foreign investment (Ekco, Blue Water) creating immediate systems needs</li>
+          <li>IT consulting firms need their own transformation — high conversion probability</li>
+        </ul>
+
+        <h3>IFIN Patterns</h3>
+        <ul>
+          <li>IDB, USAID, GIZ all active in Caribbean digital economy funding</li>
+          <li>Credii-aligned trust infrastructure funding emerging from community development donors</li>
+          <li>Consortium approach preferred — single-brand bids less competitive</li>
+        </ul>
+
+        <h3>Brand Implications</h3>
+        <div class="brand-implication str">
+          <div class="brand-label str">Stratiix</div>
+          <div class="brand-text">Governance failures and scaling chaos signal strong demand for the Stratiix OS. Blue Water Guyana and CTTL are immediate targets. Government RFPs for institutional strengthening align with core offering.</div>
+        </div>
+        <div class="brand-implication qla">
+          <div class="brand-label qla">Qualia Systems</div>
+          <div class="brand-text">JBDC Digital Jamaica (2,700 MSMEs) is the highest-value opportunity this cycle. OECS RFP and GIZ programme both require CRM implementation. Pipeline is strong.</div>
+        </div>
+        <div class="brand-implication blu">
+          <div class="brand-label blu">BluWav Growth</div>
+          <div class="brand-text">USAID Digital Inclusion and GIZ programmes both include digital visibility components. Tourism sector recovery creating demand for digital storytelling. Credii partnership strengthens community-facing proposals.</div>
+        </div>
+        <div class="brand-implication cre">
+          <div class="brand-label cre">Credii</div>
+          <div class="brand-text">Trust gaps visible across MSME scaling signals. Community capability mapping needed in USAID and IDB programmes. Credii's trust infrastructure positioning is increasingly relevant to donor priorities.</div>
+        </div>
+
+        <h3>Strategic Recommendations</h3>
+        <ul>
+          <li><strong>Priority 1:</strong> JBDC Digital Jamaica — contact Harold Davis this week</li>
+          <li><strong>Priority 2:</strong> Blue Water Guyana — Stratiix Diagnostic offer</li>
+          <li><strong>Priority 3:</strong> USAID Digital Inclusion — submit before Aug 30</li>
+          <li><strong>Partnership:</strong> Stratiix + Qualia consortium for OECS RFP</li>
+          <li><strong>Monitor:</strong> IDB Lab accelerator cohort — Sept 1 deadline</li>
+        </ul>
+      </div>
+    </div>`;
+  showToast('📙 Intelligence Digest generated');
+}
+
+// ================================================================
+// TOAST
+// ================================================================
+function showToast(msg){
+  const el=document.createElement('div');
+  el.style.cssText='position:fixed;bottom:20px;right:20px;z-index:99999;background:var(--bg-elevated);border:1px solid var(--border);border-radius:var(--radius);padding:10px 16px;font-family:var(--font-mono);font-size:11px;color:var(--text-primary);box-shadow:0 4px 20px rgba(0,0,0,0.4);max-width:360px;';
+  el.textContent=msg;
+  document.body.appendChild(el);
+  setTimeout(()=>el.remove(),3500);
+}
+</script>
+</body>
+</html>
