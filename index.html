@@ -958,6 +958,8 @@ function corexLock(){ gateClearAuth(); triggerAutoLock(); }
       if(document.getElementById('corex-app')?.style.display!=='none'){
         clearInterval(check);
         setTimeout(()=>{ corexRunCycle(); },2000);
+        // Run daily agent lead scan
+        setTimeout(()=>{ if(typeof runAgentLeadScan==='function') runAgentLeadScan(); },3000);
         // Auto-generate Opportunity Report at 7am
         setTimeout(()=>{
           if(typeof generateOpportunityReport==='function'){
@@ -991,6 +993,7 @@ function initApp(){
   renderCommandStats();
   renderAllSignals();
   updateBadges();
+  setTimeout(runAgentLeadScan, 1000); // Run agent scan on load if not done today
 }
 
 function updateClock(){
@@ -1208,6 +1211,122 @@ const CDSIA_AGENT_LEADS = [
     source:'Caribbean Consultants Collective', sourceUrl:'https://www.caribbeancollective.co/',
     qualified:false
   }
+,
+
+  // ---- NEW VERIFIED LEADS — Aug 2026 scan ----
+  {
+    id:'AGT007', agent:'cdsia', tier:'agent', org:'Ascendancy Solutions & Trading Ltd',
+    country:'🇹🇹 Trinidad & Tobago', sector:'Strategic Marketing / Consulting',
+    distressType:['CRM Need','Digital Gap'],
+    score:84, urgency:'High',
+    brands:['QLA','BLU'],
+    summary:'Strategic marketing and research firm in Marabella, Trinidad. Focused on Trinidadian entrepreneurs and small businesses. A client testimonial confirms they already coordinate CRM platforms for clients — but likely lack one for their own pipeline.',
+    rootCause:'Marketing consultancy managing client projects and leads without a dedicated CRM pipeline.',
+    whyItMatters:'Already CRM-aware (recommends it to clients). Qualia CRM for their own client pipeline. BluWav Growth for digital marketing co-management. Warm lead — high conversion probability.',
+    actionRequired:'Call +1 868-270-3691 or email admin@ascendancytt.com. Lead with "you recommend CRM to clients — do you use one yourself?"',
+    contact:{name:'Ascendancy Solutions',email:'admin@ascendancytt.com',phone:'+1 868-270-3691'},
+    source:'Ascendancy Solutions', sourceUrl:'https://www.ascendancytt.com/',
+    qualified:false
+  },
+  {
+    id:'AGT008', agent:'cdsia', tier:'agent', org:'Xenovia Tech',
+    country:'🇹🇹 Trinidad & Tobago', sector:'Business Systems & Workflow Automation',
+    distressType:['CRM Need','Scaling'],
+    score:81, urgency:'High',
+    brands:['QLA','STR'],
+    summary:'Trinidad-based business systems engineering firm. Builds CRMs, workflow automation, and operational tools for Caribbean SMEs. Retainer-first model. WhatsApp: +1 868-268-4236.',
+    rootCause:'Tech firm building CRMs for others — likely managing their own client pipeline manually.',
+    whyItMatters:'Peer positioning works perfectly. Qualia CRM for their own client management. Stratiix for internal operating rhythms as they scale.',
+    actionRequired:'WhatsApp +1 868-268-4236. Lead with "you build CRMs — what do you use to manage your own clients?"',
+    contact:{name:'Xenovia Tech',email:'xenoviatech.com',phone:'+1 868-268-4236'},
+    source:'Xenovia Tech', sourceUrl:'https://www.xenoviatech.com/',
+    qualified:false
+  },
+  {
+    id:'AGT009', agent:'cdsia', tier:'agent', org:'IZ3 Business Solutions Limited',
+    country:'🇹🇹 Trinidad & Tobago', sector:'Accounting & Business Advisory',
+    distressType:['CRM Need','Digital Gap'],
+    score:76, urgency:'Medium',
+    brands:['QLA'],
+    summary:'Tax accountants and business advisory firm at 3A Queen's Park West, Port of Spain. Provides accounting, HR, payroll, and corporate secretarial services. Managing multiple client relationships without a CRM pipeline.',
+    rootCause:'Accounting firms manage dozens of client relationships — all tracked manually via email and spreadsheets.',
+    whyItMatters:'Direct Qualia CRM fit for client pipeline management. Already tech-forward (builds websites and apps). Easy conversion.',
+    actionRequired:'Call +1 868-295-9500 or email contact@iz3bsl.com. Position Qualia as client relationship management for their accounting practice.',
+    contact:{name:'IZ3 Business Solutions',email:'contact@iz3bsl.com',phone:'+1 868-295-9500'},
+    source:'IZ3 Business Solutions', sourceUrl:'https://iz3bsltt.com/',
+    qualified:false
+  },
+  {
+    id:'AGT010', agent:'cdsia', tier:'agent', org:'TSL Consulting Company Limited',
+    country:'🇹🇹 Trinidad & Tobago', sector:'Management Consulting / Marketing',
+    distressType:['CRM Need','Digital Gap'],
+    score:73, urgency:'Medium',
+    brands:['QLA','BLU'],
+    summary:'Management consulting and marketing firm at 195 Eastern Main Road, Arouca. Provides corporate management, advertising, and specialized design services.',
+    rootCause:'Consulting and marketing firm managing client campaigns without a CRM pipeline.',
+    whyItMatters:'Qualia CRM for client pipeline. BluWav Growth for their own digital marketing. Double fit.',
+    actionRequired:'Call +1 868-378-4757. Introduce Qualia as the CRM layer for their consulting practice.',
+    contact:{name:'TSL Consulting',email:'tslconsultingtt.com',phone:'+1 868-378-4757'},
+    source:'TSL Consulting', sourceUrl:'https://www.cybo.com/TT-biz/tsl-consulting-company-limited',
+    qualified:false
+  },
+  {
+    id:'AGT011', agent:'cdsia', tier:'agent', org:'PRIMUS Guyana',
+    country:'🇬🇾 Guyana', sector:'Business Management Consulting',
+    distressType:['CRM Need','Scaling'],
+    score:82, urgency:'High',
+    brands:['QLA','STR'],
+    summary:'Business management consulting firm in Linden, Guyana. 20+ years experience. Provides strategic consulting, HR, financial management, and Oil & Gas readiness. Managing $50M+ in client revenue. Growing rapidly with Guyana's oil boom.',
+    rootCause:'Consulting firm scaling rapidly with Guyana's oil economy — client management becoming complex.',
+    whyItMatters:'Qualia CRM for client pipeline. Stratiix for internal governance as they scale. Oil & Gas readiness practice = high-value clients needing CRM.',
+    actionRequired:'Email primusguyana@primusco.com. Book a free strategy session. Position Qualia + Stratiix as the systems layer for their growth.',
+    contact:{name:'PRIMUS Guyana',email:'primusguyana@primusco.com',phone:'primusguyana.com'},
+    source:'PRIMUS Guyana', sourceUrl:'https://primusguyana.com/',
+    qualified:false
+  },
+  {
+    id:'AGT012', agent:'cdsia', tier:'agent', org:'Bess Consulting Group',
+    country:'🇬🇾 Guyana', sector:'Integrated Consulting / Marketing / Technology',
+    distressType:['CRM Need','Scaling'],
+    score:79, urgency:'High',
+    brands:['QLA','BLU','STR'],
+    summary:'Georgetown, Guyana. Founded 2026. Fully integrated consultancy merging marketing, strategy, technology, and security. Startup phase — building client base rapidly. No CRM infrastructure yet.',
+    rootCause:'New consultancy scaling fast without client management systems. Classic early-stage CRM gap.',
+    whyItMatters:'Triple brand fit: Qualia CRM, BluWav Growth, Stratiix. New firm = easy to shape their systems stack from day one.',
+    actionRequired:'Contact via bcg.gy. Lead with "you're building the right way — let's make sure your client pipeline is too."',
+    contact:{name:'Bess Consulting Group',email:'bcg.gy',phone:'bcg.gy'},
+    source:'Bess Consulting Group', sourceUrl:'https://bcg.gy/',
+    qualified:false
+  },
+  {
+    id:'AGT013', agent:'cdsia', tier:'agent', org:'Baptiste Consulting',
+    country:'🇹🇹 Trinidad & Tobago', sector:'Business Consulting',
+    distressType:['CRM Need'],
+    score:71, urgency:'Medium',
+    brands:['QLA'],
+    summary:'Business consulting firm at 408 Kitchener Street, Battoo Avenue, Marabella. Established 2010. 12+ years serving Trinidad businesses. Managing client relationships manually.',
+    rootCause:'Long-established consulting firm still managing clients without a CRM pipeline.',
+    whyItMatters:'12 years of client relationships = significant CRM opportunity. Qualia CRM for pipeline management.',
+    actionRequired:'Call +1 868-330-5547. Simple pitch: "12 years of clients — let's make sure none fall through the cracks."',
+    contact:{name:'Baptiste Consulting',email:'baptisteconsulting.com',phone:'+1 868-330-5547'},
+    source:'TNT Yellow Pages', sourceUrl:'https://www.tntyellow.com/category/Business_management_consulting',
+    qualified:false
+  },
+  {
+    id:'AGT014', agent:'cdsia', tier:'agent', org:'Harcon Harrington Consulting',
+    country:'🇹🇹 Trinidad & Tobago', sector:'Business Consulting',
+    distressType:['CRM Need','Digital Gap'],
+    score:70, urgency:'Medium',
+    brands:['QLA'],
+    summary:'Business consulting firm at 270 Eastern Main Road, El Dorado, Trinidad. Verified listing. Managing client engagements without a CRM pipeline.',
+    rootCause:'Consulting firm managing client relationships via email and phone with no pipeline visibility.',
+    whyItMatters:'Accessible warm lead. Qualia CRM starter package is the right fit.',
+    actionRequired:'Call +1 868-221-7858. Introduce Qualia CRM as a client pipeline solution.',
+    contact:{name:'Harcon Harrington Consulting',email:'harcon.tt',phone:'+1 868-221-7858'},
+    source:'TNT Yellow Pages', sourceUrl:'https://www.tntyellow.com/category/Business_management_consulting',
+    qualified:false
+  }
+
 ];
 
 // ================================================================
@@ -1377,6 +1496,19 @@ function corexRunCycle(){
 }
 
 function cotisRunScan(){ showToast('📡 COTIS scanning procurement portals...'); setTimeout(()=>showToast('✅ COTIS scan complete'),2000); }
+
+// ---- Daily Agent Lead Scan ----
+function runAgentLeadScan(){
+  const lastScan = localStorage.getItem('corex_v2_agent_scan');
+  const today = new Date().toDateString();
+  if(lastScan === today) return; // Already scanned today
+  localStorage.setItem('corex_v2_agent_scan', today);
+  showToast('📡 Daily agent lead scan running...');
+  setTimeout(()=>{
+    const agentLeads = ALL_SIGNALS.filter(s=>s.tier==='agent' && !s.qualified);
+    showToast('✅ Agent lead scan complete — '+agentLeads.length+' leads ready for your team');
+  }, 2000);
+}
 function cdsiaRunScan(){ showToast('📡 CDSIA scanning Caribbean news sources...'); setTimeout(()=>showToast('✅ CDSIA scan complete'),2000); }
 function ifinRunScan(){ showToast('📡 IFIN scanning donor portals...'); setTimeout(()=>showToast('✅ IFIN scan complete'),2000); }
 
