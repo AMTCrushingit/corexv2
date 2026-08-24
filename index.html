@@ -837,11 +837,24 @@ function gateClearAuth(){ localStorage.removeItem('corex_v2_auth'); localStorage
 
 // ---- Gate Init ----
 (function(){
+  // Clear stale lockout (older than 1 hour with no active lock)
+  const lockout = gateGetLockout();
+  const attempts = gateGetAttempts();
+  if(attempts > 0 && !lockout) { gateSetAttempts(0); } // reset stale attempts
   if(gateIsAuth()){ showApp(); return; }
   gateClearAuth();
   if(gateIsLocked()){ showLockedPanel(); }
   else { setTimeout(()=>document.getElementById('gate-passphrase')?.focus(),200); }
 })();
+
+// Emergency reset — run corexReset() in browser console if locked out
+function corexReset(){
+  localStorage.removeItem('corex_v2_attempts');
+  localStorage.removeItem('corex_v2_lockout');
+  localStorage.removeItem('corex_v2_auth');
+  localStorage.removeItem('corex_v2_auth_ts');
+  location.reload();
+}
 
 function showLockedPanel(){
   document.getElementById('gate-locked-panel').style.display='block';
