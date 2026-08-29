@@ -628,32 +628,28 @@
 <div class="gate-scan-line"></div>
 <div class="gate-card">
 <div class="gate-logo">COREX</div>
-<div class="gate-subtitle">Caribbean Intelligence Engine · Restricted Access</div>
-
-<div style="width:20px;height:1px;background:var(--border);"></div>
-<div class="gate-dot" id="gate-dot-2"></div>
-</div>
-<!-- Locked panel -->
+<div class="gate-subtitle">Caribbean Intelligence Engine &middot; Restricted Access</div>
 <div class="gate-locked" id="gate-locked-panel">
-<div class="gate-locked-title">🔒 Access Locked</div>
+<div class="gate-locked-title">&#x1F512; Access Locked</div>
 <div class="gate-locked-msg">3 failed attempts detected.</div>
 <div class="gate-locked-timer" id="gate-lockout-timer">30:00</div>
 <div class="gate-locked-msg">Try again after the timer expires.</div>
 </div>
-<!-- Step 1 -->
 <div id="gate-step-1">
 <div class="gate-step-label">Access Passphrase</div>
-<input autocomplete="off" class="gate-input" id="gate-passphrase" onkeydown="if(event.key==='Enter')gateVerifyPassphrase()" placeholder="Enter passphrase" type="password"/>
+<input autocomplete="off" class="gate-input" id="gate-passphrase" onkeydown="if(event.key==='Enter')gateVerifyPassphrase()" placeholder="Enter passphrase" type="text"/>
 <div class="gate-error" id="gate-err-1"></div>
 <button class="gate-btn" onclick="gateVerifyPassphrase()">Unlock COREX &#x2192;</button>
 </div>
-<input autocomplete="off" class="gate-input" id="gate-passphrase" onkeydown="if(event.key==='Enter')gateVerifyPassphrase()" placeholder="Enter passphrase" type="password"/>
-
-<button class="gate-btn" onclick="gateVerifyPassphrase()">Unlock COREX →</button>
-</div>
 <div id="gate-attempts-display" style="display:none;margin-top:12px;font-family:var(--font-mono);font-size:10px;color:var(--text-muted);">
-      ⚠ Failed attempts: <span id="gate-attempt-count" style="color:var(--red);font-weight:700;">0</span> / 3
-    </div>
+&#x26A0; Failed attempts: <span id="gate-attempt-count" style="color:var(--red);font-weight:700;">0</span> / 3
+</div>
+<div class="gate-security-note">
+&#x1F512; COREX is a restricted internal system.<br/>
+Unauthorised access attempts are logged.<br/>
+Founder &amp; Executive Director access only.
+</div>
+</div>
 <div class="gate-security-note">
       🔒 COREX is a restricted internal system.<br/>
       Unauthorised access attempts are logged.<br/>
