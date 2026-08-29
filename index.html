@@ -624,7 +624,7 @@
 <!-- ================================================================
      SECURITY GATE
      ================================================================ -->
-<div id="corex-gate">
+<div id="corex-gate" style="display:flex;">
 <div class="gate-scan-line"></div>
 <div class="gate-card">
 <div class="gate-logo">COREX</div>
@@ -819,7 +819,7 @@ const GATE_PASSPHRASE = 'AMT26-COREXv2';
 const GATE_PIN = '260824';
 const MAX_ATTEMPTS = 3;
 const LOCKOUT_MS = 30 * 60 * 1000;
-const INACTIVITY_MS = 10 * 60 * 1000;
+const INACTIVITY_MS = 8 * 60 * 60 * 1000; // 8 hours
 
 // ---- Gate State ----
 function gateGetAttempts(){ return parseInt(localStorage.getItem('corex_v2_attempts')||'0'); }
@@ -833,12 +833,18 @@ function gateClearAuth(){ localStorage.removeItem('corex_v2_auth'); localStorage
 
 // ---- Gate Init ----
 (function(){
-  // Clear stale lockout (older than 1 hour with no active lock)
+  // Hide gate instantly if already authenticated (prevents flash)
+  const gate = document.getElementById('corex-gate');
   const lockout = gateGetLockout();
   const attempts = gateGetAttempts();
-  if(attempts > 0 && !lockout) { gateSetAttempts(0); } // reset stale attempts
-  if(gateIsAuth()){ showApp(); return; }
+  if(attempts > 0 && !lockout) { gateSetAttempts(0); }
+  if(gateIsAuth()){
+    if(gate) gate.style.display='none';
+    showApp();
+    return;
+  }
   gateClearAuth();
+  if(gate) gate.style.display='flex';
   if(gateIsLocked()){ showLockedPanel(); }
   else { setTimeout(()=>document.getElementById('gate-passphrase')?.focus(),200); }
 })();
@@ -980,6 +986,11 @@ function initApp(){
   updateBadges();
   setTimeout(runAgentLeadScan,1000);
   setInterval(renderCommandStats,30000);
+  // Set CDSIA as default view
+  setTimeout(()=>{
+    const cdsia = document.querySelector('[data-view="cdsia"]');
+    if(cdsia) showView('cdsia', cdsia);
+  }, 100);
 }
 
 function updateBadges(){
