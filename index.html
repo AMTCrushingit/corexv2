@@ -821,7 +821,10 @@
 </div>
 <div id="followup-banner"><span id="followup-banner-text">Follow-up overdue</span></div>
 <div class="scanner-status" id="cdsia-scanner-status">
-  <div style="font-family:var(--font-mono);font-size:10px;font-weight:600;color:var(--cyan);">CDSIA SCANNING...</div>
+  <div style="display:flex;justify-content:space-between;align-items:center;">
+    <div style="font-family:var(--font-mono);font-size:10px;font-weight:600;color:var(--cyan);">CDSIA SCANNING CARIBBEAN SOURCES...</div>
+    <button onclick="cdsiaForceStop()" style="font-family:var(--font-mono);font-size:9px;padding:3px 8px;background:none;border:1px solid var(--border);border-radius:2px;color:var(--text-muted);cursor:pointer;">Stop</button>
+  </div>
   <div class="scanner-bar-wrap"><div class="scanner-bar" id="cdsia-scanner-bar"></div></div>
   <div class="scanner-log" id="cdsia-scanner-log"></div>
 </div>
@@ -1685,12 +1688,12 @@ function getWhatsAppMsg(lead){
 }
 async function fetchRSSLeads(query,country){
   const rssUrl='https://news.google.com/rss/search?q='+encodeURIComponent(query)+'&hl=en-US&gl=US&ceid=US:en';
-  const proxyUrl='https://api.allorigins.win/get?url='+encodeURIComponent(rssUrl);
+  const proxyUrl='https://corsproxy.io/?'+encodeURIComponent(rssUrl);
   try{
-    const res=await fetch(proxyUrl,{signal:AbortSignal.timeout(8000)});
-    const data=await res.json();
+    const res=await fetch(proxyUrl,{signal:AbortSignal.timeout(10000)});
+    const text=await res.text();
     const parser=new DOMParser();
-    const xml=parser.parseFromString(data.contents,'text/xml');
+    const xml=parser.parseFromString(text,'text/xml');
     const items=Array.from(xml.querySelectorAll('item')).slice(0,5);
     return items.map(item=>({
       title:item.querySelector('title')?.textContent||'',
@@ -1767,6 +1770,15 @@ async function cdsiaRunScan(){
     renderCDSIAView();updateBadges();
     showToast('CDSIA scan complete - '+newOnly.length+' new leads found');
   },1500);
+}
+
+function cdsiaForceStop(){
+  const btn=document.getElementById('cdsia-scan-btn');
+  const statusEl=document.getElementById('cdsia-scanner-status');
+  if(btn){btn.disabled=false;btn.textContent='Scan Now';}
+  if(statusEl) statusEl.classList.remove('visible');
+  renderCDSIAView();updateBadges();
+  showToast('Scan stopped - showing available leads');
 }
 function renderCDSIAView(){
   const el=document.getElementById('cdsia-signals');
