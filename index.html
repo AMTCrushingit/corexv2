@@ -579,6 +579,168 @@
     .empty-sub { font-family: var(--font-mono); font-size: 11px; color: var(--text-muted); }
 
     /* ================================================================
+       FOLLOW-UP WORKFLOW
+       ================================================================ */
+    .followup-panel {
+      margin-top: 12px; padding-top: 12px;
+      border-top: 1px solid var(--border);
+      display: none;
+    }
+    .followup-panel.open { display: block; }
+
+    .status-track {
+      display: flex; align-items: center; gap: 6px;
+      margin-bottom: 12px; flex-wrap: wrap;
+    }
+    .status-track-label {
+      font-family: var(--font-mono); font-size: 9px; font-weight: 600;
+      color: var(--text-muted); letter-spacing: 0.12em; text-transform: uppercase;
+      margin-right: 4px;
+    }
+    .status-btn {
+      padding: 4px 10px; border-radius: 2px;
+      font-family: var(--font-mono); font-size: 9px; font-weight: 700;
+      letter-spacing: 0.08em; text-transform: uppercase;
+      border: 1px solid var(--border); background: none;
+      color: var(--text-muted); cursor: pointer; transition: all 0.15s;
+    }
+    .status-btn:hover { border-color: var(--cyan); color: var(--cyan); }
+    .status-btn.active-contacted { background: var(--cyan-dim); border-color: var(--cyan); color: var(--cyan); }
+    .status-btn.active-meeting { background: var(--gold-dim); border-color: var(--gold); color: var(--gold); }
+    .status-btn.active-won { background: var(--green-dim); border-color: var(--green); color: var(--green); }
+    .status-btn.active-lost { background: var(--red-dim); border-color: var(--red); color: var(--red); }
+
+    .followup-actions {
+      display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 12px;
+    }
+    .action-btn {
+      padding: 6px 12px; border-radius: var(--radius);
+      font-family: var(--font-mono); font-size: 10px; font-weight: 600;
+      letter-spacing: 0.06em; cursor: pointer; transition: all 0.15s;
+      border: 1px solid var(--border); background: var(--bg-surface);
+      color: var(--text-secondary); text-decoration: none; display: inline-flex;
+      align-items: center; gap: 5px;
+    }
+    .action-btn:hover { border-color: var(--cyan); color: var(--cyan); }
+    .action-btn.whatsapp:hover { border-color: #25D366; color: #25D366; }
+    .action-btn.email:hover { border-color: var(--gold); color: var(--gold); }
+
+    .notes-field {
+      width: 100%; padding: 8px 12px;
+      background: var(--bg-surface); border: 1px solid var(--border);
+      border-radius: var(--radius); color: var(--text-primary);
+      font-family: var(--font-mono); font-size: 11px; line-height: 1.5;
+      outline: none; resize: vertical; min-height: 52px;
+      transition: border-color 0.2s;
+    }
+    .notes-field:focus { border-color: var(--cyan); }
+    .notes-field::placeholder { color: var(--text-muted); }
+
+    .followup-reminder {
+      background: var(--gold-dim); border: 1px solid rgba(245,200,66,0.2);
+      border-radius: var(--radius); padding: 8px 12px; margin-bottom: 10px;
+      font-family: var(--font-mono); font-size: 10px; color: var(--gold);
+    }
+
+    /* ================================================================
+       EMAIL MODAL
+       ================================================================ */
+    #email-modal {
+      position: fixed; inset: 0; z-index: 9990;
+      background: rgba(13,13,15,0.92); backdrop-filter: blur(6px);
+      display: none; align-items: center; justify-content: center;
+    }
+    #email-modal.open { display: flex; }
+    .email-modal-card {
+      background: var(--bg-dark); border: 1px solid var(--border);
+      border-radius: 8px; padding: 28px 32px; width: 560px; max-width: 94vw;
+      max-height: 88vh; overflow-y: auto;
+    }
+    .email-modal-title {
+      font-family: var(--font-display); font-size: 14px; font-weight: 700;
+      color: var(--text-primary); margin-bottom: 16px;
+      display: flex; justify-content: space-between; align-items: center;
+    }
+    .email-close {
+      background: none; border: none; color: var(--text-muted);
+      font-size: 18px; cursor: pointer; padding: 0 4px;
+    }
+    .email-field-label {
+      font-family: var(--font-mono); font-size: 9px; font-weight: 600;
+      color: var(--text-muted); letter-spacing: 0.12em; text-transform: uppercase;
+      margin-bottom: 4px; margin-top: 12px;
+    }
+    .email-field {
+      width: 100%; padding: 8px 12px;
+      background: var(--bg-surface); border: 1px solid var(--border);
+      border-radius: var(--radius); color: var(--text-primary);
+      font-family: var(--font-mono); font-size: 12px; outline: none;
+      transition: border-color 0.2s;
+    }
+    .email-field:focus { border-color: var(--cyan); }
+    .email-body-field {
+      width: 100%; padding: 10px 12px;
+      background: var(--bg-surface); border: 1px solid var(--border);
+      border-radius: var(--radius); color: var(--text-primary);
+      font-family: var(--font-mono); font-size: 12px; line-height: 1.7;
+      outline: none; resize: vertical; min-height: 200px;
+      transition: border-color 0.2s;
+    }
+    .email-body-field:focus { border-color: var(--cyan); }
+    .email-actions {
+      display: flex; gap: 8px; margin-top: 16px; flex-wrap: wrap;
+    }
+    .email-send-btn {
+      padding: 8px 20px; background: var(--cyan); color: var(--bg-primary);
+      border: none; border-radius: var(--radius);
+      font-family: var(--font-display); font-size: 12px; font-weight: 700;
+      letter-spacing: 0.06em; cursor: pointer; transition: opacity 0.2s;
+    }
+    .email-send-btn:hover { opacity: 0.85; }
+    .email-copy-btn {
+      padding: 8px 16px; background: none;
+      border: 1px solid var(--border); border-radius: var(--radius);
+      color: var(--text-secondary); font-family: var(--font-mono);
+      font-size: 11px; cursor: pointer; transition: all 0.15s;
+    }
+    .email-copy-btn:hover { border-color: var(--cyan); color: var(--cyan); }
+
+    /* ================================================================
+       SCANNER STATUS
+       ================================================================ */
+    .scanner-status {
+      background: var(--bg-dark); border: 1px solid var(--border);
+      border-radius: var(--radius); padding: 16px 20px; margin-bottom: 16px;
+      display: none;
+    }
+    .scanner-status.visible { display: block; }
+    .scanner-bar-wrap {
+      background: var(--bg-surface); border-radius: 2px;
+      height: 4px; margin: 10px 0 8px; overflow: hidden;
+    }
+    .scanner-bar {
+      height: 100%; background: var(--cyan);
+      border-radius: 2px; transition: width 0.4s ease;
+      width: 0%;
+    }
+    .scanner-log {
+      font-family: var(--font-mono); font-size: 10px;
+      color: var(--text-muted); line-height: 1.8;
+      max-height: 80px; overflow-y: auto;
+    }
+
+    /* ================================================================
+       FOLLOW-UP REMINDER BANNER
+       ================================================================ */
+    #followup-banner {
+      background: var(--gold-dim); border: 1px solid rgba(245,200,66,0.25);
+      border-radius: var(--radius); padding: 10px 16px; margin-bottom: 16px;
+      font-family: var(--font-mono); font-size: 11px; color: var(--gold);
+      display: none; align-items: center; gap: 10px;
+    }
+    #followup-banner.visible { display: flex; }
+
+    /* ================================================================
        SCROLLBAR
        ================================================================ */
     ::-webkit-scrollbar { width: 4px; height: 4px; }
@@ -610,16 +772,11 @@
   </style>
 </head>
 <body>
-<!-- ================================================================
-     AUTO-LOCK OVERLAY
-     ================================================================ -->
-<div id="corex-autolock">
 <div class="autolock-card">
 <div style="font-size:28px;margin-bottom:12px;">🔒</div>
 <div class="autolock-title">Session Locked</div>
 <div class="autolock-msg">COREX locked due to inactivity.<br/>Re-authenticate to continue.</div>
 <button class="autolock-btn" onclick="corexAutoLockResume()">Unlock COREX</button>
-</div>
 </div>
 <!-- ================================================================
      SECURITY GATE
@@ -758,9 +915,18 @@
 <div class="section-header">
 <div>
 <div class="section-title">CDSIA — MSME Distress Signals</div>
-<div class="section-sub">Caribbean Distress Signals &amp; MSME Reality Mapping</div>
+<div class="section-sub">Caribbean Distress Signals &amp; MSME Reality Mapping · Stratiix Pipeline</div>
 </div>
-<button class="run-btn" onclick="cdsiaRunScan()" style="font-size:10px;padding:5px 12px;">📡 Scan</button>
+<button class="run-btn" id="cdsia-scan-btn" onclick="cdsiaRunScan()" style="font-size:10px;padding:5px 12px;">📡 Scan Now</button>
+</div>
+<div id="followup-banner">
+<span>⚡</span>
+<span id="followup-banner-text">You have leads awaiting follow-up.</span>
+</div>
+<div class="scanner-status" id="cdsia-scanner-status">
+<div style="font-family:var(--font-mono);font-size:10px;font-weight:600;color:var(--cyan);letter-spacing:0.1em;">📡 CDSIA SCANNING CARIBBEAN SOURCES...</div>
+<div class="scanner-bar-wrap"><div class="scanner-bar" id="cdsia-scanner-bar"></div></div>
+<div class="scanner-log" id="cdsia-scanner-log"></div>
 </div>
 <div id="cdsia-signals"></div>
 </div>
@@ -1000,14 +1166,7 @@ function showApp(){
   initApp();
 }
 
-function initApp(){
-  updateClock();
-  setInterval(updateClock,60000);
-  renderCommandStats();
-  renderAllSignals();
-  updateBadges();
-  setTimeout(runAgentLeadScan, 1000); // Run agent scan on load if not done today
-}
+
 
 function updateClock(){
   const now=new Date();
@@ -1035,7 +1194,7 @@ function showView(name, el){
   if(el) el.classList.add('active');
   document.getElementById('view-title').textContent=VIEW_TITLES[name]||name;
   if(name==='cotis') renderAgentSignals('cotis');
-  if(name==='cdsia') renderAgentSignals('cdsia');
+  if(name==='cdsia') renderCDSIAView();
   if(name==='ifin') renderAgentSignals('ifin');
 }
 
@@ -1397,16 +1556,19 @@ const ALL_SIGNALS = [...COTIS_DATA, ...CDSIA_DATA, ...CDSIA_AGENT_LEADS, ...IFIN
 let _queueFilter = 'all';
 
 function renderCommandStats(){
-  const total = ALL_SIGNALS.length;
-  const critical = ALL_SIGNALS.filter(s=>s.urgency==='Critical').length;
-  const qualified = ALL_SIGNALS.filter(s=>s.qualified).length;
-  const hot = ALL_SIGNALS.filter(s=>s.score>=85).length;
+  const scanned = loadScannedLeads();
+  const allSignals = [...ALL_SIGNALS, ...scanned];
+  const states = loadLeadStates();
+  const total = allSignals.length;
+  const critical = allSignals.filter(s=>s.urgency==='Critical').length;
+  const inPipeline = Object.values(states).filter(s=>['contacted','meeting_booked'].includes(s.status)).length;
+  const won = Object.values(states).filter(s=>s.status==='won').length;
 
   document.getElementById('command-stats').innerHTML = [
-    {label:'Total Signals',val:total,cls:'cyan',sub:'All agents'},
+    {label:'Total Signals',val:total,cls:'cyan',sub:'All agents + live scans'},
     {label:'Critical',val:critical,cls:'red',sub:'Immediate action'},
-    {label:'Hot (≥85)',val:hot,cls:'gold',sub:'High priority'},
-    {label:'Qualified',val:qualified,cls:'green',sub:'Pushed to CRM'}
+    {label:'In Pipeline',val:inPipeline,cls:'gold',sub:'Contacted + meetings'},
+    {label:'Closed Won',val:won,cls:'green',sub:'Deals closed'}
   ].map(s=>`<div class="stat-card ${s.cls}">
     <div class="stat-label">${s.label}</div>
     <div class="stat-value">${s.val}</div>
@@ -1432,18 +1594,50 @@ function renderAgentSignals(agent){
     : '<div class="empty-state"><div class="empty-icon">📡</div><div class="empty-title">No signals yet</div><div class="empty-sub">Click Scan to discover new signals</div></div>';
 }
 
-function renderSignalCard(s){
+function renderSignalCard(s, showFollowUp=false){
   const agentLabel = {cotis:'COTIS',cdsia:'CDSIA',ifin:'IFIN'}[s.agent]||s.agent;
   const urgencyClass = s.urgency==='Critical'?'tag-urgent':s.urgency==='High'?'tag-high':'tag-medium';
   const brandTags = (s.brands||[]).map(b=>`<span class="tag tag-${b.toLowerCase()}">${b}</span>`).join('');
   const distressTags = (s.distressType||[]).map(t=>`<span class="tag tag-medium">${t}</span>`).join('');
   const typeTags = s.type ? `<span class="tag tag-medium">${s.type}</span>` : '';
+  const tierBadge = s.tier==='agent'?' · <span style="background:rgba(247,200,115,0.15);color:#F5C842;padding:1px 6px;border-radius:2px;font-size:9px;font-weight:700;">AGENT LEAD</span>':s.tier==='scanned'?' · <span style="background:rgba(0,232,255,0.1);color:var(--cyan);padding:1px 6px;border-radius:2px;font-size:9px;font-weight:700;">LIVE SCAN</span>':'';
 
-  return `<div class="signal-card" id="signal-${s.id}">
+  // Load persisted state
+  const state = getLeadState(s.id);
+  const statusColors = { detected:'', contacted:'active-contacted', meeting_booked:'active-meeting', won:'active-won', lost:'active-lost' };
+  const statusLabel = { detected:'Not Contacted', contacted:'Contacted', meeting_booked:'Meeting Booked', won:'Won ✓', lost:'Lost ✗' };
+  const currentStatus = state.status || 'detected';
+
+  // Follow-up panel (only for CDSIA view)
+  const followUpPanel = showFollowUp ? `
+    <div class="followup-panel ${state.status && state.status !== 'detected' ? 'open' : ''}" id="fup-${s.id}">
+      <div class="status-track">
+        <span class="status-track-label">Status:</span>
+        <button class="status-btn ${currentStatus==='contacted'?'active-contacted':''}" onclick="setLeadStatus('${s.id}','contacted')">📞 Contacted</button>
+        <button class="status-btn ${currentStatus==='meeting_booked'?'active-meeting':''}" onclick="setLeadStatus('${s.id}','meeting_booked')">📅 Meeting Booked</button>
+        <button class="status-btn ${currentStatus==='won'?'active-won':''}" onclick="setLeadStatus('${s.id}','won')">✓ Won</button>
+        <button class="status-btn ${currentStatus==='lost'?'active-lost':''}" onclick="setLeadStatus('${s.id}','lost')">✗ Lost</button>
+      </div>
+      <div class="followup-actions">
+        <button class="action-btn email" onclick="openEmailModal('${s.id}')">✉️ Draft Email</button>
+        ${s.contact?.phone && s.contact.phone.includes('+') ? `<a class="action-btn whatsapp" href="https://wa.me/${s.contact.phone.replace(/[^0-9]/g,'').replace(/^1/,'')}?text=${getWhatsAppMessage(s)}" target="_blank" rel="noopener">💬 WhatsApp</a>` : `<button class="action-btn whatsapp" onclick="copyWhatsApp('${s.id}')">💬 Copy WhatsApp Msg</button>`}
+        <button class="action-btn" onclick="copyBrief('${s.id}')">📋 Copy Brief</button>
+        ${s.sourceUrl && s.sourceUrl !== '#' ? `<a class="action-btn" href="${s.sourceUrl}" target="_blank" rel="noopener">🔗 Source ↗</a>` : ''}
+      </div>
+      ${state.meetingDate ? `<div class="followup-reminder">📅 Meeting: ${state.meetingDate}</div>` : ''}
+      ${currentStatus==='meeting_booked' && !state.meetingDate ? `<div style="margin-bottom:8px;"><input type="date" class="notes-field" style="min-height:auto;resize:none;" placeholder="Meeting date" onchange="saveMeetingDate('${s.id}',this.value)" value="${state.meetingDate||''}"/></div>` : ''}
+      <textarea class="notes-field" placeholder="Notes — saved automatically..." onblur="saveNotes('${s.id}',this.value)">${state.notes||''}</textarea>
+    </div>` : '';
+
+  const qualifyBtn = showFollowUp
+    ? `<button class="qualify-btn ${state.status && state.status!=='detected'?'done':''}" onclick="qualifyAndOpen('${s.id}')">${state.status && state.status!=='detected'?`✓ ${statusLabel[currentStatus]}`:'→ Qualify'}</button>`
+    : `<button class="qualify-btn ${s.qualified?'done':''}" onclick="qualifySignal('${s.id}')" ${s.qualified?'disabled':''}>${s.qualified?'✓ Qualified':'→ Qualify'}</button>`;
+
+  return `<div class="signal-card" id="signal-${s.id}" style="${currentStatus==='won'?'opacity:0.6':currentStatus==='lost'?'opacity:0.4':''}">
     <div class="signal-header">
       <div>
         <div class="signal-org">${s.org}</div>
-        <div class="signal-meta">${s.country} · ${s.sector} · <span style="color:var(--cyan);font-family:var(--font-mono);font-size:9px;">${agentLabel}</span>${s.tier==='agent'?' · <span style="background:rgba(247,200,115,0.15);color:#F5C842;padding:1px 6px;border-radius:2px;font-size:9px;font-weight:700;">AGENT LEAD</span>':''}${s.deadline?` · Deadline: ${s.deadline}`:''}</div>
+        <div class="signal-meta">${s.country} · ${s.sector} · <span style="color:var(--cyan);font-family:var(--font-mono);font-size:9px;">${agentLabel}</span>${tierBadge}${s.deadline?` · Deadline: ${s.deadline}`:''}${s.pubDate?` · ${new Date(s.pubDate).toLocaleDateString('en-US',{month:'short',day:'numeric'})}`:''}</div>
       </div>
       <div class="signal-score">${s.score}</div>
     </div>
@@ -1455,15 +1649,111 @@ function renderSignalCard(s){
     <div class="signal-summary">${s.summary}</div>
     ${s.whyItMatters?`<div class="signal-why"><strong>Why it matters:</strong> ${s.whyItMatters}</div>`:''}
     <div class="signal-footer">
-      ${s.contact?.name?`<div class="signal-contact">👤 <strong>${s.contact.name}</strong></div>`:''}
-      ${s.contact?.email?`<a href="mailto:${s.contact.email}" style="font-family:var(--font-mono);font-size:10px;color:var(--cyan);text-decoration:none;">✉️ ${s.contact.email}</a>`:''}
-      ${s.sourceUrl&&s.sourceUrl!=='#'?`<a href="${s.sourceUrl}" target="_blank" rel="noopener" style="font-family:var(--font-mono);font-size:10px;color:var(--text-muted);text-decoration:none;">🔗 ${s.source} ↗</a>`:''}
-      <button class="qualify-btn ${s.qualified?'done':''}" onclick="qualifySignal('${s.id}')" ${s.qualified?'disabled':''}>
-        ${s.qualified?'✓ Qualified':'→ Qualify'}
-      </button>
+      ${s.contact?.name&&s.contact.name!=='See article'?`<div class="signal-contact">👤 <strong>${s.contact.name}</strong></div>`:''}
+      ${s.contact?.email?`<span style="font-family:var(--font-mono);font-size:10px;color:var(--cyan);">✉️ ${s.contact.email}</span>`:''}
+      ${qualifyBtn}
     </div>
     ${s.actionRequired?`<div class="signal-action">⚡ ${s.actionRequired}</div>`:''}
+    ${followUpPanel}
   </div>`;
+}
+
+// ================================================================
+// FOLLOW-UP ACTIONS
+// ================================================================
+function qualifyAndOpen(id) {
+  const state = getLeadState(id);
+  if (!state.status || state.status === 'detected') {
+    saveLeadState(id, { status: 'contacted', contactedAt: new Date().toISOString() });
+    showToast('✓ Lead qualified — follow-up panel open');
+  }
+  const panel = document.getElementById('fup-' + id);
+  if (panel) panel.classList.toggle('open');
+  renderCDSIAView();
+}
+
+function setLeadStatus(id, status) {
+  const update = { status };
+  if (status === 'contacted') update.contactedAt = new Date().toISOString();
+  if (status === 'won' || status === 'lost') update.closedAt = new Date().toISOString();
+  saveLeadState(id, update);
+  renderCDSIAView();
+  const labels = { contacted:'📞 Marked as Contacted', meeting_booked:'📅 Meeting Booked', won:'✅ Closed Won!', lost:'Lead marked as Lost' };
+  showToast(labels[status] || 'Status updated');
+}
+
+function saveNotes(id, val) {
+  saveLeadState(id, { notes: val });
+}
+
+function saveMeetingDate(id, val) {
+  saveLeadState(id, { meetingDate: val });
+  renderCDSIAView();
+  showToast('📅 Meeting date saved');
+}
+
+// ---- Email Modal ----
+let _emailLeadId = null;
+function openEmailModal(id) {
+  _emailLeadId = id;
+  const all = [...CDSIA_DATA, ...CDSIA_AGENT_LEADS, ...loadScannedLeads()];
+  const lead = all.find(s => s.id === id);
+  if (!lead) return;
+  const tpl = getEmailTemplate(lead);
+  document.getElementById('email-to').value = tpl.to;
+  document.getElementById('email-subject').value = tpl.subject;
+  document.getElementById('email-body').value = tpl.body;
+  document.getElementById('email-modal').classList.add('open');
+}
+
+function closeEmailModal() {
+  document.getElementById('email-modal').classList.remove('open');
+  _emailLeadId = null;
+}
+
+function emailSendMailto() {
+  const to = document.getElementById('email-to').value;
+  const subject = encodeURIComponent(document.getElementById('email-subject').value);
+  const body = encodeURIComponent(document.getElementById('email-body').value);
+  window.open(`mailto:${to}?subject=${subject}&body=${body}`);
+  if (_emailLeadId) saveLeadState(_emailLeadId, { lastAction: 'email' });
+  closeEmailModal();
+}
+
+function emailCopyAll() {
+  const subject = document.getElementById('email-subject').value;
+  const body = document.getElementById('email-body').value;
+  const to = document.getElementById('email-to').value;
+  navigator.clipboard.writeText(`To: ${to}\nSubject: ${subject}\n\n${body}`).then(() => showToast('📋 Email copied to clipboard'));
+}
+
+function copyWhatsApp(id) {
+  const all = [...CDSIA_DATA, ...CDSIA_AGENT_LEADS, ...loadScannedLeads()];
+  const lead = all.find(s => s.id === id);
+  if (!lead) return;
+  const msg = decodeURIComponent(getWhatsAppMessage(lead));
+  navigator.clipboard.writeText(msg).then(() => showToast('💬 WhatsApp message copied'));
+}
+
+function copyBrief(id) {
+  const all = [...CDSIA_DATA, ...CDSIA_AGENT_LEADS, ...loadScannedLeads()];
+  const lead = all.find(s => s.id === id);
+  if (!lead) return;
+  const state = getLeadState(id);
+  const brief = `COREX LEAD BRIEF
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+Org: ${lead.org}
+Country: ${lead.country}
+Score: ${lead.score} | Urgency: ${lead.urgency}
+Signals: ${(lead.distressType||[]).join(', ')}
+Contact: ${lead.contact?.name||'—'} | ${lead.contact?.email||''} | ${lead.contact?.phone||''}
+Source: ${lead.sourceUrl||lead.source||'—'}
+Status: ${state.status||'detected'}
+Notes: ${state.notes||'—'}
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+PITCH: ${lead.actionRequired||'—'}
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━`;
+  navigator.clipboard.writeText(brief).then(() => showToast('📋 Lead brief copied'));
 }
 
 function filterQueue(filter, btn){
@@ -1473,11 +1763,7 @@ function filterQueue(filter, btn){
   renderAllSignals();
 }
 
-function updateBadges(){
-  document.getElementById('cotis-badge').textContent = COTIS_DATA.length;
-  document.getElementById('cdsia-badge').textContent = CDSIA_DATA.length + CDSIA_AGENT_LEADS.length;
-  document.getElementById('ifin-badge').textContent = IFIN_DATA.length;
-}
+
 
 // ================================================================
 // QUALIFY SIGNAL
@@ -1486,10 +1772,11 @@ function qualifySignal(id){
   const signal = ALL_SIGNALS.find(s=>s.id===id);
   if(!signal||signal.qualified) return;
   signal.qualified = true;
+  saveLeadState(id, { status: 'contacted', contactedAt: new Date().toISOString() });
   renderCommandStats();
   renderAllSignals();
   if(signal.agent==='cotis') renderAgentSignals('cotis');
-  if(signal.agent==='cdsia') renderAgentSignals('cdsia');
+  if(signal.agent==='cdsia') renderCDSIAView();
   if(signal.agent==='ifin') renderAgentSignals('ifin');
   showToast('✓ '+signal.org+' qualified');
 }
@@ -1522,7 +1809,303 @@ function runAgentLeadScan(){
     showToast('✅ Agent lead scan complete — '+agentLeads.length+' leads ready for your team');
   }, 2000);
 }
-function cdsiaRunScan(){ showToast('📡 CDSIA scanning Caribbean news sources...'); setTimeout(()=>showToast('✅ CDSIA scan complete'),2000); }
+// ================================================================
+// CDSIA — REAL SCANNER (Google News RSS via CORS proxy)
+// ================================================================
+
+const CDSIA_QUERIES = [
+  { q: 'Trinidad Tobago business hiring expanding 2026', country: '🇹🇹 Trinidad & Tobago' },
+  { q: 'Trinidad SME startup scaling challenges 2026', country: '🇹🇹 Trinidad & Tobago' },
+  { q: 'Trinidad business restructuring growth operations 2026', country: '🇹🇹 Trinidad & Tobago' },
+  { q: 'Barbados small business hiring expanding 2026', country: '🇧🇧 Barbados' },
+  { q: 'Barbados business growth challenges 2026', country: '🇧🇧 Barbados' },
+  { q: 'Jamaica SME business hiring expanding 2026', country: '🇯🇲 Jamaica' },
+  { q: 'Jamaica small business challenges growth 2026', country: '🇯🇲 Jamaica' },
+  { q: 'Guyana business hiring expanding operations 2026', country: '🇬🇾 Guyana' },
+  { q: 'Guyana SME startup scaling 2026', country: '🇬🇾 Guyana' },
+  { q: 'Caribbean MSME project management consultant 2026', country: '🌊 Caribbean' },
+  { q: 'Caribbean business overwhelmed founder bottleneck 2026', country: '🌊 Caribbean' },
+];
+
+const STRESS_SIGNALS = [
+  { word: 'hiring', score: 15, signal: 'Actively hiring — scaling faster than systems' },
+  { word: 'expanding', score: 12, signal: 'Expanding operations — systems gap likely' },
+  { word: 'new office', score: 14, signal: 'Opening new office — operational complexity increasing' },
+  { word: 'growth', score: 8, signal: 'Growth phase — needs operational infrastructure' },
+  { word: 'restructur', score: 18, signal: 'Restructuring — leadership/systems overhaul needed' },
+  { word: 'challeng', score: 16, signal: 'Facing challenges — distress signal' },
+  { word: 'struggl', score: 20, signal: 'Struggling — high distress, immediate Stratiix fit' },
+  { word: 'overwhelm', score: 20, signal: 'Overwhelmed — founder bottleneck signal' },
+  { word: 'project management', score: 18, signal: 'Seeking project management — direct Stratiix fit' },
+  { word: 'consultant', score: 15, signal: 'Seeking consultants — open to advisory' },
+  { word: 'operations', score: 10, signal: 'Operations focus — systems gap likely' },
+  { word: 'staff', score: 8, signal: 'Staff growth — coordination challenges ahead' },
+  { word: 'launch', score: 10, signal: 'New launch — needs operating systems from day one' },
+  { word: 'investment', score: 12, signal: 'Received investment — scaling pressure incoming' },
+  { word: 'recruit', score: 14, signal: 'Recruiting heavily — team scaling without systems' },
+  { word: 'rapid', score: 11, signal: 'Rapid growth — operational chaos risk' },
+  { word: 'transform', score: 13, signal: 'Transformation underway — needs governance layer' },
+  { word: 'crisis', score: 22, signal: 'Crisis signal — urgent Stratiix intervention needed' },
+  { word: 'backlog', score: 17, signal: 'Backlog issues — workflow and systems breakdown' },
+  { word: 'capacity', score: 12, signal: 'Capacity challenges — scaling without infrastructure' },
+];
+
+function getPitchAngle(signals, org) {
+  if (signals.some(s => s.includes('project management'))) return `Lead with: "You're looking for project management — Stratiix OS is the permanent solution, not just a hire."`;
+  if (signals.some(s => s.includes('Struggling') || s.includes('crisis'))) return `Lead with: "Stratiix Diagnostic — one free session to identify exactly what's breaking and how to fix it fast."`;
+  if (signals.some(s => s.includes('Restructuring'))) return `Lead with: "Restructuring is the perfect moment to install the right operating system. Stratiix makes the change stick."`;
+  if (signals.some(s => s.includes('hiring') || s.includes('Recruiting'))) return `Lead with: "Growing teams need operating systems — Stratiix installs the governance layer before chaos sets in."`;
+  if (signals.some(s => s.includes('Expanding') || s.includes('new office'))) return `Lead with: "Expansion without systems = expensive mistakes. Stratiix OS gets your operations right before you scale."`;
+  if (signals.some(s => s.includes('investment'))) return `Lead with: "You've got the capital — now build the operating system to deploy it right. That's Stratiix."`;
+  return `Lead with: "Stratiix Diagnostic — free 45-minute session to map your operational gaps. No commitment."`;
+}
+
+function getEmailTemplate(lead) {
+  const firstName = lead.contact?.name?.split(' ')[0] || 'there';
+  const pitchMap = {
+    hiring: `I noticed ${lead.org} is growing its team — congratulations. In our experience, the moment a Caribbean business starts hiring fast is exactly when operational systems become critical.\n\nWe built Stratiix OS specifically for this moment — it installs the governance layer that keeps your team coordinated and your clients happy as you scale.`,
+    restructur: `I came across ${lead.org} and noticed you're going through a restructuring phase. That's actually the perfect moment to install the right operating system — one that makes the change stick.\n\nStratiix OS is built for Caribbean businesses in exactly this transition.`,
+    challeng: `I came across ${lead.org} and the challenges you're navigating. In our experience, most business challenges have a systems root cause — and that's exactly what Stratiix is built to fix.`,
+    default: `I came across ${lead.org} and think there's a strong fit between what you're building and what we do with Stratiix — our operating system for Caribbean businesses ready to scale properly.`
+  };
+  const signals = (lead.distressType || []).join(' ').toLowerCase();
+  let body = pitchMap.default;
+  for (const [key, val] of Object.entries(pitchMap)) {
+    if (key !== 'default' && signals.includes(key)) { body = val; break; }
+  }
+  return {
+    to: lead.contact?.email || '',
+    subject: `Stratiix OS — Built for ${lead.org}'s Next Phase`,
+    body: `Hi ${firstName},\n\n${body}\n\nWould you be open to a free 45-minute Stratiix Diagnostic? No pitch — just a clear map of where your operations stand and what to fix first.\n\nAndrea Tanguay\nFounder & Executive Director, BluWav Group\nStratiix · Qualia Systems · BluWav Growth · Credii`
+  };
+}
+
+function getWhatsAppMessage(lead) {
+  const org = lead.org;
+  const signal = (lead.distressType || ['growth'])[0].toLowerCase();
+  let msg = `Hi, this is Andrea from BluWav Group. I came across ${org} and noticed you're ${signal === 'hiring' ? 'growing your team fast' : signal === 'restructuring' ? 'going through a restructuring' : 'navigating some growth challenges'}. We built Stratiix OS specifically for Caribbean businesses at this stage — would you be open to a free 45-min diagnostic session? No commitment, just clarity.`;
+  return encodeURIComponent(msg);
+}
+
+// ---- localStorage persistence ----
+const LEADS_KEY = 'corex_v2_lead_states';
+const SCANNED_KEY = 'corex_v2_scanned_leads';
+
+function loadLeadStates() {
+  try { return JSON.parse(localStorage.getItem(LEADS_KEY) || '{}'); } catch(e) { return {}; }
+}
+function saveLeadState(id, state) {
+  const all = loadLeadStates();
+  all[id] = { ...all[id], ...state, updatedAt: new Date().toISOString() };
+  localStorage.setItem(LEADS_KEY, JSON.stringify(all));
+}
+function getLeadState(id) {
+  return loadLeadStates()[id] || { status: 'detected', notes: '', qualifiedAt: null, contactedAt: null, meetingDate: null };
+}
+
+function loadScannedLeads() {
+  try { return JSON.parse(localStorage.getItem(SCANNED_KEY) || '[]'); } catch(e) { return []; }
+}
+function saveScannedLeads(leads) {
+  localStorage.setItem(SCANNED_KEY, JSON.stringify(leads));
+}
+
+// ---- Real RSS Scanner ----
+async function fetchRSSLeads(query, country) {
+  const encoded = encodeURIComponent(query);
+  const rssUrl = `https://news.google.com/rss/search?q=${encoded}&hl=en-US&gl=US&ceid=US:en`;
+  const proxyUrl = `https://api.allorigins.win/get?url=${encodeURIComponent(rssUrl)}`;
+  try {
+    const res = await fetch(proxyUrl, { signal: AbortSignal.timeout(8000) });
+    const data = await res.json();
+    const parser = new DOMParser();
+    const xml = parser.parseFromString(data.contents, 'text/xml');
+    const items = Array.from(xml.querySelectorAll('item')).slice(0, 5);
+    return items.map(item => ({
+      title: item.querySelector('title')?.textContent || '',
+      description: item.querySelector('description')?.textContent?.replace(/<[^>]+>/g, '') || '',
+      link: item.querySelector('link')?.textContent || '',
+      pubDate: item.querySelector('pubDate')?.textContent || '',
+      country
+    }));
+  } catch(e) { return []; }
+}
+
+function scoreArticle(title, description) {
+  const text = (title + ' ' + description).toLowerCase();
+  let totalScore = 50;
+  const foundSignals = [];
+  for (const sig of STRESS_SIGNALS) {
+    if (text.includes(sig.word)) {
+      totalScore += sig.score;
+      foundSignals.push(sig.signal);
+    }
+  }
+  return { score: Math.min(totalScore, 99), signals: foundSignals };
+}
+
+function extractOrgName(title) {
+  // Try to extract company name from article title
+  const cleaned = title
+    .replace(/\b(says?|reports?|announces?|launches?|opens?|hires?|expands?|faces?|struggles?)\b.*/i, '')
+    .replace(/['"]/g, '')
+    .trim();
+  // Take first meaningful segment
+  const parts = cleaned.split(/[:\-–|]/);
+  return parts[0].trim().substring(0, 60) || 'Caribbean Business';
+}
+
+function articleToLead(article, index) {
+  const { score, signals } = scoreArticle(article.title, article.description);
+  if (score < 58) return null; // Filter low-relevance articles
+
+  const org = extractOrgName(article.title);
+  const id = 'SCAN' + Date.now() + '_' + index;
+  const urgency = score >= 80 ? 'Critical' : score >= 68 ? 'High' : 'Medium';
+
+  return {
+    id,
+    agent: 'cdsia',
+    tier: 'scanned',
+    org,
+    country: article.country,
+    sector: 'Caribbean SME',
+    distressType: signals.slice(0, 3).map(s => s.split('—')[0].trim()),
+    score,
+    urgency,
+    brands: ['STR'],
+    summary: article.description.substring(0, 200) + (article.description.length > 200 ? '...' : ''),
+    whyItMatters: signals.slice(0, 2).join(' · ') || 'Caribbean SME showing growth/distress signals — Stratiix fit.',
+    actionRequired: getPitchAngle(signals, org),
+    contact: { name: 'See article', email: '', phone: '' },
+    source: 'Google News',
+    sourceUrl: article.link,
+    pubDate: article.pubDate,
+    qualified: false,
+    scannedAt: new Date().toISOString()
+  };
+}
+
+async function cdsiaRunScan() {
+  const btn = document.getElementById('cdsia-scan-btn');
+  const statusEl = document.getElementById('cdsia-scanner-status');
+  const barEl = document.getElementById('cdsia-scanner-bar');
+  const logEl = document.getElementById('cdsia-scanner-log');
+
+  btn.disabled = true; btn.textContent = '⏳ Scanning...';
+  statusEl.classList.add('visible');
+  barEl.style.width = '0%';
+  logEl.innerHTML = '';
+
+  const addLog = (msg) => {
+    logEl.innerHTML += `<div>› ${msg}</div>`;
+    logEl.scrollTop = logEl.scrollHeight;
+  };
+
+  addLog('Initialising CDSIA scanner...');
+  let allLeads = [];
+  const total = CDSIA_QUERIES.length;
+
+  for (let i = 0; i < total; i++) {
+    const q = CDSIA_QUERIES[i];
+    addLog(`Scanning: ${q.country} — "${q.q.substring(0, 40)}..."`);
+    barEl.style.width = Math.round(((i + 1) / total) * 100) + '%';
+
+    const articles = await fetchRSSLeads(q.q, q.country);
+    addLog(`  → ${articles.length} articles found`);
+
+    for (let j = 0; j < articles.length; j++) {
+      const lead = articleToLead(articles[j], i * 10 + j);
+      if (lead) {
+        allLeads.push(lead);
+        addLog(`  ✓ Lead: ${lead.org} (Score: ${lead.score})`);
+      }
+    }
+    await new Promise(r => setTimeout(r, 300));
+  }
+
+  barEl.style.width = '100%';
+
+  // Deduplicate by org name similarity
+  const seen = new Set();
+  allLeads = allLeads.filter(l => {
+    const key = l.org.toLowerCase().substring(0, 20);
+    if (seen.has(key)) return false;
+    seen.add(key); return true;
+  });
+
+  // Sort by score
+  allLeads.sort((a, b) => b.score - a.score);
+
+  // Merge with existing scanned leads (keep old ones not in new scan)
+  const existing = loadScannedLeads();
+  const existingIds = new Set(existing.map(l => l.org.toLowerCase().substring(0, 20)));
+  const newOnly = allLeads.filter(l => !existingIds.has(l.org.toLowerCase().substring(0, 20)));
+  const merged = [...newOnly, ...existing].slice(0, 50); // Keep max 50 scanned leads
+  saveScannedLeads(merged);
+
+  addLog(`✅ Scan complete — ${allLeads.length} leads found, ${newOnly.length} new`);
+
+  setTimeout(() => {
+    statusEl.classList.remove('visible');
+    btn.disabled = false; btn.textContent = '📡 Scan Now';
+    renderCDSIAView();
+    showToast(`✅ CDSIA scan complete — ${newOnly.length} new leads found`);
+  }, 1500);
+}
+
+function renderCDSIAView() {
+  const el = document.getElementById('cdsia-signals');
+  if (!el) return;
+
+  // Combine hardcoded + scanned leads
+  const scanned = loadScannedLeads();
+  const allCDSIA = [...CDSIA_DATA, ...CDSIA_AGENT_LEADS, ...scanned];
+
+  // Check follow-up reminders
+  checkFollowUpReminders(allCDSIA);
+
+  if (!allCDSIA.length) {
+    el.innerHTML = '<div class="empty-state"><div class="empty-icon">📡</div><div class="empty-title">No signals yet</div><div class="empty-sub">Click Scan Now to discover stressed Caribbean SMEs</div></div>';
+    return;
+  }
+
+  // Sort: critical first, then by score
+  const sorted = [...allCDSIA].sort((a, b) => {
+    const urgOrder = { Critical: 0, High: 1, Medium: 2 };
+    const ua = urgOrder[a.urgency] ?? 3, ub = urgOrder[b.urgency] ?? 3;
+    if (ua !== ub) return ua - ub;
+    return b.score - a.score;
+  });
+
+  el.innerHTML = sorted.map(s => renderSignalCard(s, true)).join('');
+}
+
+function checkFollowUpReminders(leads) {
+  const states = loadLeadStates();
+  const now = Date.now();
+  const sevenDays = 7 * 24 * 60 * 60 * 1000;
+  const overdue = [];
+
+  for (const lead of leads) {
+    const state = states[lead.id];
+    if (!state) continue;
+    if (state.status === 'contacted' && state.contactedAt) {
+      const contactedAt = new Date(state.contactedAt).getTime();
+      if (now - contactedAt > sevenDays) overdue.push(lead.org);
+    }
+  }
+
+  const banner = document.getElementById('followup-banner');
+  const bannerText = document.getElementById('followup-banner-text');
+  if (banner && overdue.length > 0) {
+    bannerText.textContent = `⚡ Follow-up overdue: ${overdue.slice(0, 3).join(', ')}${overdue.length > 3 ? ` +${overdue.length - 3} more` : ''}`;
+    banner.classList.add('visible');
+  } else if (banner) {
+    banner.classList.remove('visible');
+  }
+}
+
 function ifinRunScan(){ showToast('📡 IFIN scanning donor portals...'); setTimeout(()=>showToast('✅ IFIN scan complete'),2000); }
 
 // ================================================================
