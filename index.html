@@ -629,8 +629,7 @@
 <div class="gate-card">
 <div class="gate-logo">COREX</div>
 <div class="gate-subtitle">Caribbean Intelligence Engine · Restricted Access</div>
-<div class="gate-dots">
-<div class="gate-dot active" id="gate-dot-1"></div>
+
 <div style="width:20px;height:1px;background:var(--border);"></div>
 <div class="gate-dot" id="gate-dot-2"></div>
 </div>
@@ -643,17 +642,14 @@
 </div>
 <!-- Step 1 -->
 <div id="gate-step-1">
-<div class="gate-step-label">Step 1 of 2 — Access Passphrase</div>
-<input autocomplete="off" class="gate-input" id="gate-passphrase" onkeydown="if(event.key==='Enter')gateVerifyPassphrase()" placeholder="Enter passphrase" type="text"/>
+<div class="gate-step-label">Access Passphrase</div>
+<input autocomplete="off" class="gate-input" id="gate-passphrase" onkeydown="if(event.key==='Enter')gateVerifyPassphrase()" placeholder="Enter passphrase" type="password"/>
 <div class="gate-error" id="gate-err-1"></div>
-<button class="gate-btn" onclick="gateVerifyPassphrase()">Continue →</button>
+<button class="gate-btn" onclick="gateVerifyPassphrase()">Unlock COREX &#x2192;</button>
 </div>
-<!-- Step 2 -->
-<div id="gate-step-2" style="display:none;">
-<div class="gate-step-label">Step 2 of 2 — Security PIN</div>
-<input autocomplete="off" class="gate-input" id="gate-pin" inputmode="numeric" maxlength="6" onkeydown="if(event.key==='Enter')gateVerifyPIN()" placeholder="Enter PIN" type="text"/>
-<div class="gate-error" id="gate-err-2"></div>
-<button class="gate-btn" onclick="gateVerifyPIN()">Unlock COREX →</button>
+<input autocomplete="off" class="gate-input" id="gate-passphrase" onkeydown="if(event.key==='Enter')gateVerifyPassphrase()" placeholder="Enter passphrase" type="password"/>
+
+<button class="gate-btn" onclick="gateVerifyPassphrase()">Unlock COREX →</button>
 </div>
 <div id="gate-attempts-display" style="display:none;margin-top:12px;font-family:var(--font-mono);font-size:10px;color:var(--text-muted);">
       ⚠ Failed attempts: <span id="gate-attempt-count" style="color:var(--red);font-weight:700;">0</span> / 3
@@ -859,7 +855,6 @@ function corexReset(){
 function showLockedPanel(){
   document.getElementById('gate-locked-panel').style.display='block';
   document.getElementById('gate-step-1').style.display='none';
-  document.getElementById('gate-step-2').style.display='none';
   let li=setInterval(()=>{
     const rem=gateGetLockout()-Date.now();
     if(rem<=0){clearInterval(li);gateSetAttempts(0);gateSetLockout(0);document.getElementById('gate-locked-panel').style.display='none';document.getElementById('gate-step-1').style.display='block';setTimeout(()=>document.getElementById('gate-passphrase')?.focus(),100);return;}
@@ -887,9 +882,7 @@ function gateVerifyPassphrase(){
   if(val===GATE_PASSPHRASE){
     err.style.display='none';
     document.getElementById('gate-step-1').style.display='none';
-    document.getElementById('gate-step-2').style.display='block';
-    document.getElementById('gate-dot-1').className='gate-dot done';
-    document.getElementById('gate-dot-2').className='gate-dot active';
+    
     setTimeout(()=>document.getElementById('gate-pin')?.focus(),100);
   } else {
     const locked=gateRecordFail();
@@ -905,26 +898,6 @@ function gateVerifyPassphrase(){
   }
 }
 
-function gateVerifyPIN(){
-  const val=document.getElementById('gate-pin').value.trim();
-  const err=document.getElementById('gate-err-2');
-  if(val===GATE_PIN){
-    err.style.display='none'; gateSetAttempts(0); gateSetAuth();
-    document.getElementById('corex-gate').style.display='none';
-    showApp();
-  } else {
-    const locked=gateRecordFail();
-    if(!locked){
-      const rem=MAX_ATTEMPTS-gateGetAttempts();
-      err.textContent='✗ Incorrect PIN. '+rem+' attempt'+(rem===1?'':'s')+' remaining.';
-      err.style.display='block';
-      document.getElementById('gate-pin').value='';
-      document.getElementById('gate-pin').classList.add('error');
-      setTimeout(()=>document.getElementById('gate-pin').classList.remove('error'),400);
-      document.getElementById('gate-pin').focus();
-    }
-  }
-}
 
 // ---- Auto-lock ----
 let _inactivityTimer=null;
@@ -946,9 +919,6 @@ function corexAutoLockResume(){
   document.getElementById('corex-autolock').classList.remove('visible');
   document.getElementById('corex-gate').style.display='flex';
   document.getElementById('gate-step-1').style.display='block';
-  document.getElementById('gate-step-2').style.display='none';
-  document.getElementById('gate-dot-1').className='gate-dot active';
-  document.getElementById('gate-dot-2').className='gate-dot';
   setTimeout(()=>document.getElementById('gate-passphrase')?.focus(),200);
 }
 function corexLock(){ gateClearAuth(); triggerAutoLock(); }
