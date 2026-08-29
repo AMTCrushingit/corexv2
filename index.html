@@ -883,14 +883,15 @@ function gateVerifyPassphrase(){
   const err=document.getElementById('gate-err-1');
   if(val===GATE_PASSPHRASE){
     err.style.display='none';
-    document.getElementById('gate-step-1').style.display='none';
-    
-    setTimeout(()=>document.getElementById('gate-pin')?.focus(),100);
+    gateSetAttempts(0);
+    gateSetAuth();
+    document.getElementById('corex-gate').style.display='none';
+    showApp();
   } else {
     const locked=gateRecordFail();
     if(!locked){
       const rem=MAX_ATTEMPTS-gateGetAttempts();
-      err.textContent='✗ Incorrect passphrase. '+rem+' attempt'+(rem===1?'':'s')+' remaining.';
+      err.textContent='Incorrect passphrase. '+rem+' attempt'+(rem===1?'':'s')+' remaining.';
       err.style.display='block';
       document.getElementById('gate-passphrase').value='';
       document.getElementById('gate-passphrase').classList.add('error');
