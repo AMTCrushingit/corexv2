@@ -461,7 +461,8 @@ function getWAMsg(lead){
 let _filter='all';
 
 function allLeads(){
-  const raw=[...DIRECTORY_LEADS,...loadSc()];
+  const dirLeads=typeof DIRECTORY_LEADS!=='undefined'?DIRECTORY_LEADS:[];
+  const raw=[...dirLeads,...loadSc()];
   // Deduplicate: normalize org name (remove punctuation, lowercase, first 22 chars)
   const seen=new Set();
   return raw.filter(l=>{
@@ -703,8 +704,16 @@ function updateClock(){document.getElementById('clock').textContent=new Date().t
 // INIT
 updateClock();
 setInterval(updateClock,60000);
-render();
-updateStats();
+// Wait for leads.js to be available
+function initWhenReady(){
+  if(typeof DIRECTORY_LEADS !== 'undefined'){
+    render();
+    updateStats();
+  } else {
+    setTimeout(initWhenReady, 50);
+  }
+}
+initWhenReady();
 </script>
 </body>
 </html>
