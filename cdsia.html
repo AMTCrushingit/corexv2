@@ -94,6 +94,7 @@ body{font-family:'Inter',sans-serif;background:var(--bg);color:var(--text);min-h
 .t-crm{background:var(--green-dim);color:var(--green);}
 .t-live{background:rgba(0,229,255,0.05);color:var(--cyan);border:1px solid rgba(0,229,255,0.15);}
 .t-dir{background:rgba(155,127,212,0.08);color:var(--purple);border:1px solid rgba(155,127,212,0.15);}
+.card-summary{font-size:13px;color:var(--text-2);line-height:1.65;margin-bottom:12px;}
 .card-pitch{background:rgba(0,229,255,0.04);border-left:3px solid var(--cyan);padding:9px 13px;margin-bottom:12px;border-radius:0 var(--r) var(--r) 0;font-size:13px;color:var(--text-2);line-height:1.6;}
 .card-pitch strong{color:var(--cyan);font-weight:600;}
 .card-foot{display:flex;align-items:center;gap:10px;flex-wrap:wrap;}
@@ -261,8 +262,14 @@ const NEWS_SOURCES = [
   {name:'Trinidad Newsday',url:'https://newsday.co.tt/feed/',country:'Trinidad & Tobago',flag:'🇹🇹'},
   {name:'Jamaica Observer',url:'https://www.jamaicaobserver.com/feed/',country:'Jamaica',flag:'🇯🇲'},
   {name:'Jamaica Gleaner',url:'https://jamaica-gleaner.com/feed/rss.xml',country:'Jamaica',flag:'🇯🇲'},
+  {name:'Jamaica Information Service',url:'https://jis.gov.jm/feed/',country:'Jamaica',flag:'🇯🇲'},
   {name:'Kaieteur News',url:'https://www.kaieteurnewsonline.com/feed/',country:'Guyana',flag:'🇬🇾'},
+  {name:'Guyana Chronicle',url:'https://guyanachronicle.com/feed/',country:'Guyana',flag:'🇬🇾'},
+  {name:'iNews Guyana',url:'https://www.inewsguyana.com/feed/',country:'Guyana',flag:'🇬🇾'},
+  {name:'Demerara Waves',url:'https://demerarawaves.com/feed/',country:'Guyana',flag:'🇬🇾'},
   {name:'Barbados Today',url:'https://barbadostoday.bb/feed/',country:'Barbados',flag:'🇧🇧'},
+  {name:'The Tribune Bahamas',url:'https://www.tribune242.com/rss/headlines/',country:'Bahamas',flag:'🇧🇸'},
+  {name:'Antigua Observer',url:'https://antiguaobserver.com/feed/',country:'Antigua',flag:'🇦🇬'},
 ];
 
 const BIZ_KEYWORDS = ['business','compan','hire','hiring','expand','launch','invest','growth','entrepreneur','startup','open','staff','employ','contract','project','revenue','market','digital','technolog','consult','service'];
@@ -291,6 +298,25 @@ function scanBrands(found,desc){
   if(/crm|client.management|pipeline|leads|sales.tracking|customer.relationship|contacts|follow.up/.test(t)) b.push('CRM');
   if(!b.length) b.push('STR');
   return b;
+}
+
+function scanSummary(org,country,brands,found,desc){
+  const f=found.join(' ').toLowerCase();
+  const hasBLU=brands.includes('BLU'),hasSTR=brands.includes('STR');
+  let why='';
+  if(f.includes('hiring')||f.includes('recruit')) why='Actively hiring — scaling faster than their systems can handle. ';
+  else if(f.includes('restructur')) why='Going through restructuring — the perfect moment to install the right operating system. ';
+  else if(f.includes('struggling')||f.includes('crisis')) why='Showing distress signals — operational or financial challenges that need immediate attention. ';
+  else if(f.includes('expanding')||f.includes('new office')) why='Expanding operations — new locations or services without governance systems create coordination chaos. ';
+  else if(f.includes('launch')) why='Recently launched — the ideal moment to build the right systems from day one. ';
+  else if(f.includes('marketing')||f.includes('visibility')) why='Focused on growth but likely lacks a structured customer acquisition system. ';
+  else why='Caribbean SME showing growth signals that indicate a need for operational support. ';
+  let fit='';
+  if(hasBLU&&hasSTR) fit='Double fit: BluWav Growth Sprint ($2,500) to get more customers in 30 days + Stratiix OS for operational systems.';
+  else if(hasBLU) fit='BluWav Growth Sprint: get more customers in 30 days, starting at $2,500.';
+  else fit='Stratiix OS: install the governance layer and operating rhythms before scaling chaos sets in.';
+  const ctx=desc.replace(/<[^>]+>/g,'').substring(0,150).trim();
+  return why+(ctx?'"'+ctx+(ctx.length>=150?'..."':'"')+' — '+fit:fit);
 }
 
 function scanPitch(brands,found){
@@ -339,10 +365,12 @@ async function runScan(){
           const org=item.title.replace(/\b(says?|reports?|announces?|launches?|opens?|hires?|expands?)\b.*/i,'').replace(/['"]/g,'').trim().split(/[:\-–|]/)[0].trim().substring(0,65)||src.name+' Business';
           const brands=scanBrands(found,desc);
           const urgency=score>=82?'Critical':score>=70?'High':'Medium';
+          const scanSum=scanSummary(org,src.country,brands,found,desc);
           newLeads.push({
             id:'SCAN'+Date.now()+'_'+j,tier:'live',org,
             country:src.flag+' '+src.country,sector:'Caribbean SME',
             brands,signals:found.slice(0,4),score,urgency,
+            summary:scanSum,
             pitch:scanPitch(brands,found),
             email_body:getEmailBody(brands,org),
             src:item.link||'',
@@ -504,6 +532,7 @@ function renderCard(l,state){
       <span class="tag ${uC}">${l.urgency}</span>
       ${bTags}${tierTag}${sTags}
     </div>
+    ${l.summary?`<div class="card-summary">${l.summary}</div>`:''}
     <div class="card-pitch"><strong>Pitch:</strong> ${l.pitch}</div>
     <div class="card-foot">
       ${l.contact?.name?'<div class="card-contact">'+l.contact.name+'</div>':''}
