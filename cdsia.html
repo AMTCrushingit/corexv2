@@ -7,221 +7,150 @@
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet"/>
 <style>
 :root {
-  --bg: #0A0A0C;
-  --bg-card: #111114;
-  --bg-surface: #18181C;
-  --bg-elevated: #202026;
-  --cyan: #00E5FF;
-  --cyan-dim: rgba(0,229,255,0.08);
-  --gold: #F5C842;
-  --gold-dim: rgba(245,200,66,0.1);
-  --green: #00D68F;
-  --green-dim: rgba(0,214,143,0.1);
-  --red: #FF4D6A;
-  --red-dim: rgba(255,77,106,0.1);
-  --purple: #9B7FD4;
-  --purple-dim: rgba(155,127,212,0.12);
-  --border: rgba(255,255,255,0.07);
-  --border-hover: rgba(0,229,255,0.2);
-  --text: #F2F2F7;
-  --text-2: #8E8E9E;
-  --text-3: #3E3E4E;
-  --r: 6px;
+  --bg:#0A0A0C; --bg-card:#111114; --bg-surface:#18181C; --bg-el:#202026;
+  --cyan:#00E5FF; --cyan-dim:rgba(0,229,255,0.08);
+  --gold:#F5C842; --gold-dim:rgba(245,200,66,0.1);
+  --green:#00D68F; --green-dim:rgba(0,214,143,0.1);
+  --red:#FF4D6A; --red-dim:rgba(255,77,106,0.1);
+  --purple:#9B7FD4; --purple-dim:rgba(155,127,212,0.12);
+  --border:rgba(255,255,255,0.07); --border-h:rgba(0,229,255,0.2);
+  --text:#F2F2F7; --text-2:#8E8E9E; --text-3:#3E3E4E; --r:6px;
 }
-* { margin:0; padding:0; box-sizing:border-box; }
-body { font-family:'Inter',sans-serif; background:var(--bg); color:var(--text); min-height:100vh; font-size:15px; }
+*{margin:0;padding:0;box-sizing:border-box;}
+body{font-family:'Inter',sans-serif;background:var(--bg);color:var(--text);min-height:100vh;font-size:15px;}
 
 /* HEADER */
-.header {
-  background: var(--bg-card); border-bottom: 1px solid var(--border);
-  padding: 0 32px; height: 60px;
-  display: flex; align-items: center; justify-content: space-between;
-  position: sticky; top: 0; z-index: 100;
-}
-.logo-wrap { display:flex; align-items:center; gap:12px; }
-.logo { font-size:20px; font-weight:800; color:var(--cyan); letter-spacing:-0.02em; }
-.logo-sep { color:var(--text-3); font-weight:300; }
-.logo-sub { font-size:13px; font-weight:500; color:var(--text-2); }
-.pulse { width:7px; height:7px; border-radius:50%; background:var(--green); box-shadow:0 0 8px var(--green); animation:pulse 2s ease-in-out infinite; flex-shrink:0; }
+.hdr{background:var(--bg-card);border-bottom:1px solid var(--border);padding:0 28px;height:58px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:100;}
+.hdr-l{display:flex;align-items:center;gap:14px;}
+.logo{font-size:19px;font-weight:800;color:var(--cyan);}
+.logo-sub{font-size:12px;color:var(--text-3);margin-top:2px;}
+.pulse{width:7px;height:7px;border-radius:50%;background:var(--green);box-shadow:0 0 8px var(--green);animation:pulse 2s ease-in-out infinite;flex-shrink:0;}
 @keyframes pulse{0%,100%{opacity:1}50%{opacity:0.3}}
-.header-right { display:flex; align-items:center; gap:12px; }
-.clock { font-size:13px; color:var(--text-3); }
-.scan-btn {
-  padding:10px 22px; background:var(--cyan); color:#000;
-  border:none; border-radius:var(--r);
-  font-family:'Inter',sans-serif; font-size:14px; font-weight:700;
-  cursor:pointer; transition:all 0.2s; display:flex; align-items:center; gap:8px;
-}
-.scan-btn:hover { opacity:0.88; transform:translateY(-1px); }
-.scan-btn:disabled { opacity:0.4; cursor:not-allowed; transform:none; }
+.hdr-r{display:flex;align-items:center;gap:10px;}
+.clock{font-size:13px;color:var(--text-3);}
+.scan-btn{padding:9px 20px;background:var(--cyan);color:#000;border:none;border-radius:var(--r);font-family:'Inter',sans-serif;font-size:14px;font-weight:700;cursor:pointer;transition:all 0.2s;display:flex;align-items:center;gap:7px;}
+.scan-btn:hover{opacity:0.88;transform:translateY(-1px);}
+.scan-btn:disabled{opacity:0.4;cursor:not-allowed;transform:none;}
 
 /* STATS */
-.stats-bar { display:grid; grid-template-columns:repeat(5,1fr); border-bottom:1px solid var(--border); }
-.stat { background:var(--bg-card); padding:16px 24px; border-right:1px solid var(--border); position:relative; overflow:hidden; }
-.stat:last-child { border-right:none; }
-.stat::before { content:''; position:absolute; top:0; left:0; right:0; height:2px; }
-.stat.c1::before{background:var(--cyan);}
-.stat.c2::before{background:var(--red);}
-.stat.c3::before{background:var(--gold);}
-.stat.c4::before{background:var(--green);}
-.stat.c5::before{background:var(--purple);}
-.stat-label { font-size:11px; font-weight:600; color:var(--text-3); text-transform:uppercase; letter-spacing:0.1em; margin-bottom:6px; }
-.stat-val { font-size:28px; font-weight:800; line-height:1; }
-.stat.c1 .stat-val{color:var(--cyan);}
-.stat.c2 .stat-val{color:var(--red);}
-.stat.c3 .stat-val{color:var(--gold);}
-.stat.c4 .stat-val{color:var(--green);}
-.stat.c5 .stat-val{color:var(--purple);}
-.stat-sub { font-size:12px; color:var(--text-3); margin-top:3px; }
+.stats{display:grid;grid-template-columns:repeat(5,1fr);border-bottom:1px solid var(--border);}
+.stat{background:var(--bg-card);padding:14px 20px;border-right:1px solid var(--border);position:relative;overflow:hidden;}
+.stat:last-child{border-right:none;}
+.stat::before{content:'';position:absolute;top:0;left:0;right:0;height:2px;}
+.s1::before{background:var(--cyan)}.s2::before{background:var(--red)}.s3::before{background:var(--gold)}.s4::before{background:var(--green)}.s5::before{background:var(--purple)}
+.stat-lbl{font-size:11px;font-weight:600;color:var(--text-3);text-transform:uppercase;letter-spacing:0.1em;margin-bottom:5px;}
+.stat-val{font-size:26px;font-weight:800;line-height:1;}
+.s1 .stat-val{color:var(--cyan)}.s2 .stat-val{color:var(--red)}.s3 .stat-val{color:var(--gold)}.s4 .stat-val{color:var(--green)}.s5 .stat-val{color:var(--purple)}
+.stat-sub{font-size:11px;color:var(--text-3);margin-top:2px;}
 
 /* MAIN */
-.main { max-width:1000px; margin:0 auto; padding:28px 24px; }
+.main{max-width:980px;margin:0 auto;padding:24px 20px;}
 
 /* SCANNER */
-.scanner-panel { background:var(--bg-card); border:1px solid var(--border); border-radius:var(--r); padding:18px 22px; margin-bottom:20px; display:none; }
-.scanner-panel.visible { display:block; }
-.scanner-top { display:flex; justify-content:space-between; align-items:center; margin-bottom:10px; }
-.scanner-title { font-size:13px; font-weight:700; color:var(--cyan); letter-spacing:0.05em; }
-.stop-btn { font-size:12px; padding:4px 12px; background:none; border:1px solid var(--border); border-radius:4px; color:var(--text-2); cursor:pointer; }
-.stop-btn:hover { border-color:var(--red); color:var(--red); }
-.progress-wrap { background:var(--bg-surface); border-radius:2px; height:4px; margin-bottom:10px; overflow:hidden; }
-.progress-fill { height:100%; background:linear-gradient(90deg,var(--cyan),var(--purple)); border-radius:2px; transition:width 0.4s ease; width:0%; }
-.scanner-log { font-size:12px; color:var(--text-3); line-height:2; max-height:90px; overflow-y:auto; font-family:monospace; }
+.scan-panel{background:var(--bg-card);border:1px solid var(--border);border-radius:var(--r);padding:16px 20px;margin-bottom:18px;display:none;}
+.scan-panel.on{display:block;}
+.scan-top{display:flex;justify-content:space-between;align-items:center;margin-bottom:8px;}
+.scan-title{font-size:13px;font-weight:700;color:var(--cyan);}
+.stop-btn{font-size:12px;padding:3px 10px;background:none;border:1px solid var(--border);border-radius:4px;color:var(--text-2);cursor:pointer;}
+.stop-btn:hover{border-color:var(--red);color:var(--red);}
+.prog-wrap{background:var(--bg-surface);border-radius:2px;height:3px;margin-bottom:8px;overflow:hidden;}
+.prog-fill{height:100%;background:linear-gradient(90deg,var(--cyan),var(--purple));border-radius:2px;transition:width 0.4s ease;width:0%;}
+.scan-log{font-size:11px;color:var(--text-3);line-height:1.9;max-height:80px;overflow-y:auto;font-family:monospace;}
 
 /* BANNER */
-.banner { background:var(--gold-dim); border:1px solid rgba(245,200,66,0.15); border-radius:var(--r); padding:12px 18px; margin-bottom:18px; font-size:13px; color:var(--gold); display:none; align-items:center; gap:10px; }
-.banner.visible { display:flex; }
+.banner{background:var(--gold-dim);border:1px solid rgba(245,200,66,0.15);border-radius:var(--r);padding:10px 16px;margin-bottom:16px;font-size:13px;color:var(--gold);display:none;align-items:center;gap:8px;}
+.banner.on{display:flex;}
 
 /* CONTROLS */
-.controls { display:flex; align-items:center; justify-content:space-between; margin-bottom:18px; flex-wrap:wrap; gap:12px; }
-.controls-left { display:flex; align-items:center; gap:8px; flex-wrap:wrap; }
-.controls-right { display:flex; align-items:center; gap:8px; }
+.ctrl{display:flex;align-items:center;justify-content:space-between;margin-bottom:16px;flex-wrap:wrap;gap:10px;}
+.ctrl-l{display:flex;align-items:center;gap:6px;flex-wrap:wrap;}
+.ctrl-r{display:flex;align-items:center;gap:8px;}
+.ftabs{display:flex;gap:3px;background:var(--bg-card);border:1px solid var(--border);border-radius:var(--r);padding:3px;}
+.ftab{padding:6px 13px;border-radius:4px;font-size:13px;font-weight:500;color:var(--text-2);cursor:pointer;border:none;background:none;transition:all 0.15s;white-space:nowrap;}
+.ftab:hover{color:var(--text);}
+.ftab.on{background:var(--cyan-dim);color:var(--cyan);font-weight:600;}
+.sort-sel{padding:7px 11px;background:var(--bg-card);border:1px solid var(--border);border-radius:var(--r);color:var(--text-2);font-size:13px;font-family:'Inter',sans-serif;cursor:pointer;outline:none;}
+.sort-sel:focus{border-color:var(--cyan);}
+.srch{padding:7px 13px;background:var(--bg-card);border:1px solid var(--border);border-radius:var(--r);color:var(--text);font-size:13px;font-family:'Inter',sans-serif;outline:none;width:190px;}
+.srch:focus{border-color:var(--cyan);}
+.srch::placeholder{color:var(--text-3);}
+.rcount{font-size:13px;color:var(--text-3);white-space:nowrap;}
 
-.filter-group { display:flex; gap:4px; background:var(--bg-card); border:1px solid var(--border); border-radius:var(--r); padding:4px; }
-.f-btn { padding:6px 14px; border-radius:4px; font-size:13px; font-weight:500; color:var(--text-2); cursor:pointer; border:none; background:none; transition:all 0.15s; white-space:nowrap; }
-.f-btn:hover { color:var(--text); }
-.f-btn.active { background:var(--cyan-dim); color:var(--cyan); font-weight:600; }
-
-.sort-select {
-  padding:7px 12px; background:var(--bg-card); border:1px solid var(--border);
-  border-radius:var(--r); color:var(--text-2); font-size:13px;
-  font-family:'Inter',sans-serif; cursor:pointer; outline:none;
-}
-.sort-select:focus { border-color:var(--cyan); }
-
-.search-input {
-  padding:7px 14px; background:var(--bg-card); border:1px solid var(--border);
-  border-radius:var(--r); color:var(--text); font-size:13px;
-  font-family:'Inter',sans-serif; outline:none; width:200px;
-}
-.search-input:focus { border-color:var(--cyan); }
-.search-input::placeholder { color:var(--text-3); }
-
-.results-count { font-size:13px; color:var(--text-3); white-space:nowrap; }
-
-/* LEAD CARD */
-.lead-card {
-  background:var(--bg-card); border:1px solid var(--border);
-  border-radius:var(--r); padding:20px 22px; margin-bottom:10px;
-  transition:border-color 0.15s, transform 0.15s;
-}
-.lead-card:hover { border-color:var(--border-hover); }
-.lead-card.won { opacity:0.45; }
-.lead-card.lost { opacity:0.3; }
-
-.card-top { display:flex; justify-content:space-between; align-items:flex-start; gap:16px; margin-bottom:12px; }
-.card-left { flex:1; min-width:0; }
-.card-org { font-size:17px; font-weight:700; color:var(--text); margin-bottom:4px; }
-.card-meta { font-size:13px; color:var(--text-2); display:flex; align-items:center; gap:8px; flex-wrap:wrap; }
-.card-meta-sep { color:var(--text-3); }
-.card-score { font-size:26px; font-weight:800; color:var(--gold); flex-shrink:0; line-height:1; }
-
-.card-tags { display:flex; gap:6px; flex-wrap:wrap; margin-bottom:12px; }
-.tag { font-size:11px; font-weight:700; padding:3px 9px; border-radius:3px; letter-spacing:0.05em; text-transform:uppercase; }
-.tag-critical { background:var(--red-dim); color:var(--red); }
-.tag-high { background:var(--gold-dim); color:var(--gold); }
-.tag-medium { background:rgba(142,142,158,0.1); color:var(--text-2); }
-.tag-str { background:var(--purple-dim); color:var(--purple); }
-.tag-blu { background:var(--cyan-dim); color:var(--cyan); }
-.tag-crm { background:var(--green-dim); color:var(--green); }
-.tag-live { background:rgba(0,229,255,0.06); color:var(--cyan); border:1px solid rgba(0,229,255,0.15); }
-.tag-agent { background:var(--gold-dim); color:var(--gold); border:1px solid rgba(245,200,66,0.15); }
-
-.card-summary { font-size:14px; color:var(--text-2); line-height:1.65; margin-bottom:12px; }
-.card-pitch {
-  background:rgba(0,229,255,0.04); border-left:3px solid var(--cyan);
-  padding:10px 14px; margin-bottom:14px; border-radius:0 var(--r) var(--r) 0;
-  font-size:13px; color:var(--text-2); line-height:1.6;
-}
-.card-pitch strong { color:var(--cyan); font-weight:600; }
-
-.card-footer { display:flex; align-items:center; gap:10px; flex-wrap:wrap; }
-.card-contact { font-size:13px; color:var(--text-2); }
-.card-contact a { color:var(--cyan); text-decoration:none; }
-.card-contact a:hover { text-decoration:underline; }
-
-.qualify-btn {
-  margin-left:auto; padding:7px 16px;
-  background:var(--cyan-dim); border:1px solid rgba(0,229,255,0.2);
-  border-radius:var(--r); color:var(--cyan);
-  font-size:13px; font-weight:600; cursor:pointer; transition:all 0.15s; flex-shrink:0;
-}
-.qualify-btn:hover { background:var(--cyan); color:#000; }
-.qualify-btn.qualified { background:var(--green-dim); border-color:rgba(0,214,143,0.2); color:var(--green); }
+/* CARD */
+.card{background:var(--bg-card);border:1px solid var(--border);border-radius:var(--r);padding:18px 20px;margin-bottom:9px;transition:border-color 0.15s;}
+.card:hover{border-color:var(--border-h);}
+.card.won{opacity:0.45;}.card.lost{opacity:0.3;}
+.card-top{display:flex;justify-content:space-between;align-items:flex-start;gap:14px;margin-bottom:10px;}
+.card-org{font-size:16px;font-weight:700;margin-bottom:3px;}
+.card-meta{font-size:13px;color:var(--text-2);}
+.card-score{font-size:24px;font-weight:800;color:var(--gold);flex-shrink:0;line-height:1;}
+.tags{display:flex;gap:5px;flex-wrap:wrap;margin-bottom:10px;}
+.tag{font-size:11px;font-weight:700;padding:2px 8px;border-radius:3px;letter-spacing:0.04em;text-transform:uppercase;}
+.t-crit{background:var(--red-dim);color:var(--red);}
+.t-high{background:var(--gold-dim);color:var(--gold);}
+.t-med{background:rgba(142,142,158,0.1);color:var(--text-2);}
+.t-str{background:var(--purple-dim);color:var(--purple);}
+.t-blu{background:var(--cyan-dim);color:var(--cyan);}
+.t-crm{background:var(--green-dim);color:var(--green);}
+.t-live{background:rgba(0,229,255,0.05);color:var(--cyan);border:1px solid rgba(0,229,255,0.15);}
+.t-dir{background:rgba(155,127,212,0.08);color:var(--purple);border:1px solid rgba(155,127,212,0.15);}
+.card-pitch{background:rgba(0,229,255,0.04);border-left:3px solid var(--cyan);padding:9px 13px;margin-bottom:12px;border-radius:0 var(--r) var(--r) 0;font-size:13px;color:var(--text-2);line-height:1.6;}
+.card-pitch strong{color:var(--cyan);font-weight:600;}
+.card-foot{display:flex;align-items:center;gap:10px;flex-wrap:wrap;}
+.card-contact{font-size:13px;color:var(--text-2);}
+.q-btn{margin-left:auto;padding:6px 15px;background:var(--cyan-dim);border:1px solid rgba(0,229,255,0.2);border-radius:var(--r);color:var(--cyan);font-size:13px;font-weight:600;cursor:pointer;transition:all 0.15s;flex-shrink:0;}
+.q-btn:hover{background:var(--cyan);color:#000;}
+.q-btn.done{background:var(--green-dim);border-color:rgba(0,214,143,0.2);color:var(--green);}
 
 /* FOLLOW-UP */
-.followup { display:none; margin-top:16px; padding-top:16px; border-top:1px solid var(--border); }
-.followup.open { display:block; }
-
-.status-row { display:flex; align-items:center; gap:8px; margin-bottom:14px; flex-wrap:wrap; }
-.status-label { font-size:12px; font-weight:600; color:var(--text-3); text-transform:uppercase; letter-spacing:0.08em; margin-right:4px; }
-.s-btn { padding:5px 12px; border-radius:4px; font-size:12px; font-weight:600; letter-spacing:0.04em; text-transform:uppercase; border:1px solid var(--border); background:none; color:var(--text-3); cursor:pointer; transition:all 0.15s; }
-.s-btn:hover { border-color:var(--cyan); color:var(--cyan); }
-.s-btn.s-contacted { background:var(--cyan-dim); border-color:var(--cyan); color:var(--cyan); }
-.s-btn.s-meeting { background:var(--gold-dim); border-color:var(--gold); color:var(--gold); }
-.s-btn.s-won { background:var(--green-dim); border-color:var(--green); color:var(--green); }
-.s-btn.s-lost { background:var(--red-dim); border-color:var(--red); color:var(--red); }
-
-.action-row { display:flex; gap:8px; flex-wrap:wrap; margin-bottom:14px; }
-.a-btn { padding:7px 14px; border-radius:var(--r); font-size:13px; font-weight:500; border:1px solid var(--border); background:var(--bg-surface); color:var(--text-2); cursor:pointer; transition:all 0.15s; text-decoration:none; display:inline-flex; align-items:center; gap:6px; }
-.a-btn:hover { border-color:var(--cyan); color:var(--cyan); }
-.a-btn.wa:hover { border-color:#25D366; color:#25D366; }
-.a-btn.em:hover { border-color:var(--gold); color:var(--gold); }
-
-.notes { width:100%; padding:10px 14px; background:var(--bg-surface); border:1px solid var(--border); border-radius:var(--r); color:var(--text); font-family:'Inter',sans-serif; font-size:13px; line-height:1.5; outline:none; resize:vertical; min-height:52px; }
-.notes:focus { border-color:var(--cyan); }
-.notes::placeholder { color:var(--text-3); }
-.meeting-input { padding:7px 12px; background:var(--bg-surface); border:1px solid var(--border); border-radius:var(--r); color:var(--text); font-family:'Inter',sans-serif; font-size:13px; outline:none; margin-bottom:12px; }
-.meeting-input:focus { border-color:var(--gold); }
+.fup{display:none;margin-top:14px;padding-top:14px;border-top:1px solid var(--border);}
+.fup.on{display:block;}
+.s-row{display:flex;align-items:center;gap:7px;margin-bottom:12px;flex-wrap:wrap;}
+.s-lbl{font-size:12px;font-weight:600;color:var(--text-3);text-transform:uppercase;letter-spacing:0.08em;margin-right:3px;}
+.s-btn{padding:5px 11px;border-radius:4px;font-size:12px;font-weight:600;letter-spacing:0.04em;text-transform:uppercase;border:1px solid var(--border);background:none;color:var(--text-3);cursor:pointer;transition:all 0.15s;}
+.s-btn:hover{border-color:var(--cyan);color:var(--cyan);}
+.s-contacted{background:var(--cyan-dim);border-color:var(--cyan);color:var(--cyan);}
+.s-meeting{background:var(--gold-dim);border-color:var(--gold);color:var(--gold);}
+.s-won{background:var(--green-dim);border-color:var(--green);color:var(--green);}
+.s-lost{background:var(--red-dim);border-color:var(--red);color:var(--red);}
+.a-row{display:flex;gap:7px;flex-wrap:wrap;margin-bottom:12px;}
+.a-btn{padding:6px 13px;border-radius:var(--r);font-size:13px;font-weight:500;border:1px solid var(--border);background:var(--bg-surface);color:var(--text-2);cursor:pointer;transition:all 0.15s;text-decoration:none;display:inline-flex;align-items:center;gap:5px;}
+.a-btn:hover{border-color:var(--cyan);color:var(--cyan);}
+.a-btn.wa:hover{border-color:#25D366;color:#25D366;}
+.a-btn.em:hover{border-color:var(--gold);color:var(--gold);}
+.notes{width:100%;padding:9px 13px;background:var(--bg-surface);border:1px solid var(--border);border-radius:var(--r);color:var(--text);font-family:'Inter',sans-serif;font-size:13px;line-height:1.5;outline:none;resize:vertical;min-height:48px;}
+.notes:focus{border-color:var(--cyan);}
+.notes::placeholder{color:var(--text-3);}
+.meet-in{padding:6px 11px;background:var(--bg-surface);border:1px solid var(--border);border-radius:var(--r);color:var(--text);font-family:'Inter',sans-serif;font-size:13px;outline:none;margin-bottom:10px;}
+.meet-in:focus{border-color:var(--gold);}
 
 /* EMAIL MODAL */
-#email-modal { position:fixed; inset:0; z-index:999; background:rgba(10,10,12,0.92); backdrop-filter:blur(8px); display:none; align-items:center; justify-content:center; }
-#email-modal.open { display:flex; }
-.modal-card { background:var(--bg-card); border:1px solid var(--border); border-radius:10px; padding:32px 36px; width:560px; max-width:94vw; max-height:88vh; overflow-y:auto; }
-.modal-title { font-size:16px; font-weight:700; margin-bottom:18px; display:flex; justify-content:space-between; align-items:center; }
-.modal-close { background:none; border:none; color:var(--text-3); font-size:20px; cursor:pointer; line-height:1; }
-.modal-close:hover { color:var(--text); }
-.modal-label { font-size:12px; font-weight:600; color:var(--text-3); text-transform:uppercase; letter-spacing:0.08em; margin:14px 0 5px; }
-.modal-input { width:100%; padding:9px 14px; background:var(--bg-surface); border:1px solid var(--border); border-radius:var(--r); color:var(--text); font-family:'Inter',sans-serif; font-size:13px; outline:none; }
-.modal-input:focus { border-color:var(--cyan); }
-.modal-textarea { width:100%; padding:10px 14px; background:var(--bg-surface); border:1px solid var(--border); border-radius:var(--r); color:var(--text); font-family:'Inter',sans-serif; font-size:13px; line-height:1.7; outline:none; resize:vertical; min-height:190px; }
-.modal-textarea:focus { border-color:var(--cyan); }
-.modal-actions { display:flex; gap:10px; margin-top:18px; flex-wrap:wrap; }
-.modal-send { padding:9px 22px; background:var(--cyan); color:#000; border:none; border-radius:var(--r); font-family:'Inter',sans-serif; font-size:14px; font-weight:700; cursor:pointer; }
-.modal-send:hover { opacity:0.88; }
-.modal-copy { padding:9px 16px; background:none; border:1px solid var(--border); border-radius:var(--r); color:var(--text-2); font-family:'Inter',sans-serif; font-size:13px; cursor:pointer; }
-.modal-copy:hover { border-color:var(--cyan); color:var(--cyan); }
+#emodal{position:fixed;inset:0;z-index:999;background:rgba(10,10,12,0.93);backdrop-filter:blur(8px);display:none;align-items:center;justify-content:center;}
+#emodal.on{display:flex;}
+.modal{background:var(--bg-card);border:1px solid var(--border);border-radius:10px;padding:30px 34px;width:550px;max-width:94vw;max-height:88vh;overflow-y:auto;}
+.modal-hdr{font-size:16px;font-weight:700;margin-bottom:16px;display:flex;justify-content:space-between;align-items:center;}
+.modal-x{background:none;border:none;color:var(--text-3);font-size:20px;cursor:pointer;line-height:1;}
+.modal-x:hover{color:var(--text);}
+.modal-lbl{font-size:12px;font-weight:600;color:var(--text-3);text-transform:uppercase;letter-spacing:0.08em;margin:12px 0 4px;}
+.modal-in{width:100%;padding:8px 13px;background:var(--bg-surface);border:1px solid var(--border);border-radius:var(--r);color:var(--text);font-family:'Inter',sans-serif;font-size:13px;outline:none;}
+.modal-in:focus{border-color:var(--cyan);}
+.modal-ta{width:100%;padding:9px 13px;background:var(--bg-surface);border:1px solid var(--border);border-radius:var(--r);color:var(--text);font-family:'Inter',sans-serif;font-size:13px;line-height:1.7;outline:none;resize:vertical;min-height:180px;}
+.modal-ta:focus{border-color:var(--cyan);}
+.modal-acts{display:flex;gap:9px;margin-top:16px;flex-wrap:wrap;}
+.m-send{padding:9px 20px;background:var(--cyan);color:#000;border:none;border-radius:var(--r);font-family:'Inter',sans-serif;font-size:14px;font-weight:700;cursor:pointer;}
+.m-send:hover{opacity:0.88;}
+.m-copy{padding:9px 14px;background:none;border:1px solid var(--border);border-radius:var(--r);color:var(--text-2);font-family:'Inter',sans-serif;font-size:13px;cursor:pointer;}
+.m-copy:hover{border-color:var(--cyan);color:var(--cyan);}
 
 /* EMPTY */
-.empty { text-align:center; padding:70px 20px; }
-.empty-icon { font-size:40px; margin-bottom:14px; opacity:0.2; }
-.empty-title { font-size:17px; font-weight:600; color:var(--text-2); margin-bottom:8px; }
-.empty-sub { font-size:14px; color:var(--text-3); }
+.empty{text-align:center;padding:60px 20px;}
+.empty-icon{font-size:38px;margin-bottom:12px;opacity:0.2;}
+.empty-title{font-size:17px;font-weight:600;color:var(--text-2);margin-bottom:7px;}
+.empty-sub{font-size:14px;color:var(--text-3);}
 
 /* TOAST */
-.toast { position:fixed; bottom:24px; right:24px; z-index:9999; background:var(--bg-elevated); border:1px solid var(--border); border-radius:var(--r); padding:12px 18px; font-size:13px; color:var(--text); box-shadow:0 8px 32px rgba(0,0,0,0.6); max-width:360px; animation:slideUp 0.2s ease; }
-@keyframes slideUp{from{transform:translateY(8px);opacity:0}to{transform:translateY(0);opacity:1}}
-
+.toast{position:fixed;bottom:22px;right:22px;z-index:9999;background:var(--bg-el);border:1px solid var(--border);border-radius:var(--r);padding:11px 17px;font-size:13px;color:var(--text);box-shadow:0 8px 32px rgba(0,0,0,0.6);max-width:340px;animation:su 0.2s ease;}
+@keyframes su{from{transform:translateY(8px);opacity:0}to{transform:translateY(0);opacity:1}}
 ::-webkit-scrollbar{width:4px;height:4px}
 ::-webkit-scrollbar-track{background:transparent}
 ::-webkit-scrollbar-thumb{background:var(--text-3);border-radius:2px}
@@ -230,570 +159,447 @@ body { font-family:'Inter',sans-serif; background:var(--bg); color:var(--text); 
 <body>
 
 <!-- EMAIL MODAL -->
-<div id="email-modal">
-  <div class="modal-card">
-    <div class="modal-title">
-      <span>Draft Email</span>
-      <button class="modal-close" onclick="closeEmail()">&#x2715;</button>
-    </div>
-    <div class="modal-label">To</div>
-    <input class="modal-input" id="e-to" type="text"/>
-    <div class="modal-label">Subject</div>
-    <input class="modal-input" id="e-subject" type="text"/>
-    <div class="modal-label">Message</div>
-    <textarea class="modal-textarea" id="e-body"></textarea>
-    <div class="modal-actions">
-      <button class="modal-send" onclick="sendEmail()">Open in Email App</button>
-      <button class="modal-copy" onclick="copyEmail()">Copy All</button>
-      <button class="modal-copy" onclick="closeEmail()">Cancel</button>
+<div id="emodal">
+  <div class="modal">
+    <div class="modal-hdr"><span>✉️ Draft Email</span><button class="modal-x" onclick="closeEmail()">✕</button></div>
+    <div class="modal-lbl">To</div><input class="modal-in" id="e-to" type="text"/>
+    <div class="modal-lbl">Subject</div><input class="modal-in" id="e-sub" type="text"/>
+    <div class="modal-lbl">Message</div><textarea class="modal-ta" id="e-body"></textarea>
+    <div class="modal-acts">
+      <button class="m-send" onclick="sendEmail()">Open in Email App</button>
+      <button class="m-copy" onclick="copyEmail()">Copy All</button>
+      <button class="m-copy" onclick="closeEmail()">Cancel</button>
     </div>
   </div>
 </div>
 
 <!-- HEADER -->
-<header class="header">
-  <div class="logo-wrap">
+<header class="hdr">
+  <div class="hdr-l">
     <div class="pulse"></div>
     <div>
-      <div class="logo">CDSIA <span class="logo-sep">|</span> <span style="color:var(--text);font-size:16px;font-weight:600;">Lead Intelligence</span></div>
-      <div class="logo-sub">Caribbean Distress Signals &nbsp;·&nbsp; Stratiix &amp; BluWav Growth Pipeline</div>
+      <div class="logo">CDSIA — Lead Intelligence</div>
+      <div class="logo-sub">Caribbean Distress Signals · Stratiix & BluWav Growth Pipeline · September Sprint</div>
     </div>
   </div>
-  <div class="header-right">
+  <div class="hdr-r">
     <div class="clock" id="clock"></div>
-    <button class="scan-btn" id="scan-btn" onclick="runScan()">📡 Scan Now</button>
+    <button class="scan-btn" id="scan-btn" onclick="runScan()">📡 Scan for New Leads</button>
   </div>
 </header>
 
 <!-- STATS -->
-<div class="stats-bar">
-  <div class="stat c1"><div class="stat-label">Total Leads</div><div class="stat-val" id="s-total">0</div><div class="stat-sub">All sources</div></div>
-  <div class="stat c2"><div class="stat-label">Critical</div><div class="stat-val" id="s-critical">0</div><div class="stat-sub">Act immediately</div></div>
-  <div class="stat c3"><div class="stat-label">In Pipeline</div><div class="stat-val" id="s-pipeline">0</div><div class="stat-sub">Active pursuit</div></div>
-  <div class="stat c4"><div class="stat-label">Closed Won</div><div class="stat-val" id="s-won">0</div><div class="stat-sub">Revenue closed</div></div>
-  <div class="stat c5"><div class="stat-label">Live Scans</div><div class="stat-val" id="s-live">0</div><div class="stat-sub">From today's news</div></div>
+<div class="stats">
+  <div class="stat s1"><div class="stat-lbl">Total Leads</div><div class="stat-val" id="s-total">0</div><div class="stat-sub">Verified + live</div></div>
+  <div class="stat s2"><div class="stat-lbl">Critical</div><div class="stat-val" id="s-crit">0</div><div class="stat-sub">Act now</div></div>
+  <div class="stat s3"><div class="stat-lbl">In Pipeline</div><div class="stat-val" id="s-pipe">0</div><div class="stat-sub">Active pursuit</div></div>
+  <div class="stat s4"><div class="stat-lbl">Closed Won</div><div class="stat-val" id="s-won">0</div><div class="stat-sub">Revenue closed</div></div>
+  <div class="stat s5"><div class="stat-lbl">Live Scans</div><div class="stat-val" id="s-live">0</div><div class="stat-sub">From news</div></div>
 </div>
 
 <!-- MAIN -->
 <div class="main">
-
-  <div class="banner" id="banner">⚡ <span id="banner-text"></span></div>
+  <div class="banner" id="banner">⚡ <span id="banner-txt"></span></div>
 
   <!-- SCANNER -->
-  <div class="scanner-panel" id="scanner-panel">
-    <div class="scanner-top">
-      <div class="scanner-title">📡 SCANNING CARIBBEAN SOURCES...</div>
+  <div class="scan-panel" id="scan-panel">
+    <div class="scan-top">
+      <div class="scan-title">📡 SCANNING CARIBBEAN NEWS SOURCES...</div>
       <button class="stop-btn" onclick="stopScan()">Stop</button>
     </div>
-    <div class="progress-wrap"><div class="progress-fill" id="progress-fill"></div></div>
-    <div class="scanner-log" id="scanner-log"></div>
+    <div class="prog-wrap"><div class="prog-fill" id="prog-fill"></div></div>
+    <div class="scan-log" id="scan-log"></div>
   </div>
 
   <!-- CONTROLS -->
-  <div class="controls">
-    <div class="controls-left">
-      <div class="filter-group">
-        <button class="f-btn active" onclick="setFilter('all',this)">All</button>
-        <button class="f-btn" onclick="setFilter('str',this)">Stratiix</button>
-        <button class="f-btn" onclick="setFilter('blu',this)">BluWav</button>
-        <button class="f-btn" onclick="setFilter('crm',this)">CRM</button>
-        <button class="f-btn" onclick="setFilter('live',this)">Live Scans</button>
-        <button class="f-btn" onclick="setFilter('pipeline',this)">Pipeline</button>
-        <button class="f-btn" onclick="setFilter('won',this)">Won</button>
+  <div class="ctrl">
+    <div class="ctrl-l">
+      <div class="ftabs">
+        <button class="ftab on" onclick="setF('all',this)">All</button>
+        <button class="ftab" onclick="setF('str',this)">Stratiix</button>
+        <button class="ftab" onclick="setF('blu',this)">BluWav</button>
+        <button class="ftab" onclick="setF('crm',this)">CRM</button>
+        <button class="ftab" onclick="setF('live',this)">Live Scans</button>
+        <button class="ftab" onclick="setF('pipeline',this)">Pipeline</button>
+        <button class="ftab" onclick="setF('won',this)">Won</button>
       </div>
     </div>
-    <div class="controls-right">
-      <input class="search-input" id="search-input" placeholder="Search leads..." oninput="render()"/>
-      <select class="sort-select" id="sort-select" onchange="render()">
-        <option value="score">Sort: Score</option>
-        <option value="urgency">Sort: Urgency</option>
-        <option value="country">Sort: Country</option>
-        <option value="status">Sort: Status</option>
-        <option value="newest">Sort: Newest</option>
+    <div class="ctrl-r">
+      <input class="srch" id="srch" placeholder="Search leads..." oninput="render()"/>
+      <select class="sort-sel" id="sort" onchange="render()">
+        <option value="score">Score ↓</option>
+        <option value="urgency">Urgency</option>
+        <option value="country">Country A-Z</option>
+        <option value="sector">Sector A-Z</option>
+        <option value="status">Status</option>
+        <option value="newest">Newest</option>
       </select>
-      <span class="results-count" id="results-count"></span>
+      <span class="rcount" id="rcount"></span>
     </div>
   </div>
 
-  <div id="leads-container"></div>
+  <div id="leads"></div>
 </div>
 
+<script src="leads.js"></script>
 <script>
-// ================================================================
-// ICP + BRAND LOGIC
-// ================================================================
-// Sprint ICP: Caribbean SMEs 5-50 employees
-// Stratiix: operational chaos, scaling, governance, project management
-// BluWav Growth: visibility, marketing, getting customers, digital presence
-// CRM: client management, pipeline, sales tracking
-
-function getBrands(signals, summary) {
-  const text = (signals.join(' ') + ' ' + summary).toLowerCase();
-  const brands = [];
-  // Stratiix signals
-  if (/hiring|scaling|restructur|governance|project management|overwhelm|bottleneck|operations|chaos|workflow|systems|capacity|backlog|transform/.test(text)) brands.push('STR');
-  // BluWav signals
-  if (/visibility|marketing|customers|digital|social media|brand|online|website|growth|sales|revenue|market|advertis|promotion|awareness/.test(text)) brands.push('BLU');
-  // CRM signals
-  if (/crm|client management|pipeline|leads|sales tracking|customer relationship|contacts|follow.up|database/.test(text)) brands.push('CRM');
-  // Default: if growing/stressed and no brand matched, assign STR
-  if (brands.length === 0) brands.push('STR');
-  return brands;
-}
-
-function getPitch(brands, signals, org) {
-  const hasBLU = brands.includes('BLU');
-  const hasSTR = brands.includes('STR');
-  const hasCRM = brands.includes('CRM');
-  const sig = signals.join(' ').toLowerCase();
-
-  if (hasSTR && hasBLU) return 'Double fit: Stratiix for operational systems + BluWav Growth Sprint to get more customers. Lead with the 30-Day Growth Sprint at $2,500.';
-  if (hasBLU) return 'Lead with: "Get more customers in the next 30 days — BluWav Growth Sprint, $2,500. Guaranteed visibility improvements."';
-  if (hasCRM) return 'Lead with: "Managing clients without a CRM is costing you deals. Qualia CRM + Stratiix OS — built for Caribbean businesses."';
-  if (sig.includes('hiring') || sig.includes('recruit')) return 'Lead with: "Growing teams need operating systems — Stratiix installs the governance layer before chaos sets in."';
-  if (sig.includes('restructur')) return 'Lead with: "Restructuring is the perfect moment to install the right operating system. Stratiix makes the change stick."';
-  if (sig.includes('challeng') || sig.includes('struggl')) return 'Lead with: "Stratiix Diagnostic — free 45-min session to identify exactly what is breaking and how to fix it."';
-  return 'Lead with: "BluWav Growth Sprint — get more customers in 30 days. Starting at $2,500."';
-}
-
-function getEmailBody(lead) {
-  const hasBLU = lead.brands.includes('BLU');
-  const hasSTR = lead.brands.includes('STR');
-  if (hasBLU && hasSTR) {
-    return 'I came across ' + lead.org + ' and see a strong double fit.\n\nFirst — our BluWav Growth Sprint can get you more customers in the next 30 days. Starting at $2,500, it includes a growth roadmap, visibility improvements, and expert guidance.\n\nSecond — as you grow, Stratiix OS installs the operational systems to handle the new volume without chaos.\n\nWould you be open to a quick 20-minute call this week?';
-  }
-  if (hasBLU) {
-    return 'I came across ' + lead.org + ' and think our BluWav Growth Sprint is a perfect fit.\n\nIn 30 days, we help Caribbean businesses get more customers — with a clear growth roadmap, visibility improvements, and hands-on guidance. Starting at $2,500.\n\nWould you be open to a quick 20-minute call this week?';
-  }
-  return 'I came across ' + lead.org + ' and noticed some signals that suggest your operations are under pressure as you grow.\n\nWe built Stratiix OS specifically for Caribbean businesses at this stage — it installs the governance layer that keeps your team coordinated and your clients happy.\n\nWould you be open to a free 45-minute Stratiix Diagnostic? No pitch — just clarity on what to fix first.';
-}
-
-function getWAMsg(lead) {
-  const hasBLU = lead.brands.includes('BLU');
-  if (hasBLU) {
-    return encodeURIComponent('Hi, this is Andrea from BluWav Group. I came across ' + lead.org + ' and think our 30-Day Growth Sprint could help you get more customers fast — starting at $2,500. Would you be open to a quick chat this week?');
-  }
-  return encodeURIComponent('Hi, this is Andrea from BluWav Group. I came across ' + lead.org + ' and noticed some growth signals. We built Stratiix OS for Caribbean businesses scaling right now — would you be open to a free 45-min diagnostic session?');
-}
-
-// ================================================================
-// SCANNER QUERIES — Wide Caribbean Net
-// ================================================================
-const QUERIES = [
-  // Trinidad & Tobago
-  {q:'Trinidad Tobago business hiring staff 2026', country:'Trinidad & Tobago', flag:'🇹🇹'},
-  {q:'Trinidad SME expanding new office 2026', country:'Trinidad & Tobago', flag:'🇹🇹'},
-  {q:'Trinidad business challenges growth 2026', country:'Trinidad & Tobago', flag:'🇹🇹'},
-  {q:'Trinidad startup launch 2026', country:'Trinidad & Tobago', flag:'🇹🇹'},
-  {q:'Trinidad business marketing customers 2026', country:'Trinidad & Tobago', flag:'🇹🇹'},
-  // Barbados
-  {q:'Barbados business hiring expanding 2026', country:'Barbados', flag:'🇧🇧'},
-  {q:'Barbados SME growth challenges 2026', country:'Barbados', flag:'🇧🇧'},
-  {q:'Barbados startup business launch 2026', country:'Barbados', flag:'🇧🇧'},
-  // Jamaica
-  {q:'Jamaica business hiring expanding 2026', country:'Jamaica', flag:'🇯🇲'},
-  {q:'Jamaica SME growth challenges 2026', country:'Jamaica', flag:'🇯🇲'},
-  {q:'Jamaica startup business launch 2026', country:'Jamaica', flag:'🇯🇲'},
-  {q:'Jamaica business marketing customers 2026', country:'Jamaica', flag:'🇯🇲'},
-  // Guyana
-  {q:'Guyana business hiring expanding 2026', country:'Guyana', flag:'🇬🇾'},
-  {q:'Guyana SME startup scaling 2026', country:'Guyana', flag:'🇬🇾'},
-  {q:'Guyana business growth investment 2026', country:'Guyana', flag:'🇬🇾'},
-  // Other Caribbean
-  {q:'Bahamas business hiring expanding 2026', country:'Bahamas', flag:'🇧🇸'},
-  {q:'Saint Lucia business growth 2026', country:'St. Lucia', flag:'🇱🇨'},
-  {q:'Grenada business expanding 2026', country:'Grenada', flag:'🇬🇩'},
-  {q:'Antigua business growth 2026', country:'Antigua', flag:'🇦🇬'},
-  {q:'Belize business hiring expanding 2026', country:'Belize', flag:'🇧🇿'},
-  {q:'Suriname business growth 2026', country:'Suriname', flag:'🇸🇷'},
-  {q:'Caribbean SME digital marketing visibility 2026', country:'Caribbean', flag:'🌊'},
-  {q:'Caribbean business project management consultant 2026', country:'Caribbean', flag:'🌊'},
-  {q:'Caribbean startup founder scaling 2026', country:'Caribbean', flag:'🌊'},
-];
-
-const STRESS_SIGNALS = [
-  {w:'hiring',s:14,label:'Actively hiring'},{w:'expanding',s:12,label:'Expanding'},{w:'new office',s:13,label:'New office'},
-  {w:'growth',s:8,label:'Growth phase'},{w:'restructur',s:18,label:'Restructuring'},{w:'challeng',s:15,label:'Challenges'},
-  {w:'struggl',s:19,label:'Struggling'},{w:'overwhelm',s:19,label:'Overwhelmed'},{w:'project management',s:17,label:'Needs PM'},
-  {w:'consultant',s:14,label:'Seeking consultants'},{w:'operations',s:9,label:'Operations focus'},{w:'staff',s:8,label:'Staff growth'},
-  {w:'launch',s:10,label:'New launch'},{w:'investment',s:12,label:'Investment received'},{w:'recruit',s:13,label:'Recruiting'},
-  {w:'rapid',s:11,label:'Rapid growth'},{w:'transform',s:12,label:'Transformation'},{w:'crisis',s:21,label:'Crisis'},
-  {w:'backlog',s:16,label:'Backlog issues'},{w:'capacity',s:11,label:'Capacity issues'},{w:'marketing',s:10,label:'Marketing focus'},
-  {w:'visibility',s:12,label:'Visibility gap'},{w:'customers',s:10,label:'Customer acquisition'},{w:'digital',s:9,label:'Digital gap'},
-  {w:'social media',s:11,label:'Social media gap'},{w:'brand',s:9,label:'Brand building'},{w:'revenue',s:11,label:'Revenue focus'},
-  {w:'sales',s:10,label:'Sales focus'},{w:'crm',s:16,label:'CRM need'},{w:'pipeline',s:14,label:'Pipeline management'},
-];
-
-function scoreText(title, desc) {
-  const text = (title + ' ' + desc).toLowerCase();
-  let score = 50; const found = [];
-  for (const sig of STRESS_SIGNALS) {
-    if (text.includes(sig.w)) { score += sig.s; found.push(sig.label); }
-  }
-  return { score: Math.min(score, 99), found };
-}
-
 // ================================================================
 // PERSISTENCE
 // ================================================================
-const LS_STATES = 'cdsia_v2_states';
-const LS_SCANNED = 'cdsia_v2_scanned';
+const LS_ST = 'cdsia_v3_states';
+const LS_SC = 'cdsia_v3_scanned';
+function loadSt(){try{return JSON.parse(localStorage.getItem(LS_ST)||'{}');}catch(e){return{};}}
+function saveSt(id,p){const a=loadSt();a[id]={...a[id],...p,upd:new Date().toISOString()};localStorage.setItem(LS_ST,JSON.stringify(a));}
+function getSt(id){return loadSt()[id]||{status:'new',notes:'',meet:''};}
+function loadSc(){try{return JSON.parse(localStorage.getItem(LS_SC)||'[]');}catch(e){return[];}}
+function saveSc(l){localStorage.setItem(LS_SC,JSON.stringify(l));}
 
-function loadStates() { try { return JSON.parse(localStorage.getItem(LS_STATES)||'{}'); } catch(e) { return {}; } }
-function saveState(id, patch) {
-  const all = loadStates();
-  all[id] = {...all[id], ...patch, updatedAt: new Date().toISOString()};
-  localStorage.setItem(LS_STATES, JSON.stringify(all));
+// ================================================================
+// SCANNER — Caribbean News Sources
+// ================================================================
+const NEWS_SOURCES = [
+  {name:'Trinidad Newsday',url:'https://newsday.co.tt/feed/',country:'Trinidad & Tobago',flag:'🇹🇹'},
+  {name:'Jamaica Observer',url:'https://www.jamaicaobserver.com/feed/',country:'Jamaica',flag:'🇯🇲'},
+  {name:'Jamaica Gleaner',url:'https://jamaica-gleaner.com/feed/rss.xml',country:'Jamaica',flag:'🇯🇲'},
+  {name:'Kaieteur News',url:'https://www.kaieteurnewsonline.com/feed/',country:'Guyana',flag:'🇬🇾'},
+  {name:'Barbados Today',url:'https://barbadostoday.bb/feed/',country:'Barbados',flag:'🇧🇧'},
+];
+
+const BIZ_KEYWORDS = ['business','compan','hire','hiring','expand','launch','invest','growth','entrepreneur','startup','open','staff','employ','contract','project','revenue','market','digital','technolog','consult','service'];
+
+const SCAN_SIGNALS = [
+  {w:'hiring',s:15},{w:'expanding',s:12},{w:'new office',s:13},{w:'growth',s:8},
+  {w:'restructur',s:18},{w:'challeng',s:15},{w:'struggl',s:19},{w:'overwhelm',s:19},
+  {w:'project management',s:17},{w:'consultant',s:14},{w:'operations',s:9},
+  {w:'staff',s:8},{w:'launch',s:10},{w:'investment',s:12},{w:'recruit',s:13},
+  {w:'marketing',s:10},{w:'visibility',s:12},{w:'customers',s:10},{w:'digital',s:9},
+  {w:'sales',s:10},{w:'crm',s:16},{w:'pipeline',s:14},{w:'revenue',s:11},
+];
+
+function scoreScan(title,desc){
+  const t=(title+' '+desc).toLowerCase();
+  let s=50;const f=[];
+  for(const sig of SCAN_SIGNALS){if(t.includes(sig.w)){s+=sig.s;f.push(sig.w);}}
+  return{score:Math.min(s,99),found:f};
 }
-function getState(id) { return loadStates()[id] || {status:'new', notes:'', meetingDate:''}; }
-function loadScanned() { try { return JSON.parse(localStorage.getItem(LS_SCANNED)||'[]'); } catch(e) { return []; } }
-function saveScanned(leads) { localStorage.setItem(LS_SCANNED, JSON.stringify(leads)); }
 
-// ================================================================
-// SCANNER
-// ================================================================
-let _scanning = false;
+function scanBrands(found,desc){
+  const t=(found.join(' ')+' '+desc).toLowerCase();
+  const b=[];
+  if(/hiring|scaling|restructur|governance|project.management|overwhelm|bottleneck|operations|chaos|workflow|systems|capacity|backlog|transform/.test(t)) b.push('STR');
+  if(/visibility|marketing|customers|digital|social.media|brand|online|website|growth|sales|revenue|market|advertis|promotion|awareness/.test(t)) b.push('BLU');
+  if(/crm|client.management|pipeline|leads|sales.tracking|customer.relationship|contacts|follow.up/.test(t)) b.push('CRM');
+  if(!b.length) b.push('STR');
+  return b;
+}
 
-async function runScan() {
-  if (_scanning) return;
-  _scanning = true;
-  const btn = document.getElementById('scan-btn');
-  const panel = document.getElementById('scanner-panel');
-  const fill = document.getElementById('progress-fill');
-  const log = document.getElementById('scanner-log');
-  btn.disabled = true; btn.textContent = 'Scanning...';
-  panel.classList.add('visible');
-  fill.style.width = '0%'; log.innerHTML = '';
+function scanPitch(brands,found){
+  const hasBLU=brands.includes('BLU'),hasSTR=brands.includes('STR');
+  if(hasBLU&&hasSTR) return 'Double fit: BluWav Growth Sprint ($2,500) to get more customers in 30 days + Stratiix OS for operational systems.';
+  if(hasBLU) return 'Lead with: "Get more customers in the next 30 days — BluWav Growth Sprint, $2,500."';
+  if(found.includes('hiring')||found.includes('recruit')) return 'Lead with: "Growing teams need operating systems — Stratiix installs the governance layer before chaos sets in."';
+  return 'Lead with: "Stratiix Diagnostic — free 45-min session to map your operational gaps."';
+}
 
-  const addLog = msg => { log.innerHTML += '<div>> ' + msg + '</div>'; log.scrollTop = log.scrollHeight; };
-  addLog('Initialising CDSIA scanner — ' + QUERIES.length + ' Caribbean queries...');
+let _scanning=false;
 
-  let newLeads = [];
-  for (let i = 0; i < QUERIES.length; i++) {
-    if (!_scanning) break;
-    const q = QUERIES[i];
-    addLog('Scanning ' + q.flag + ' ' + q.country + '...');
-    fill.style.width = Math.round(((i+1)/QUERIES.length)*100) + '%';
-    const articles = await fetchArticles(q.q, q.country, q.flag);
-    for (let j = 0; j < articles.length; j++) {
-      const lead = articleToLead(articles[j], i*10+j);
-      if (lead) { newLeads.push(lead); addLog('  ✓ ' + lead.org + ' [' + lead.brands.join('+') + '] (' + lead.score + ')'); }
-    }
-    await new Promise(r => setTimeout(r, 150));
+async function runScan(){
+  if(_scanning) return;
+  _scanning=true;
+  const btn=document.getElementById('scan-btn');
+  const panel=document.getElementById('scan-panel');
+  const fill=document.getElementById('prog-fill');
+  const log=document.getElementById('scan-log');
+  btn.disabled=true;btn.textContent='Scanning...';
+  panel.classList.add('on');
+  fill.style.width='0%';log.innerHTML='';
+  const addLog=msg=>{log.innerHTML+='<div>> '+msg+'</div>';log.scrollTop=log.scrollHeight;};
+  addLog('Scanning '+NEWS_SOURCES.length+' Caribbean news sources...');
+
+  let newLeads=[];
+  for(let i=0;i<NEWS_SOURCES.length;i++){
+    if(!_scanning) break;
+    const src=NEWS_SOURCES[i];
+    addLog(src.flag+' '+src.name+'...');
+    fill.style.width=Math.round(((i+1)/NEWS_SOURCES.length)*100)+'%';
+    try{
+      const apiUrl='https://api.rss2json.com/v1/api.json?rss_url='+encodeURIComponent(src.url);
+      const res=await fetch(apiUrl,{signal:AbortSignal.timeout(10000)});
+      const data=await res.json();
+      if(data.status==='ok'&&data.items){
+        const bizItems=data.items.filter(item=>
+          BIZ_KEYWORDS.some(k=>(item.title+' '+(item.description||'')).toLowerCase().includes(k))
+        );
+        addLog('  '+bizItems.length+' business articles found');
+        for(let j=0;j<bizItems.length;j++){
+          const item=bizItems[j];
+          const desc=(item.description||'').replace(/<[^>]+>/g,'');
+          const {score,found}=scoreScan(item.title,desc);
+          if(score<65) continue;
+          const org=item.title.replace(/\b(says?|reports?|announces?|launches?|opens?|hires?|expands?)\b.*/i,'').replace(/['"]/g,'').trim().split(/[:\-–|]/)[0].trim().substring(0,65)||src.name+' Business';
+          const brands=scanBrands(found,desc);
+          const urgency=score>=82?'Critical':score>=70?'High':'Medium';
+          newLeads.push({
+            id:'SCAN'+Date.now()+'_'+j,tier:'live',org,
+            country:src.flag+' '+src.country,sector:'Caribbean SME',
+            brands,signals:found.slice(0,4),score,urgency,
+            pitch:scanPitch(brands,found),
+            email_body:getEmailBody(brands,org),
+            src:item.link||'',
+            pubDate:item.pubDate||'',
+            scannedAt:new Date().toISOString()
+          });
+          addLog('  ✓ '+org+' ['+brands.join('+')+'] ('+score+')');
+        }
+      }
+    }catch(e){addLog('  Error: '+e.message);}
+    await new Promise(r=>setTimeout(r,300));
   }
 
-  fill.style.width = '100%';
-
-  // Deduplicate by org name
-  const seen = new Set();
-  newLeads = newLeads.filter(l => {
-    const k = l.org.toLowerCase().replace(/[^a-z0-9]/g,'').substring(0,18);
-    if (seen.has(k)) return false; seen.add(k); return true;
-  });
-  newLeads.sort((a,b) => b.score - a.score);
-
-  // Merge with existing scanned
-  const existing = loadScanned();
-  const existingKeys = new Set(existing.map(l => l.org.toLowerCase().replace(/[^a-z0-9]/g,'').substring(0,18)));
-  const fresh = newLeads.filter(l => !existingKeys.has(l.org.toLowerCase().replace(/[^a-z0-9]/g,'').substring(0,18)));
-  saveScanned([...fresh, ...existing].slice(0, 100));
-
-  addLog('✅ Done — ' + fresh.length + ' new leads found across ' + QUERIES.length + ' queries');
-
-  setTimeout(() => {
-    panel.classList.remove('visible');
-    btn.disabled = false; btn.textContent = '📡 Scan Now';
-    _scanning = false;
-    render(); updateStats();
-    toast('✅ Scan complete — ' + fresh.length + ' new leads found');
-  }, 1200);
+  fill.style.width='100%';
+  // Deduplicate
+  const seen=new Set();
+  newLeads=newLeads.filter(l=>{const k=l.org.toLowerCase().replace(/[^a-z0-9]/g,'').substring(0,18);if(seen.has(k))return false;seen.add(k);return true;});
+  newLeads.sort((a,b)=>b.score-a.score);
+  const existing=loadSc();
+  const existKeys=new Set(existing.map(l=>l.org.toLowerCase().replace(/[^a-z0-9]/g,'').substring(0,18)));
+  const fresh=newLeads.filter(l=>!existKeys.has(l.org.toLowerCase().replace(/[^a-z0-9]/g,'').substring(0,18)));
+  saveSc([...fresh,...existing].slice(0,150));
+  addLog('✅ Done — '+fresh.length+' new leads added');
+  setTimeout(()=>{
+    panel.classList.remove('on');
+    btn.disabled=false;btn.textContent='📡 Scan for New Leads';
+    _scanning=false;
+    render();updateStats();
+    toast('✅ Scan complete — '+fresh.length+' new leads found');
+  },1200);
 }
 
-function stopScan() {
-  _scanning = false;
-  document.getElementById('scanner-panel').classList.remove('visible');
-  const btn = document.getElementById('scan-btn');
-  btn.disabled = false; btn.textContent = '📡 Scan Now';
-  render(); updateStats();
-  toast('Scan stopped');
+function stopScan(){
+  _scanning=false;
+  document.getElementById('scan-panel').classList.remove('on');
+  const btn=document.getElementById('scan-btn');
+  btn.disabled=false;btn.textContent='📡 Scan for New Leads';
+  render();updateStats();toast('Scan stopped');
 }
 
-async function fetchArticles(query, country, flag) {
-  const rssUrl = 'https://news.google.com/rss/search?q=' + encodeURIComponent(query) + '&hl=en-US&gl=US&ceid=US:en';
-  const apiUrl = 'https://api.rss2json.com/v1/api.json?rss_url=' + encodeURIComponent(rssUrl);
-  try {
-    const res = await fetch(apiUrl, {signal: AbortSignal.timeout(10000)});
-    const data = await res.json();
-    if (data.status !== 'ok' || !data.items) return [];
-    return data.items.slice(0,4).map(item => ({
-      title: item.title || '',
-      description: (item.description||'').replace(/<[^>]+>/g,''),
-      link: item.link || '',
-      pubDate: item.pubDate || '',
-      country, flag
-    }));
-  } catch(e) { return []; }
+// ================================================================
+// EMAIL HELPERS
+// ================================================================
+function getEmailBody(brands,org){
+  const hasBLU=brands.includes('BLU'),hasSTR=brands.includes('STR');
+  if(hasBLU&&hasSTR) return 'I came across '+org+' and see a strong fit on two fronts.\n\nFirst — our BluWav Growth Sprint can get you more customers in the next 30 days. Starting at $2,500, it includes a growth roadmap, visibility improvements, and hands-on guidance.\n\nSecond — as you grow, Stratiix OS installs the operational systems to handle the new volume without chaos.\n\nWould you be open to a quick 20-minute call this week?';
+  if(hasBLU) return 'I came across '+org+' and think our BluWav Growth Sprint is a strong fit.\n\nIn 30 days, we help Caribbean businesses get more customers — with a clear growth roadmap, visibility improvements, and expert guidance. Starting at $2,500.\n\nWould you be open to a quick 20-minute call this week?';
+  return 'I came across '+org+' and noticed signals that suggest your operations are under pressure as you grow.\n\nWe built Stratiix OS specifically for Caribbean businesses at this stage — it installs the governance layer that keeps your team coordinated and your clients happy.\n\nWould you be open to a free 45-minute Stratiix Diagnostic? No pitch — just clarity on what to fix first.';
 }
 
-function articleToLead(article, idx) {
-  const {score, found} = scoreText(article.title, article.description);
-  if (score < 62) return null;
-  // Extract org name from title
-  const org = article.title
-    .replace(/\b(says?|reports?|announces?|launches?|opens?|hires?|expands?|faces?|struggles?|gets?|wins?|lands?)\b.*/i, '')
-    .replace(/['"«»]/g,'').trim()
-    .split(/[:\-–—|]/)[0].trim()
-    .substring(0,65) || 'Caribbean Business';
-  const brands = getBrands(found, article.description);
-  const urgency = score >= 82 ? 'Critical' : score >= 70 ? 'High' : 'Medium';
-  return {
-    id: 'SCAN' + Date.now() + '_' + idx,
-    tier: 'live',
-    org,
-    country: article.flag + ' ' + article.country,
-    sector: 'Caribbean SME',
-    distressType: found.slice(0,4),
-    score, urgency, brands,
-    summary: article.description.substring(0,240) + (article.description.length > 240 ? '...' : ''),
-    pitch: getPitch(brands, found, org),
-    contact: {name:'', email:'', phone:''},
-    sourceUrl: article.link,
-    pubDate: article.pubDate,
-    scannedAt: new Date().toISOString()
-  };
+function getWAMsg(lead){
+  const hasBLU=lead.brands.includes('BLU');
+  if(hasBLU) return encodeURIComponent('Hi, this is Andrea from BluWav Group. I came across '+lead.org+' and think our 30-Day Growth Sprint could help you get more customers fast — starting at $2,500. Would you be open to a quick chat this week?');
+  return encodeURIComponent('Hi, this is Andrea from BluWav Group. I came across '+lead.org+' and think there is a strong fit with Stratiix OS — our operating system for Caribbean businesses scaling right now. Would you be open to a free 45-min diagnostic session?');
 }
 
 // ================================================================
 // RENDER
 // ================================================================
-let _filter = 'all';
+let _filter='all';
 
-function allLeads() { return loadScanned(); }
+function allLeads(){return[...DIRECTORY_LEADS,...loadSc()];}
 
-function setFilter(f, btn) {
-  _filter = f;
-  document.querySelectorAll('.f-btn').forEach(b => b.classList.remove('active'));
-  if (btn) btn.classList.add('active');
+function setF(f,btn){
+  _filter=f;
+  document.querySelectorAll('.ftab').forEach(b=>b.classList.remove('on'));
+  if(btn) btn.classList.add('on');
   render();
 }
 
-function render() {
-  const states = loadStates();
-  const search = (document.getElementById('search-input')?.value || '').toLowerCase();
-  const sortBy = document.getElementById('sort-select')?.value || 'score';
-  let leads = allLeads();
+function render(){
+  const states=loadSt();
+  const srch=(document.getElementById('srch')?.value||'').toLowerCase();
+  const sortBy=document.getElementById('sort')?.value||'score';
+  let leads=allLeads();
 
-  // Filter
-  if (_filter === 'str') leads = leads.filter(l => l.brands.includes('STR'));
-  else if (_filter === 'blu') leads = leads.filter(l => l.brands.includes('BLU'));
-  else if (_filter === 'crm') leads = leads.filter(l => l.brands.includes('CRM'));
-  else if (_filter === 'live') leads = leads.filter(l => l.tier === 'live');
-  else if (_filter === 'pipeline') leads = leads.filter(l => ['contacted','meeting_booked'].includes(states[l.id]?.status));
-  else if (_filter === 'won') leads = leads.filter(l => states[l.id]?.status === 'won');
+  if(_filter==='str') leads=leads.filter(l=>l.brands.includes('STR'));
+  else if(_filter==='blu') leads=leads.filter(l=>l.brands.includes('BLU'));
+  else if(_filter==='crm') leads=leads.filter(l=>l.brands.includes('CRM'));
+  else if(_filter==='live') leads=leads.filter(l=>l.tier==='live');
+  else if(_filter==='pipeline') leads=leads.filter(l=>['contacted','meeting_booked'].includes(states[l.id]?.status));
+  else if(_filter==='won') leads=leads.filter(l=>states[l.id]?.status==='won');
 
-  // Search
-  if (search) leads = leads.filter(l =>
-    l.org.toLowerCase().includes(search) ||
-    l.country.toLowerCase().includes(search) ||
-    l.sector.toLowerCase().includes(search) ||
-    (l.distressType||[]).join(' ').toLowerCase().includes(search)
+  if(srch) leads=leads.filter(l=>
+    l.org.toLowerCase().includes(srch)||
+    l.country.toLowerCase().includes(srch)||
+    l.sector.toLowerCase().includes(srch)||
+    (l.signals||l.distressType||[]).join(' ').toLowerCase().includes(srch)||
+    (l.brands||[]).join(' ').toLowerCase().includes(srch)
   );
 
-  // Sort
-  const urgOrder = {Critical:0, High:1, Medium:2};
-  const statusOrder = {contacted:0, meeting_booked:1, new:2, won:3, lost:4};
-  leads.sort((a,b) => {
-    if (sortBy === 'score') return b.score - a.score;
-    if (sortBy === 'urgency') return (urgOrder[a.urgency]??3) - (urgOrder[b.urgency]??3);
-    if (sortBy === 'country') return a.country.localeCompare(b.country);
-    if (sortBy === 'status') return (statusOrder[states[a.id]?.status||'new']??2) - (statusOrder[states[b.id]?.status||'new']??2);
-    if (sortBy === 'newest') return new Date(b.scannedAt||0) - new Date(a.scannedAt||0);
-    return b.score - a.score;
+  const uO={Critical:0,High:1,Medium:2};
+  const stO={contacted:0,meeting_booked:1,new:2,won:3,lost:4};
+  leads.sort((a,b)=>{
+    if(sortBy==='score') return b.score-a.score;
+    if(sortBy==='urgency') return (uO[a.urgency]??3)-(uO[b.urgency]??3);
+    if(sortBy==='country') return a.country.localeCompare(b.country);
+    if(sortBy==='sector') return a.sector.localeCompare(b.sector);
+    if(sortBy==='status') return (stO[states[a.id]?.status||'new']??2)-(stO[states[b.id]?.status||'new']??2);
+    if(sortBy==='newest') return new Date(b.scannedAt||0)-new Date(a.scannedAt||0);
+    return b.score-a.score;
   });
 
-  document.getElementById('results-count').textContent = leads.length + ' leads';
-
-  const container = document.getElementById('leads-container');
-  if (!leads.length) {
-    container.innerHTML = '<div class="empty"><div class="empty-icon">📡</div><div class="empty-title">' + (_filter === 'all' ? 'No leads yet — click Scan Now' : 'No leads match this filter') + '</div><div class="empty-sub">' + (_filter === 'all' ? 'CDSIA will scan 24 Caribbean queries and surface stressed SMEs' : 'Try a different filter or run a new scan') + '</div></div>';
+  document.getElementById('rcount').textContent=leads.length+' leads';
+  const container=document.getElementById('leads');
+  if(!leads.length){
+    container.innerHTML='<div class="empty"><div class="empty-icon">📡</div><div class="empty-title">'+(_filter==='all'?'407 verified leads loaded — use filters or search':'No leads match this filter')+'</div><div class="empty-sub">'+(_filter==='all'?'Click Scan for New Leads to add live news leads':'Try a different filter')+'</div></div>';
     return;
   }
-
-  container.innerHTML = leads.map(l => renderCard(l, states[l.id]||{})).join('');
-  checkReminders(leads, states);
+  container.innerHTML=leads.map(l=>renderCard(l,states[l.id]||{})).join('');
+  checkReminders(leads,states);
 }
 
-function renderCard(l, state) {
-  const cur = state.status || 'new';
-  const urgClass = l.urgency==='Critical'?'tag-critical':l.urgency==='High'?'tag-high':'tag-medium';
-  const brandTags = (l.brands||[]).map(b => '<span class="tag tag-'+b.toLowerCase()+'">'+b+'</span>').join('');
-  const distressTags = (l.distressType||[]).slice(0,3).map(t => '<span class="tag tag-medium">'+t+'</span>').join('');
-  const cardClass = 'lead-card' + (cur==='won'?' won':cur==='lost'?' lost':'');
-  const sLabel = {new:'Qualify →', contacted:'✓ Contacted', meeting_booked:'📅 Meeting', won:'✓ Won', lost:'✗ Lost'};
-  const qClass = cur!=='new' ? 'qualify-btn qualified' : 'qualify-btn';
-  const pubDate = l.pubDate ? new Date(l.pubDate).toLocaleDateString('en-US',{month:'short',day:'numeric'}) : '';
+function renderCard(l,state){
+  const cur=state.status||'new';
+  const uC=l.urgency==='Critical'?'t-crit':l.urgency==='High'?'t-high':'t-med';
+  const bTags=(l.brands||[]).map(b=>'<span class="tag t-'+b.toLowerCase()+'">'+b+'</span>').join('');
+  const signals=l.signals||l.distressType||[];
+  const sTags=signals.slice(0,3).map(s=>'<span class="tag t-med">'+s+'</span>').join('');
+  const tierTag=l.tier==='live'?'<span class="tag t-live">Live</span>':'<span class="tag t-dir">Verified</span>';
+  const cc='card'+(cur==='won'?' won':cur==='lost'?' lost':'');
+  const sLbl={new:'Qualify →',contacted:'✓ Contacted',meeting_booked:'📅 Meeting',won:'✓ Won',lost:'✗ Lost'};
+  const qC=cur!=='new'?'q-btn done':'q-btn';
+  const pubDate=l.pubDate?new Date(l.pubDate).toLocaleDateString('en-US',{month:'short',day:'numeric'}):'';
+  const srcLink=l.src||l.sourceUrl||'';
 
-  const statusBtns = `<div class="status-row">
-    <span class="status-label">Status:</span>
-    <button class="s-btn ${cur==='contacted'?'s-contacted':''}" onclick="setStatus('${l.id}','contacted')">Contacted</button>
-    <button class="s-btn ${cur==='meeting_booked'?'s-meeting':''}" onclick="setStatus('${l.id}','meeting_booked')">Meeting Booked</button>
-    <button class="s-btn ${cur==='won'?'s-won':''}" onclick="setStatus('${l.id}','won')">Won</button>
-    <button class="s-btn ${cur==='lost'?'s-lost':''}" onclick="setStatus('${l.id}','lost')">Lost</button>
+  const sBtns=`<div class="s-row">
+    <span class="s-lbl">Status:</span>
+    <button class="s-btn ${cur==='contacted'?'s-contacted':''}" onclick="setSt('${l.id}','contacted')">Contacted</button>
+    <button class="s-btn ${cur==='meeting_booked'?'s-meeting':''}" onclick="setSt('${l.id}','meeting_booked')">Meeting Booked</button>
+    <button class="s-btn ${cur==='won'?'s-won':''}" onclick="setSt('${l.id}','won')">Won</button>
+    <button class="s-btn ${cur==='lost'?'s-lost':''}" onclick="setSt('${l.id}','lost')">Lost</button>
   </div>`;
 
-  const waLink = l.contact?.phone?.includes('+')
-    ? `<a class="a-btn wa" href="https://wa.me/${l.contact.phone.replace(/[^0-9]/g,'')}?text=${getWAMsg(l)}" target="_blank">💬 WhatsApp</a>`
-    : `<button class="a-btn wa" onclick="copyWA('${l.id}')">💬 Copy WhatsApp</button>`;
+  const waLink=l.contact?.phone?.includes('+')?
+    `<a class="a-btn wa" href="https://wa.me/${l.contact.phone.replace(/[^0-9]/g,'')}?text=${getWAMsg(l)}" target="_blank">💬 WhatsApp</a>`:
+    `<button class="a-btn wa" onclick="copyWA('${l.id}')">💬 Copy WhatsApp</button>`;
 
-  const actionBtns = `<div class="action-row">
+  const aRow=`<div class="a-row">
     <button class="a-btn em" onclick="openEmail('${l.id}')">✉️ Draft Email</button>
     ${waLink}
     <button class="a-btn" onclick="copyBrief('${l.id}')">📋 Copy Brief</button>
-    ${l.sourceUrl ? `<a class="a-btn" href="${l.sourceUrl}" target="_blank" rel="noopener">🔗 Source ↗</a>` : ''}
+    ${srcLink?`<a class="a-btn" href="${srcLink}" target="_blank" rel="noopener">🔗 Source ↗</a>`:''}
   </div>`;
 
-  const meetingField = cur==='meeting_booked'
-    ? `<input type="date" class="meeting-input" value="${state.meetingDate||''}" onchange="saveMeeting('${l.id}',this.value)"/>`
-    : state.meetingDate ? `<div style="font-size:13px;color:var(--gold);margin-bottom:10px;">📅 Meeting: ${state.meetingDate}</div>` : '';
+  const meetField=cur==='meeting_booked'?
+    `<input type="date" class="meet-in" value="${state.meet||''}" onchange="saveMeet('${l.id}',this.value)"/>`:
+    state.meet?`<div style="font-size:13px;color:var(--gold);margin-bottom:10px;">📅 Meeting: ${state.meet}</div>`:'';
 
-  return `<div class="${cardClass}" id="card-${l.id}">
+  return `<div class="${cc}" id="card-${l.id}">
     <div class="card-top">
-      <div class="card-left">
+      <div>
         <div class="card-org">${l.org}</div>
-        <div class="card-meta">
-          <span>${l.country}</span>
-          <span class="card-meta-sep">·</span>
-          <span>${l.sector}</span>
-          ${pubDate ? '<span class="card-meta-sep">·</span><span>'+pubDate+'</span>' : ''}
-        </div>
+        <div class="card-meta">${l.country} · ${l.sector}${pubDate?' · '+pubDate:''}</div>
       </div>
       <div class="card-score">${l.score}</div>
     </div>
-    <div class="card-tags">
-      <span class="tag ${urgClass}">${l.urgency}</span>
-      ${brandTags}
-      ${l.tier==='live'?'<span class="tag tag-live">Live Scan</span>':''}
-      ${distressTags}
+    <div class="tags">
+      <span class="tag ${uC}">${l.urgency}</span>
+      ${bTags}${tierTag}${sTags}
     </div>
-    <div class="card-summary">${l.summary}</div>
     <div class="card-pitch"><strong>Pitch:</strong> ${l.pitch}</div>
-    <div class="card-footer">
-      ${l.contact?.name ? '<div class="card-contact">'+l.contact.name+'</div>' : ''}
-      ${l.contact?.email ? '<div class="card-contact"><a href="mailto:'+l.contact.email+'">'+l.contact.email+'</a></div>' : ''}
-      <button class="${qClass}" onclick="toggleFollowUp('${l.id}')">${sLabel[cur]||'Qualify →'}</button>
+    <div class="card-foot">
+      ${l.contact?.name?'<div class="card-contact">'+l.contact.name+'</div>':''}
+      ${l.contact?.email?'<div class="card-contact" style="color:var(--cyan);">'+l.contact.email+'</div>':''}
+      <button class="${qC}" onclick="toggleFup('${l.id}')">${sLbl[cur]||'Qualify →'}</button>
     </div>
-    <div class="followup ${cur!=='new'?'open':''}" id="fup-${l.id}">
-      ${statusBtns}
-      ${actionBtns}
-      ${meetingField}
+    <div class="fup ${cur!=='new'?'on':''}" id="fup-${l.id}">
+      ${sBtns}${aRow}${meetField}
       <textarea class="notes" placeholder="Notes — saved automatically..." onblur="saveNotes('${l.id}',this.value)">${state.notes||''}</textarea>
     </div>
   </div>`;
 }
 
-function updateStats() {
-  const leads = allLeads();
-  const states = loadStates();
-  document.getElementById('s-total').textContent = leads.length;
-  document.getElementById('s-critical').textContent = leads.filter(l=>l.urgency==='Critical').length;
-  document.getElementById('s-pipeline').textContent = Object.values(states).filter(s=>['contacted','meeting_booked'].includes(s.status)).length;
-  document.getElementById('s-won').textContent = Object.values(states).filter(s=>s.status==='won').length;
-  document.getElementById('s-live').textContent = leads.filter(l=>l.tier==='live').length;
+function updateStats(){
+  const leads=allLeads();
+  const states=loadSt();
+  document.getElementById('s-total').textContent=leads.length;
+  document.getElementById('s-crit').textContent=leads.filter(l=>l.urgency==='Critical').length;
+  document.getElementById('s-pipe').textContent=Object.values(states).filter(s=>['contacted','meeting_booked'].includes(s.status)).length;
+  document.getElementById('s-won').textContent=Object.values(states).filter(s=>s.status==='won').length;
+  document.getElementById('s-live').textContent=loadSc().length;
 }
 
-function checkReminders(leads, states) {
-  const now = Date.now(), seven = 7*24*60*60*1000;
-  const overdue = leads.filter(l => {
-    const s = states[l.id];
-    return s?.status==='contacted' && s.contactedAt && now-new Date(s.contactedAt).getTime()>seven;
-  }).map(l=>l.org);
-  const banner = document.getElementById('banner');
-  if (overdue.length) {
-    document.getElementById('banner-text').textContent = 'Follow-up overdue: ' + overdue.slice(0,3).join(', ') + (overdue.length>3?' +'+(overdue.length-3)+' more':'');
-    banner.classList.add('visible');
-  } else { banner.classList.remove('visible'); }
+function checkReminders(leads,states){
+  const now=Date.now(),seven=7*24*60*60*1000;
+  const od=leads.filter(l=>{const s=states[l.id];return s?.status==='contacted'&&s.contactedAt&&now-new Date(s.contactedAt).getTime()>seven;}).map(l=>l.org);
+  const b=document.getElementById('banner');
+  if(od.length){document.getElementById('banner-txt').textContent='Follow-up overdue: '+od.slice(0,3).join(', ')+(od.length>3?' +'+(od.length-3)+' more':'');b.classList.add('on');}
+  else b.classList.remove('on');
 }
 
-// ================================================================
 // FOLLOW-UP
-// ================================================================
-function toggleFollowUp(id) {
-  const state = getState(id);
-  if (state.status === 'new') {
-    saveState(id, {status:'contacted', contactedAt:new Date().toISOString()});
-    toast('Lead qualified ✓');
-  }
-  const panel = document.getElementById('fup-'+id);
-  if (panel) panel.classList.toggle('open');
-  render(); updateStats();
+function toggleFup(id){
+  const st=getSt(id);
+  if(st.status==='new'){saveSt(id,{status:'contacted',contactedAt:new Date().toISOString()});toast('Lead qualified ✓');}
+  const p=document.getElementById('fup-'+id);
+  if(p) p.classList.toggle('on');
+  render();updateStats();
 }
 
-function setStatus(id, status) {
-  const patch = {status};
-  if (status==='contacted') patch.contactedAt = new Date().toISOString();
-  if (status==='won'||status==='lost') patch.closedAt = new Date().toISOString();
-  saveState(id, patch);
-  render(); updateStats();
-  const labels = {contacted:'Marked Contacted',meeting_booked:'Meeting Booked 📅',won:'Closed Won! 🎉',lost:'Marked Lost'};
-  toast(labels[status]||'Updated');
+function setSt(id,status){
+  const p={status};
+  if(status==='contacted') p.contactedAt=new Date().toISOString();
+  if(status==='won'||status==='lost') p.closedAt=new Date().toISOString();
+  saveSt(id,p);render();updateStats();
+  const lbl={contacted:'Marked Contacted',meeting_booked:'Meeting Booked 📅',won:'Closed Won! 🎉',lost:'Marked Lost'};
+  toast(lbl[status]||'Updated');
 }
 
-function saveNotes(id, val) { saveState(id, {notes:val}); }
-function saveMeeting(id, val) { saveState(id, {meetingDate:val}); render(); toast('Meeting date saved'); }
+function saveNotes(id,val){saveSt(id,{notes:val});}
+function saveMeet(id,val){saveSt(id,{meet:val});render();toast('Meeting date saved');}
 
 // EMAIL
-let _emailId = null;
-function openEmail(id) {
-  _emailId = id;
-  const lead = allLeads().find(l=>l.id===id);
-  if (!lead) return;
-  document.getElementById('e-to').value = lead.contact?.email||'';
-  document.getElementById('e-subject').value = lead.brands.includes('BLU')
-    ? 'Get More Customers in 30 Days — BluWav Growth Sprint'
-    : 'Stratiix OS — Built for ' + lead.org;
-  document.getElementById('e-body').value = 'Hi,\n\n' + getEmailBody(lead) + '\n\nAndrea Tanguay\nFounder & Executive Director, BluWav Group\nStratiix | BluWav Growth | Qualia Systems | Credii\n\nBook a call: bluwavgrowth.com';
-  document.getElementById('email-modal').classList.add('open');
+let _eid=null;
+function openEmail(id){
+  _eid=id;
+  const lead=allLeads().find(l=>l.id===id);
+  if(!lead) return;
+  document.getElementById('e-to').value=lead.contact?.email||'';
+  document.getElementById('e-sub').value=lead.brands.includes('BLU')?'Get More Customers in 30 Days — BluWav Growth Sprint':'Stratiix OS — Built for '+lead.org;
+  document.getElementById('e-body').value='Hi,\n\n'+(lead.email_body||getEmailBody(lead.brands,lead.org))+'\n\nAndrea Tanguay\nFounder & Executive Director, BluWav Group\nStratiix | BluWav Growth | Qualia Systems | Credii\n\nBook a call: bluwavgrowth.com';
+  document.getElementById('emodal').classList.add('on');
 }
-function closeEmail() { document.getElementById('email-modal').classList.remove('open'); _emailId=null; }
-function sendEmail() {
-  const to = document.getElementById('e-to').value;
-  const sub = encodeURIComponent(document.getElementById('e-subject').value);
-  const body = encodeURIComponent(document.getElementById('e-body').value);
+function closeEmail(){document.getElementById('emodal').classList.remove('on');_eid=null;}
+function sendEmail(){
+  const to=document.getElementById('e-to').value;
+  const sub=encodeURIComponent(document.getElementById('e-sub').value);
+  const body=encodeURIComponent(document.getElementById('e-body').value);
   window.open('mailto:'+to+'?subject='+sub+'&body='+body);
-  if (_emailId) saveState(_emailId, {lastAction:'email'});
+  if(_eid) saveSt(_eid,{lastAction:'email'});
   closeEmail();
 }
-function copyEmail() {
-  const text = 'To: '+document.getElementById('e-to').value+'\nSubject: '+document.getElementById('e-subject').value+'\n\n'+document.getElementById('e-body').value;
-  navigator.clipboard.writeText(text).then(()=>toast('Email copied to clipboard'));
+function copyEmail(){
+  const text='To: '+document.getElementById('e-to').value+'\nSubject: '+document.getElementById('e-sub').value+'\n\n'+document.getElementById('e-body').value;
+  navigator.clipboard.writeText(text).then(()=>toast('Email copied'));
 }
-function copyWA(id) {
-  const lead = allLeads().find(l=>l.id===id);
-  if (!lead) return;
+function copyWA(id){
+  const lead=allLeads().find(l=>l.id===id);
+  if(!lead) return;
   navigator.clipboard.writeText(decodeURIComponent(getWAMsg(lead))).then(()=>toast('WhatsApp message copied'));
 }
-function copyBrief(id) {
-  const lead = allLeads().find(l=>l.id===id);
-  if (!lead) return;
-  const state = getState(id);
-  const text = 'LEAD BRIEF — CDSIA\n'+'─'.repeat(40)+'\nOrg: '+lead.org+'\nCountry: '+lead.country+'\nScore: '+lead.score+' | Urgency: '+lead.urgency+'\nBrands: '+(lead.brands||[]).join(', ')+'\nSignals: '+(lead.distressType||[]).join(', ')+'\nSource: '+(lead.sourceUrl||'-')+'\nStatus: '+(state.status||'new')+'\nNotes: '+(state.notes||'-')+'\n'+'─'.repeat(40)+'\nPITCH: '+lead.pitch;
+function copyBrief(id){
+  const lead=allLeads().find(l=>l.id===id);
+  if(!lead) return;
+  const st=getSt(id);
+  const text='LEAD BRIEF\n'+'─'.repeat(36)+'\nOrg: '+lead.org+'\nCountry: '+lead.country+'\nSector: '+lead.sector+'\nScore: '+lead.score+' | Urgency: '+lead.urgency+'\nBrands: '+(lead.brands||[]).join(', ')+'\nSignals: '+(lead.signals||lead.distressType||[]).join(', ')+'\nSource: '+(lead.src||lead.sourceUrl||'-')+'\nStatus: '+(st.status||'new')+'\nNotes: '+(st.notes||'-')+'\n'+'─'.repeat(36)+'\nPITCH: '+lead.pitch;
   navigator.clipboard.writeText(text).then(()=>toast('Brief copied'));
 }
 
 // TOAST + CLOCK
-function toast(msg) {
-  const el = document.createElement('div');
-  el.className = 'toast'; el.textContent = msg;
-  document.body.appendChild(el);
-  setTimeout(()=>el.remove(), 3000);
-}
-function updateClock() {
-  document.getElementById('clock').textContent = new Date().toLocaleString('en-US',{month:'short',day:'numeric',hour:'numeric',minute:'2-digit',hour12:true})+' EDT';
-}
+function toast(msg){const el=document.createElement('div');el.className='toast';el.textContent=msg;document.body.appendChild(el);setTimeout(()=>el.remove(),3000);}
+function updateClock(){document.getElementById('clock').textContent=new Date().toLocaleString('en-US',{month:'short',day:'numeric',hour:'numeric',minute:'2-digit',hour12:true})+' EDT';}
 
 // INIT
 updateClock();
-setInterval(updateClock, 60000);
+setInterval(updateClock,60000);
 render();
 updateStats();
 </script>
