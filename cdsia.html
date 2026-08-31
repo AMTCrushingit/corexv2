@@ -91,7 +91,7 @@ body{font-family:'Inter',sans-serif;background:var(--bg);color:var(--text);min-h
 .t-med{background:rgba(142,142,158,0.1);color:var(--text-2);}
 .t-str{background:var(--purple-dim);color:var(--purple);}
 .t-blu{background:var(--cyan-dim);color:var(--cyan);}
-.t-crm{background:var(--green-dim);color:var(--green);}
+
 .t-live{background:rgba(0,229,255,0.05);color:var(--cyan);border:1px solid rgba(0,229,255,0.15);}
 .t-dir{background:rgba(155,127,212,0.08);color:var(--purple);border:1px solid rgba(155,127,212,0.15);}
 .card-summary{font-size:13px;color:var(--text-2);line-height:1.65;margin-bottom:12px;}
@@ -219,7 +219,7 @@ body{font-family:'Inter',sans-serif;background:var(--bg);color:var(--text);min-h
         <button class="ftab on" onclick="setF('all',this)">All</button>
         <button class="ftab" onclick="setF('str',this)">Stratiix</button>
         <button class="ftab" onclick="setF('blu',this)">BluWav</button>
-        <button class="ftab" onclick="setF('crm',this)">CRM</button>
+        
         <button class="ftab" onclick="setF('live',this)">Live Scans</button>
         <button class="ftab" onclick="setF('pipeline',this)">Pipeline</button>
         <button class="ftab" onclick="setF('won',this)">Won</button>
@@ -305,16 +305,17 @@ function scoreScan(title,desc){
 function scanBrands(found,desc){
   const t=(found.join(' ')+' '+desc).toLowerCase();
   const b=[];
-  if(/hiring|scaling|restructur|governance|project.management|overwhelm|bottleneck|operations|chaos|workflow|systems|capacity|backlog|transform/.test(t)) b.push('STR');
-  if(/visibility|marketing|customers|digital|social.media|brand|online|website|growth|sales|revenue|market|advertis|promotion|awareness/.test(t)) b.push('BLU');
-  if(/crm|client.management|pipeline|leads|sales.tracking|customer.relationship|contacts|follow.up/.test(t)) b.push('CRM');
+  // STR = Stratiix: founder dependency, scaling complexity, governance gaps
+  if(/hiring|scaling|restructur|governance|project.management|overwhelm|bottleneck|operations|chaos|workflow|systems|capacity|backlog|transform|founder|dependency|accountability/.test(t)) b.push('STR');
+  // BLU = BluWav: customer acquisition, visibility, marketing
+  if(/visibility|marketing|customers|digital|social.media|brand|online|website|sales|revenue|market|advertis|promotion|awareness|bookings|enrolment/.test(t)) b.push('BLU');
   if(!b.length) b.push('STR');
   return b;
 }
 
 function scanSummary(org,country,brands,found,desc){
   const f=found.join(' ').toLowerCase();
-  const hasBLU=brands.includes('BLU'),hasSTR=brands.includes('STR'),hasCRM=brands.includes('CRM');
+  const hasBLU=brands.includes('BLU'),hasSTR=brands.includes('STR');
   // Pain point — specific to signal
   let pain='';
   if(f.includes('hiring')||f.includes('recruit'))
@@ -336,23 +337,22 @@ function scanSummary(org,country,brands,found,desc){
   // Solution fit
   let fit='';
   if(hasBLU&&hasSTR)
-    fit='Stratiix OS installs the operating system (governance, accountability, team rhythms). BluWav Growth Sprint ($2,500) builds the customer acquisition engine in 30 days. Both are needed — and both are a strong fit.';
+    fit='Double fit: Stratiix Transformation OS removes founder dependency and builds organizational capability. BluWav Growth Sprint ($2,500) gets more customers in 30 days. Both are needed.';
   else if(hasBLU)
-    fit='BluWav Growth Sprint ($2,500) is the right entry point — a clear growth roadmap, visibility improvements, and a repeatable customer acquisition system delivered in 30 days.';
-  else if(hasCRM)
-    fit='Qualia CRM tracks the client pipeline and ensures no lead falls through the cracks. Stratiix OS adds the operating rhythms that make the CRM actually work — accountability, follow-up culture, and team coordination.';
+    fit='BluWav Growth Sprint ($2,500) — a clear growth roadmap, visibility improvements, and a repeatable customer acquisition system in 30 days.';
   else
-    fit='Stratiix OS is the right solution — it installs the governance layer, operating rhythms, and accountability systems that Caribbean SMEs need to scale without chaos. Entry point: free 45-minute Stratiix Diagnostic.';
+    fit='Stratiix Transformation OS diagnoses what is limiting performance and builds the organizational capability to scale beyond the founder. Entry point: free 45-minute Stratiix Diagnostic.';
   const ctx=desc.replace(/<[^>]+>/g,'').substring(0,120).trim();
   return pain+(ctx?' Context: "'+ctx+(ctx.length>=120?'..."':'"'):'')+(ctx?' ':' ')+fit;
 }
 
 function scanPitch(brands,found){
   const hasBLU=brands.includes('BLU'),hasSTR=brands.includes('STR');
-  if(hasBLU&&hasSTR) return 'Double fit: BluWav Growth Sprint ($2,500) to get more customers in 30 days + Stratiix OS for operational systems.';
-  if(hasBLU) return 'Lead with: "Get more customers in the next 30 days — BluWav Growth Sprint, $2,500."';
-  if(found.includes('hiring')||found.includes('recruit')) return 'Lead with: "Growing teams need operating systems — Stratiix installs the governance layer before chaos sets in."';
-  return 'Lead with: "Stratiix Diagnostic — free 45-min session to map your operational gaps."';
+  if(hasBLU&&hasSTR) return 'Double fit: Stratiix Transformation OS removes founder dependency. BluWav Growth Sprint ($2,500) gets more customers in 30 days.';
+  if(hasBLU) return 'Lead with: "Get more customers in the next 30 days — BluWav Growth Sprint, $2,500. Guaranteed visibility improvements."';
+  if(found.includes('hiring')||found.includes('recruit')) return 'Lead with: "Hiring fast without building organizational capability creates founder dependency. Stratiix diagnoses and fixes that. Free 45-min Diagnostic."';
+  if(found.includes('restructur')) return 'Lead with: "Restructuring without changing the operating system just resets the clock. Stratiix builds the capability to make the change stick. Free Diagnostic."';
+  return 'Lead with: "Stratiix Diagnostic — free 45-minute session to identify exactly what is limiting your organization's performance. No commitment."';
 }
 
 let _scanning=false;
@@ -511,7 +511,7 @@ function render(){
 
   if(_filter==='str') leads=leads.filter(l=>l.brands.includes('STR'));
   else if(_filter==='blu') leads=leads.filter(l=>l.brands.includes('BLU'));
-  else if(_filter==='crm') leads=leads.filter(l=>l.brands.includes('CRM'));
+
   else if(_filter==='live') leads=leads.filter(l=>l.tier==='live');
   else if(_filter==='critical') leads=leads.filter(l=>l.urgency==='Critical');
   else if(_filter==='pipeline') leads=leads.filter(l=>['contacted','meeting_booked'].includes(states[l.id]?.status));
