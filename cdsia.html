@@ -119,7 +119,6 @@ body{font-family:'Inter',sans-serif;background:var(--bg);color:var(--text);min-h
 .a-btn:hover{border-color:var(--cyan);color:var(--cyan);}
 .a-btn.wa:hover{border-color:#25D366;color:#25D366;}
 .a-btn.em:hover{border-color:var(--gold);color:var(--gold);}
-.a-btn.apollo:hover{border-color:#7B68EE;color:#7B68EE;}
 .notes{width:100%;padding:9px 13px;background:var(--bg-surface);border:1px solid var(--border);border-radius:var(--r);color:var(--text);font-family:'Inter',sans-serif;font-size:13px;line-height:1.5;outline:none;resize:vertical;min-height:48px;}
 .notes:focus{border-color:var(--cyan);}
 .notes::placeholder{color:var(--text-3);}
@@ -168,13 +167,9 @@ body{font-family:'Inter',sans-serif;background:var(--bg);color:var(--text);min-h
     <div class="modal-lbl">Subject</div><input class="modal-in" id="e-sub" type="text"/>
     <div class="modal-lbl">Message</div><textarea class="modal-ta" id="e-body"></textarea>
     <div class="modal-acts">
-      <button class="m-send" onclick="copyEmail()">📋 Copy Email</button>
-      <button class="m-copy" onclick="sendEmail()">Open Email App</button>
+      <button class="m-send" onclick="sendEmail()">Open in Email App</button>
+      <button class="m-copy" onclick="copyEmail()">Copy All</button>
       <button class="m-copy" onclick="closeEmail()">Cancel</button>
-    </div>
-    <div style="font-size:11px;color:var(--text-3);margin-top:10px;">
-      💡 <strong>Copy Email</strong> copies subject + body to clipboard. Paste into Gmail, Outlook, or any email app.
-      <strong>Open Email App</strong> requires a default mail client configured on your device.
     </div>
   </div>
 </div>
@@ -578,11 +573,9 @@ function renderCard(l,state){
     `<a class="a-btn wa" href="https://wa.me/${l.contact.phone.replace(/[^0-9]/g,'')}?text=${getWAMsg(l)}" target="_blank">💬 WhatsApp</a>`:
     `<button class="a-btn wa" onclick="copyWA('${l.id}')">💬 Copy WhatsApp</button>`;
 
-  const apolloUrl='https://app.apollo.io/#/people?organizationName='+encodeURIComponent(l.org)+'&organizationLocations='+encodeURIComponent(l.country.replace(/[^a-zA-Z &]/g,'').trim());
   const aRow=`<div class="a-row">
     <button class="a-btn em" onclick="openEmail('${l.id}')">✉️ Draft Email</button>
     ${waLink}
-    <a class="a-btn apollo" href="${apolloUrl}" target="_blank" rel="noopener" title="Find contact on Apollo.io">🔍 Find Contact</a>
     <button class="a-btn" onclick="copyBrief('${l.id}')">📋 Copy Brief</button>
     ${srcLink?`<a class="a-btn" href="${srcLink}" target="_blank" rel="noopener">🔗 Source ↗</a>`:''}
   </div>`;
@@ -680,15 +673,11 @@ function sendEmail(){
   const to=document.getElementById('e-to').value;
   const sub=encodeURIComponent(document.getElementById('e-sub').value);
   const body=encodeURIComponent(document.getElementById('e-body').value);
-  // Create a hidden anchor and click it — most reliable cross-browser mailto
-  const a=document.createElement('a');
-  a.href='mailto:'+to+'?subject='+sub+'&body='+body;
-  a.style.display='none';
-  document.body.appendChild(a);
-  a.click();
-  document.body.removeChild(a);
+  const mailto='mailto:'+to+'?subject='+sub+'&body='+body;
+  // Use location.href for reliable mailto handling
+  window.location.href=mailto;
   if(_eid) saveSt(_eid,{lastAction:'email'});
-  toast('Opening email app...');
+  setTimeout(()=>closeEmail(),500);
 }
 function copyEmail(){
   const text='To: '+document.getElementById('e-to').value+'\nSubject: '+document.getElementById('e-sub').value+'\n\n'+document.getElementById('e-body').value;
