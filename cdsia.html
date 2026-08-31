@@ -34,7 +34,7 @@ body{font-family:'Inter',sans-serif;background:var(--bg);color:var(--text);min-h
 
 /* STATS */
 .stats{display:grid;grid-template-columns:repeat(5,1fr);border-bottom:1px solid var(--border);}
-.stat{background:var(--bg-card);padding:14px 20px;border-right:1px solid var(--border);position:relative;overflow:hidden;}
+.stat{background:var(--bg-card);padding:14px 20px;border-right:1px solid var(--border);position:relative;overflow:hidden;cursor:pointer;transition:background 0.15s;}.stat:hover{background:var(--bg-surface);}
 .stat:last-child{border-right:none;}
 .stat::before{content:'';position:absolute;top:0;left:0;right:0;height:2px;}
 .s1::before{background:var(--cyan)}.s2::before{background:var(--red)}.s3::before{background:var(--gold)}.s4::before{background:var(--green)}.s5::before{background:var(--purple)}
@@ -191,11 +191,11 @@ body{font-family:'Inter',sans-serif;background:var(--bg);color:var(--text);min-h
 
 <!-- STATS -->
 <div class="stats">
-  <div class="stat s1"><div class="stat-lbl">Total Leads</div><div class="stat-val" id="s-total">0</div><div class="stat-sub">Verified + live</div></div>
-  <div class="stat s2"><div class="stat-lbl">Critical</div><div class="stat-val" id="s-crit">0</div><div class="stat-sub">Act now</div></div>
-  <div class="stat s3"><div class="stat-lbl">In Pipeline</div><div class="stat-val" id="s-pipe">0</div><div class="stat-sub">Active pursuit</div></div>
-  <div class="stat s4"><div class="stat-lbl">Closed Won</div><div class="stat-val" id="s-won">0</div><div class="stat-sub">Revenue closed</div></div>
-  <div class="stat s5"><div class="stat-lbl">Live Scans</div><div class="stat-val" id="s-live">0</div><div class="stat-sub">From news</div></div>
+  <div class="stat s1" onclick="setStatFilter('all')" title="Show all leads"><div class="stat-lbl">Total Leads</div><div class="stat-val" id="s-total">0</div><div class="stat-sub">Click to show all</div></div>
+  <div class="stat s2" onclick="setStatFilter('critical')" title="Show critical leads"><div class="stat-lbl">Critical</div><div class="stat-val" id="s-crit">0</div><div class="stat-sub">Click to filter</div></div>
+  <div class="stat s3" onclick="setStatFilter('pipeline')" title="Show pipeline leads"><div class="stat-lbl">In Pipeline</div><div class="stat-val" id="s-pipe">0</div><div class="stat-sub">Click to filter</div></div>
+  <div class="stat s4" onclick="setStatFilter('won')" title="Show won leads"><div class="stat-lbl">Closed Won</div><div class="stat-val" id="s-won">0</div><div class="stat-sub">Click to filter</div></div>
+  <div class="stat s5" onclick="setStatFilter('live')" title="Show live scan leads"><div class="stat-lbl">Live Scans</div><div class="stat-val" id="s-live">0</div><div class="stat-sub">Click to filter</div></div>
 </div>
 
 <!-- MAIN -->
@@ -460,13 +460,47 @@ function getWAMsg(lead){
 // ================================================================
 let _filter='all';
 
-function allLeads(){return[...DIRECTORY_LEADS,...loadSc()];}
+function allLeads(){
+  const raw=[...DIRECTORY_LEADS,...loadSc()];
+  // Deduplicate: normalize org name (remove punctuation, lowercase, first 22 chars)
+  const seen=new Set();
+  return raw.filter(l=>{
+    const key=l.org.toLowerCase()
+      .replace(/[^a-z0-9]/g,'')  // remove all non-alphanumeric
+      .substring(0,22);
+    if(seen.has(key)) return false;
+    seen.add(key);
+    return true;
+  });
+}
 
 function setF(f,btn){
   _filter=f;
   document.querySelectorAll('.ftab').forEach(b=>b.classList.remove('on'));
   if(btn) btn.classList.add('on');
   render();
+}
+
+function setStatFilter(f){
+  // Map stat filter names to tab filter names
+  const map={all:'all',critical:'critical',pipeline:'pipeline',won:'won',live:'live'};
+  _filter=map[f]||'all';
+  // Update tab UI
+  document.querySelectorAll('.ftab').forEach(b=>b.classList.remove('on'));
+  const tabMap={all:0,critical:1,pipeline:5,won:6,live:4};
+  const tabs=document.querySelectorAll('.ftab');
+  // Find matching tab by text
+  tabs.forEach(b=>{
+    const txt=b.textContent.toLowerCase();
+    if(f==='all'&&txt==='all') b.classList.add('on');
+    else if(f==='pipeline'&&txt.includes('pipeline')) b.classList.add('on');
+    else if(f==='won'&&txt==='won') b.classList.add('on');
+    else if(f==='live'&&txt.includes('live')) b.classList.add('on');
+  });
+  render();
+  // Scroll to leads
+  document.getElementById('leads').scrollIntoView({behavior:'smooth',block:'start'});
+  toast('Showing '+f+' leads');
 }
 
 function render(){
@@ -479,6 +513,7 @@ function render(){
   else if(_filter==='blu') leads=leads.filter(l=>l.brands.includes('BLU'));
   else if(_filter==='crm') leads=leads.filter(l=>l.brands.includes('CRM'));
   else if(_filter==='live') leads=leads.filter(l=>l.tier==='live');
+  else if(_filter==='critical') leads=leads.filter(l=>l.urgency==='Critical');
   else if(_filter==='pipeline') leads=leads.filter(l=>['contacted','meeting_booked'].includes(states[l.id]?.status));
   else if(_filter==='won') leads=leads.filter(l=>states[l.id]?.status==='won');
 
@@ -531,6 +566,7 @@ function renderCard(l,state){
     <button class="s-btn ${cur==='meeting_booked'?'s-meeting':''}" onclick="setSt('${l.id}','meeting_booked')">Meeting Booked</button>
     <button class="s-btn ${cur==='won'?'s-won':''}" onclick="setSt('${l.id}','won')">Won</button>
     <button class="s-btn ${cur==='lost'?'s-lost':''}" onclick="setSt('${l.id}','lost')">Lost</button>
+    ${cur!=='new'?`<button class="s-btn" style="margin-left:auto;border-color:var(--text-3);font-size:11px;" onclick="resetSt('${l.id}')">↩ Reset</button>`:''}
   </div>`;
 
   const waLink=l.contact?.phone?.includes('+')?
@@ -608,6 +644,14 @@ function setSt(id,status){
   saveSt(id,p);render();updateStats();
   const lbl={contacted:'Marked Contacted',meeting_booked:'Meeting Booked 📅',won:'Closed Won! 🎉',lost:'Marked Lost'};
   toast(lbl[status]||'Updated');
+}
+
+function resetSt(id){
+  const all=loadSt();
+  delete all[id];
+  localStorage.setItem(LS_ST,JSON.stringify(all));
+  render();updateStats();
+  toast('Lead reset to unqualified');
 }
 
 function saveNotes(id,val){saveSt(id,{notes:val});}
