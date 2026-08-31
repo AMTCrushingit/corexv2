@@ -258,18 +258,30 @@ function saveSc(l){localStorage.setItem(LS_SC,JSON.stringify(l));}
 // ================================================================
 // SCANNER — Caribbean News Sources
 // ================================================================
+const GN = 'https://news.google.com/rss/search?hl=en-US&gl=US&ceid=US:en&q=';
 const NEWS_SOURCES = [
-  {name:'Trinidad Newsday',url:'https://newsday.co.tt/feed/',country:'Trinidad & Tobago',flag:'🇹🇹'},
-  {name:'Jamaica Observer',url:'https://www.jamaicaobserver.com/feed/',country:'Jamaica',flag:'🇯🇲'},
-  {name:'Jamaica Gleaner',url:'https://jamaica-gleaner.com/feed/rss.xml',country:'Jamaica',flag:'🇯🇲'},
-  {name:'Jamaica Information Service',url:'https://jis.gov.jm/feed/',country:'Jamaica',flag:'🇯🇲'},
-  {name:'Kaieteur News',url:'https://www.kaieteurnewsonline.com/feed/',country:'Guyana',flag:'🇬🇾'},
-  {name:'Guyana Chronicle',url:'https://guyanachronicle.com/feed/',country:'Guyana',flag:'🇬🇾'},
-  {name:'iNews Guyana',url:'https://www.inewsguyana.com/feed/',country:'Guyana',flag:'🇬🇾'},
-  {name:'Demerara Waves',url:'https://demerarawaves.com/feed/',country:'Guyana',flag:'🇬🇾'},
-  {name:'Barbados Today',url:'https://barbadostoday.bb/feed/',country:'Barbados',flag:'🇧🇧'},
-  {name:'The Tribune Bahamas',url:'https://www.tribune242.com/rss/headlines/',country:'Bahamas',flag:'🇧🇸'},
-  {name:'Antigua Observer',url:'https://antiguaobserver.com/feed/',country:'Antigua',flag:'🇦🇬'},
+  // Trinidad & Tobago — direct RSS
+  {name:'Trinidad Newsday',url:'https://newsday.co.tt/feed/',country:'Trinidad & Tobago',flag:'🇹🇹',mode:'direct'},
+  // Trinidad & Tobago — via Google News site: filter
+  {name:'Trinidad Express',url:GN+encodeURIComponent('site:trinidadexpress.com business'),country:'Trinidad & Tobago',flag:'🇹🇹',mode:'gnews'},
+  {name:'Trinidad Guardian',url:GN+encodeURIComponent('site:guardian.co.tt business'),country:'Trinidad & Tobago',flag:'🇹🇹',mode:'gnews'},
+  // Jamaica
+  {name:'Jamaica Observer',url:'https://www.jamaicaobserver.com/feed/',country:'Jamaica',flag:'🇯🇲',mode:'direct'},
+  {name:'Jamaica Gleaner',url:'https://jamaica-gleaner.com/feed/rss.xml',country:'Jamaica',flag:'🇯🇲',mode:'direct'},
+  {name:'Jamaica Information',url:'https://jis.gov.jm/feed/',country:'Jamaica',flag:'🇯🇲',mode:'rss2json'},
+  // Guyana
+  {name:'Kaieteur News',url:'https://www.kaieteurnewsonline.com/feed/',country:'Guyana',flag:'🇬🇾',mode:'direct'},
+  {name:'Guyana Chronicle',url:GN+encodeURIComponent('site:guyanachronicle.com business'),country:'Guyana',flag:'🇬🇾',mode:'gnews'},
+  {name:'iNews Guyana',url:'https://www.inewsguyana.com/feed/',country:'Guyana',flag:'🇬🇾',mode:'direct'},
+  {name:'Demerara Waves',url:'https://demerarawaves.com/feed/',country:'Guyana',flag:'🇬🇾',mode:'direct'},
+  // Barbados
+  {name:'Barbados Today',url:'https://barbadostoday.bb/feed/',country:'Barbados',flag:'🇧🇧',mode:'rss2json'},
+  // Bahamas
+  {name:'The Tribune Bahamas',url:'https://www.tribune242.com/rss/headlines/',country:'Bahamas',flag:'🇧🇸',mode:'direct'},
+  {name:'Bahamas Journal',url:GN+encodeURIComponent('site:thebahamasjournal.com business'),country:'Bahamas',flag:'🇧🇸',mode:'gnews'},
+  {name:'Nassau Guardian',url:GN+encodeURIComponent('site:thenassauguardian.com business'),country:'Bahamas',flag:'🇧🇸',mode:'gnews'},
+  // Other Caribbean
+  {name:'Antigua Observer',url:'https://antiguaobserver.com/feed/',country:'Antigua',flag:'🇦🇬',mode:'rss2json'},
 ];
 
 const BIZ_KEYWORDS = ['business','compan','hire','hiring','expand','launch','invest','growth','entrepreneur','startup','open','staff','employ','contract','project','revenue','market','digital','technolog','consult','service'];
@@ -302,21 +314,37 @@ function scanBrands(found,desc){
 
 function scanSummary(org,country,brands,found,desc){
   const f=found.join(' ').toLowerCase();
-  const hasBLU=brands.includes('BLU'),hasSTR=brands.includes('STR');
-  let why='';
-  if(f.includes('hiring')||f.includes('recruit')) why='Actively hiring — scaling faster than their systems can handle. ';
-  else if(f.includes('restructur')) why='Going through restructuring — the perfect moment to install the right operating system. ';
-  else if(f.includes('struggling')||f.includes('crisis')) why='Showing distress signals — operational or financial challenges that need immediate attention. ';
-  else if(f.includes('expanding')||f.includes('new office')) why='Expanding operations — new locations or services without governance systems create coordination chaos. ';
-  else if(f.includes('launch')) why='Recently launched — the ideal moment to build the right systems from day one. ';
-  else if(f.includes('marketing')||f.includes('visibility')) why='Focused on growth but likely lacks a structured customer acquisition system. ';
-  else why='Caribbean SME showing growth signals that indicate a need for operational support. ';
+  const hasBLU=brands.includes('BLU'),hasSTR=brands.includes('STR'),hasCRM=brands.includes('CRM');
+  // Pain point — specific to signal
+  let pain='';
+  if(f.includes('hiring')||f.includes('recruit'))
+    pain='This business is actively hiring — a classic scaling trap. Adding headcount without installing operating systems first leads to coordination failures, inconsistent client delivery, and a founder who becomes the bottleneck for every decision. Most Caribbean SMEs hit this wall between 8-15 staff.';
+  else if(f.includes('restructur'))
+    pain='This business is restructuring — which means existing systems have already broken down. Restructuring without installing a proper operating system just resets the clock on the same problems. The window to get it right is now.';
+  else if(f.includes('struggling')||f.includes('crisis'))
+    pain='This business is showing active distress signals. In most Caribbean SMEs, operational chaos — not market conditions — is the root cause. No clear accountability, no operating rhythms, no visibility into what is actually happening day to day.';
+  else if(f.includes('expanding')||f.includes('new office'))
+    pain='This business is expanding — opening new locations or adding service lines without governance systems in place. Every expansion multiplies coordination complexity. Without Stratiix OS, the founder ends up managing chaos instead of growth.';
+  else if(f.includes('launch'))
+    pain='This business recently launched. The habits and systems built in the first 12 months determine whether a Caribbean SME scales or stalls. Most founders skip the operating system and pay for it later with chaos, staff turnover, and lost clients.';
+  else if(f.includes('marketing')||f.includes('visibility')||f.includes('customers'))
+    pain='This business is focused on getting more customers — but without a structured acquisition system, growth is inconsistent and unpredictable. Most Caribbean SMEs rely on referrals and word-of-mouth with no repeatable process for winning new business.';
+  else if(f.includes('investment'))
+    pain='This business has received investment or funding — which means scaling pressure is incoming. Capital without operational systems creates expensive chaos. Stratiix OS ensures the business can actually deploy the capital effectively.';
+  else
+    pain='This Caribbean SME is at a growth inflection point. Without the right operating systems in place, scaling creates more problems than it solves — staff confusion, client dissatisfaction, and founder burnout.';
+  // Solution fit
   let fit='';
-  if(hasBLU&&hasSTR) fit='Double fit: BluWav Growth Sprint ($2,500) to get more customers in 30 days + Stratiix OS for operational systems.';
-  else if(hasBLU) fit='BluWav Growth Sprint: get more customers in 30 days, starting at $2,500.';
-  else fit='Stratiix OS: install the governance layer and operating rhythms before scaling chaos sets in.';
-  const ctx=desc.replace(/<[^>]+>/g,'').substring(0,150).trim();
-  return why+(ctx?'"'+ctx+(ctx.length>=150?'..."':'"')+' — '+fit:fit);
+  if(hasBLU&&hasSTR)
+    fit='Stratiix OS installs the operating system (governance, accountability, team rhythms). BluWav Growth Sprint ($2,500) builds the customer acquisition engine in 30 days. Both are needed — and both are a strong fit.';
+  else if(hasBLU)
+    fit='BluWav Growth Sprint ($2,500) is the right entry point — a clear growth roadmap, visibility improvements, and a repeatable customer acquisition system delivered in 30 days.';
+  else if(hasCRM)
+    fit='Qualia CRM tracks the client pipeline and ensures no lead falls through the cracks. Stratiix OS adds the operating rhythms that make the CRM actually work — accountability, follow-up culture, and team coordination.';
+  else
+    fit='Stratiix OS is the right solution — it installs the governance layer, operating rhythms, and accountability systems that Caribbean SMEs need to scale without chaos. Entry point: free 45-minute Stratiix Diagnostic.';
+  const ctx=desc.replace(/<[^>]+>/g,'').substring(0,120).trim();
+  return pain+(ctx?' Context: "'+ctx+(ctx.length>=120?'..."':'"'):'')+(ctx?' ':' ')+fit;
 }
 
 function scanPitch(brands,found){
