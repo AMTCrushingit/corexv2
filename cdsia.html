@@ -1,0 +1,868 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>CDSIA — Caribbean Distress Signals</title>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet"/>
+<style>
+:root {
+  --bg: #0D0D0F;
+  --bg-card: #141416;
+  --bg-surface: #1C1C20;
+  --bg-elevated: #222228;
+  --cyan: #00E8FF;
+  --cyan-dim: rgba(0,232,255,0.1);
+  --gold: #F5C842;
+  --gold-dim: rgba(245,200,66,0.12);
+  --green: #00D68F;
+  --green-dim: rgba(0,214,143,0.12);
+  --red: #FF4D6A;
+  --red-dim: rgba(255,77,106,0.12);
+  --border: rgba(0,232,255,0.1);
+  --text: #F0F0F5;
+  --text-2: #8A8A9A;
+  --text-3: #4A4A5A;
+  --mono: 'IBM Plex Mono', monospace;
+  --display: 'Space Grotesk', sans-serif;
+  --r: 4px;
+}
+* { margin:0; padding:0; box-sizing:border-box; }
+body { font-family: var(--display); background: var(--bg); color: var(--text); min-height: 100vh; }
+
+/* ── HEADER ── */
+.header {
+  background: var(--bg-card);
+  border-bottom: 1px solid var(--border);
+  padding: 0 28px;
+  height: 56px;
+  display: flex; align-items: center; justify-content: space-between;
+  position: sticky; top: 0; z-index: 100;
+}
+.header-left { display: flex; align-items: center; gap: 16px; }
+.logo { font-size: 18px; font-weight: 700; color: var(--cyan); letter-spacing: 0.08em; }
+.logo-sub { font-family: var(--mono); font-size: 9px; color: var(--text-3); letter-spacing: 0.2em; text-transform: uppercase; }
+.pulse { width: 6px; height: 6px; border-radius: 50%; background: var(--green); box-shadow: 0 0 6px var(--green); animation: pulse 2s ease-in-out infinite; }
+@keyframes pulse { 0%,100%{opacity:1} 50%{opacity:0.3} }
+.header-right { display: flex; align-items: center; gap: 10px; }
+.clock { font-family: var(--mono); font-size: 11px; color: var(--text-3); }
+
+/* ── STATS BAR ── */
+.stats-bar {
+  display: grid; grid-template-columns: repeat(4,1fr);
+  gap: 1px; background: var(--border);
+  border-bottom: 1px solid var(--border);
+}
+.stat {
+  background: var(--bg-card);
+  padding: 14px 20px;
+  position: relative; overflow: hidden;
+}
+.stat::after {
+  content: ''; position: absolute; top: 0; left: 0; right: 0; height: 2px;
+}
+.stat.cyan::after { background: var(--cyan); }
+.stat.gold::after { background: var(--gold); }
+.stat.green::after { background: var(--green); }
+.stat.red::after { background: var(--red); }
+.stat-label { font-family: var(--mono); font-size: 8px; font-weight: 600; color: var(--text-3); letter-spacing: 0.18em; text-transform: uppercase; margin-bottom: 6px; }
+.stat-val { font-size: 26px; font-weight: 700; line-height: 1; }
+.stat.cyan .stat-val { color: var(--cyan); }
+.stat.gold .stat-val { color: var(--gold); }
+.stat.green .stat-val { color: var(--green); }
+.stat.red .stat-val { color: var(--red); }
+.stat-sub { font-family: var(--mono); font-size: 9px; color: var(--text-3); margin-top: 3px; }
+
+/* ── MAIN ── */
+.main { max-width: 900px; margin: 0 auto; padding: 24px 20px; }
+
+/* ── TOOLBAR ── */
+.toolbar {
+  display: flex; align-items: center; justify-content: space-between;
+  margin-bottom: 20px; flex-wrap: wrap; gap: 12px;
+}
+.toolbar-left { display: flex; flex-direction: column; gap: 2px; }
+.toolbar-title { font-size: 18px; font-weight: 700; }
+.toolbar-sub { font-family: var(--mono); font-size: 10px; color: var(--text-2); }
+.scan-btn {
+  padding: 10px 24px;
+  background: var(--cyan); color: var(--bg);
+  border: none; border-radius: var(--r);
+  font-family: var(--display); font-size: 13px; font-weight: 700;
+  letter-spacing: 0.06em; cursor: pointer; transition: opacity 0.2s;
+  display: flex; align-items: center; gap: 8px;
+}
+.scan-btn:hover { opacity: 0.85; }
+.scan-btn:disabled { opacity: 0.4; cursor: not-allowed; }
+
+/* ── SCANNER PANEL ── */
+.scanner-panel {
+  background: var(--bg-card); border: 1px solid var(--border);
+  border-radius: var(--r); padding: 16px 20px; margin-bottom: 20px;
+  display: none;
+}
+.scanner-panel.visible { display: block; }
+.scanner-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; }
+.scanner-title { font-family: var(--mono); font-size: 10px; font-weight: 600; color: var(--cyan); letter-spacing: 0.1em; }
+.stop-btn {
+  font-family: var(--mono); font-size: 9px; padding: 3px 10px;
+  background: none; border: 1px solid var(--border); border-radius: 2px;
+  color: var(--text-3); cursor: pointer;
+}
+.stop-btn:hover { border-color: var(--red); color: var(--red); }
+.progress-bar { background: var(--bg-surface); border-radius: 2px; height: 3px; margin-bottom: 10px; overflow: hidden; }
+.progress-fill { height: 100%; background: var(--cyan); border-radius: 2px; transition: width 0.4s ease; width: 0%; }
+.scanner-log { font-family: var(--mono); font-size: 10px; color: var(--text-3); line-height: 1.9; max-height: 100px; overflow-y: auto; }
+
+/* ── BANNER ── */
+.banner {
+  background: var(--gold-dim); border: 1px solid rgba(245,200,66,0.2);
+  border-radius: var(--r); padding: 10px 16px; margin-bottom: 16px;
+  font-family: var(--mono); font-size: 11px; color: var(--gold);
+  display: none; align-items: center; gap: 8px;
+}
+.banner.visible { display: flex; }
+
+/* ── FILTER TABS ── */
+.filter-tabs {
+  display: flex; gap: 4px; margin-bottom: 16px;
+  background: var(--bg-card); border: 1px solid var(--border);
+  border-radius: var(--r); padding: 4px; width: fit-content;
+}
+.filter-tab {
+  padding: 6px 14px; border-radius: 2px;
+  font-family: var(--mono); font-size: 10px; font-weight: 600;
+  letter-spacing: 0.08em; text-transform: uppercase;
+  color: var(--text-3); cursor: pointer; border: none; background: none;
+  transition: all 0.15s;
+}
+.filter-tab:hover { color: var(--text); }
+.filter-tab.active { background: var(--cyan-dim); color: var(--cyan); }
+
+/* ── LEAD CARD ── */
+.lead-card {
+  background: var(--bg-card); border: 1px solid var(--border);
+  border-radius: var(--r); padding: 18px 20px; margin-bottom: 10px;
+  transition: border-color 0.15s;
+}
+.lead-card:hover { border-color: rgba(0,232,255,0.2); }
+.lead-card.won { opacity: 0.5; }
+.lead-card.lost { opacity: 0.35; }
+
+.lead-top { display: flex; justify-content: space-between; align-items: flex-start; gap: 12px; margin-bottom: 10px; }
+.lead-org { font-size: 15px; font-weight: 700; color: var(--text); margin-bottom: 3px; }
+.lead-meta { font-family: var(--mono); font-size: 10px; color: var(--text-2); }
+.lead-score { font-family: var(--mono); font-size: 22px; font-weight: 700; color: var(--gold); flex-shrink: 0; }
+
+.lead-tags { display: flex; gap: 5px; flex-wrap: wrap; margin-bottom: 10px; }
+.tag {
+  font-family: var(--mono); font-size: 9px; font-weight: 600;
+  padding: 2px 7px; border-radius: 2px; letter-spacing: 0.06em; text-transform: uppercase;
+}
+.tag-critical { background: var(--red-dim); color: var(--red); }
+.tag-high { background: var(--gold-dim); color: var(--gold); }
+.tag-medium { background: rgba(138,138,154,0.12); color: var(--text-2); }
+.tag-str { background: rgba(123,94,167,0.2); color: #B09FD0; }
+.tag-live { background: var(--cyan-dim); color: var(--cyan); }
+.tag-agent { background: rgba(245,200,66,0.12); color: var(--gold); }
+
+.lead-summary { font-size: 12px; color: var(--text-2); line-height: 1.6; margin-bottom: 10px; }
+.lead-pitch {
+  background: rgba(0,232,255,0.05); border-left: 2px solid var(--cyan);
+  padding: 8px 12px; margin-bottom: 12px;
+  font-family: var(--mono); font-size: 10px; color: var(--text-2); line-height: 1.6;
+}
+.lead-pitch strong { color: var(--cyan); }
+
+.lead-footer { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
+.lead-contact { font-family: var(--mono); font-size: 10px; color: var(--text-2); }
+
+/* ── QUALIFY BTN ── */
+.qualify-btn {
+  margin-left: auto; padding: 5px 14px;
+  background: var(--cyan-dim); border: 1px solid var(--border);
+  border-radius: var(--r); color: var(--cyan);
+  font-family: var(--mono); font-size: 10px; font-weight: 600;
+  letter-spacing: 0.06em; cursor: pointer; transition: all 0.15s; flex-shrink: 0;
+}
+.qualify-btn:hover { background: var(--cyan); color: var(--bg); }
+.qualify-btn.active { background: var(--green-dim); border-color: rgba(0,214,143,0.2); color: var(--green); }
+
+/* ── FOLLOW-UP PANEL ── */
+.followup { display: none; margin-top: 14px; padding-top: 14px; border-top: 1px solid var(--border); }
+.followup.open { display: block; }
+
+.status-row { display: flex; align-items: center; gap: 6px; margin-bottom: 12px; flex-wrap: wrap; }
+.status-label { font-family: var(--mono); font-size: 9px; color: var(--text-3); letter-spacing: 0.12em; text-transform: uppercase; margin-right: 4px; }
+.s-btn {
+  padding: 4px 10px; border-radius: 2px;
+  font-family: var(--mono); font-size: 9px; font-weight: 700;
+  letter-spacing: 0.08em; text-transform: uppercase;
+  border: 1px solid var(--border); background: none;
+  color: var(--text-3); cursor: pointer; transition: all 0.15s;
+}
+.s-btn:hover { border-color: var(--cyan); color: var(--cyan); }
+.s-btn.s-contacted { background: var(--cyan-dim); border-color: var(--cyan); color: var(--cyan); }
+.s-btn.s-meeting { background: var(--gold-dim); border-color: var(--gold); color: var(--gold); }
+.s-btn.s-won { background: var(--green-dim); border-color: var(--green); color: var(--green); }
+.s-btn.s-lost { background: var(--red-dim); border-color: var(--red); color: var(--red); }
+
+.action-row { display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 12px; }
+.a-btn {
+  padding: 6px 12px; border-radius: var(--r);
+  font-family: var(--mono); font-size: 10px; font-weight: 600;
+  border: 1px solid var(--border); background: var(--bg-surface);
+  color: var(--text-2); cursor: pointer; transition: all 0.15s;
+  text-decoration: none; display: inline-flex; align-items: center; gap: 5px;
+}
+.a-btn:hover { border-color: var(--cyan); color: var(--cyan); }
+.a-btn.wa:hover { border-color: #25D366; color: #25D366; }
+.a-btn.em:hover { border-color: var(--gold); color: var(--gold); }
+
+.notes {
+  width: 100%; padding: 8px 12px;
+  background: var(--bg-surface); border: 1px solid var(--border);
+  border-radius: var(--r); color: var(--text);
+  font-family: var(--mono); font-size: 11px; line-height: 1.5;
+  outline: none; resize: vertical; min-height: 48px;
+}
+.notes:focus { border-color: var(--cyan); }
+.notes::placeholder { color: var(--text-3); }
+.meeting-input {
+  padding: 6px 10px; background: var(--bg-surface);
+  border: 1px solid var(--border); border-radius: var(--r);
+  color: var(--text); font-family: var(--mono); font-size: 11px;
+  outline: none; margin-bottom: 10px;
+}
+.meeting-input:focus { border-color: var(--gold); }
+
+/* ── EMAIL MODAL ── */
+#email-modal {
+  position: fixed; inset: 0; z-index: 999;
+  background: rgba(13,13,15,0.92); backdrop-filter: blur(6px);
+  display: none; align-items: center; justify-content: center;
+}
+#email-modal.open { display: flex; }
+.modal-card {
+  background: var(--bg-card); border: 1px solid var(--border);
+  border-radius: 8px; padding: 28px 32px;
+  width: 540px; max-width: 94vw; max-height: 88vh; overflow-y: auto;
+}
+.modal-title {
+  font-size: 14px; font-weight: 700; margin-bottom: 16px;
+  display: flex; justify-content: space-between; align-items: center;
+}
+.modal-close { background: none; border: none; color: var(--text-3); font-size: 18px; cursor: pointer; }
+.modal-label { font-family: var(--mono); font-size: 9px; color: var(--text-3); letter-spacing: 0.12em; text-transform: uppercase; margin: 12px 0 4px; }
+.modal-input {
+  width: 100%; padding: 8px 12px;
+  background: var(--bg-surface); border: 1px solid var(--border);
+  border-radius: var(--r); color: var(--text);
+  font-family: var(--mono); font-size: 12px; outline: none;
+}
+.modal-textarea {
+  width: 100%; padding: 10px 12px;
+  background: var(--bg-surface); border: 1px solid var(--border);
+  border-radius: var(--r); color: var(--text);
+  font-family: var(--mono); font-size: 12px; line-height: 1.7;
+  outline: none; resize: vertical; min-height: 180px;
+}
+.modal-actions { display: flex; gap: 8px; margin-top: 16px; flex-wrap: wrap; }
+.modal-send {
+  padding: 8px 20px; background: var(--cyan); color: var(--bg);
+  border: none; border-radius: var(--r);
+  font-family: var(--display); font-size: 12px; font-weight: 700;
+  letter-spacing: 0.06em; cursor: pointer;
+}
+.modal-copy {
+  padding: 8px 14px; background: none;
+  border: 1px solid var(--border); border-radius: var(--r);
+  color: var(--text-2); font-family: var(--mono); font-size: 11px; cursor: pointer;
+}
+.modal-copy:hover { border-color: var(--cyan); color: var(--cyan); }
+
+/* ── EMPTY STATE ── */
+.empty { text-align: center; padding: 60px 20px; }
+.empty-icon { font-size: 36px; margin-bottom: 12px; opacity: 0.25; }
+.empty-title { font-size: 15px; font-weight: 600; color: var(--text-2); margin-bottom: 6px; }
+.empty-sub { font-family: var(--mono); font-size: 11px; color: var(--text-3); }
+
+/* ── TOAST ── */
+.toast {
+  position: fixed; bottom: 24px; right: 24px; z-index: 9999;
+  background: var(--bg-elevated); border: 1px solid var(--border);
+  border-radius: var(--r); padding: 10px 16px;
+  font-family: var(--mono); font-size: 11px; color: var(--text);
+  box-shadow: 0 4px 20px rgba(0,0,0,0.5); max-width: 340px;
+  animation: slideIn 0.2s ease;
+}
+@keyframes slideIn { from{transform:translateY(10px);opacity:0} to{transform:translateY(0);opacity:1} }
+
+::-webkit-scrollbar { width: 4px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb { background: var(--text-3); border-radius: 2px; }
+</style>
+</head>
+<body>
+
+<!-- EMAIL MODAL -->
+<div id="email-modal">
+  <div class="modal-card">
+    <div class="modal-title">
+      <span>Draft Email</span>
+      <button class="modal-close" onclick="closeEmail()">&#x2715;</button>
+    </div>
+    <div class="modal-label">To</div>
+    <input class="modal-input" id="e-to" type="text" readonly/>
+    <div class="modal-label">Subject</div>
+    <input class="modal-input" id="e-subject" type="text"/>
+    <div class="modal-label">Message</div>
+    <textarea class="modal-textarea" id="e-body"></textarea>
+    <div class="modal-actions">
+      <button class="modal-send" onclick="sendEmail()">Open in Email App</button>
+      <button class="modal-copy" onclick="copyEmail()">Copy All</button>
+      <button class="modal-copy" onclick="closeEmail()">Cancel</button>
+    </div>
+  </div>
+</div>
+
+<!-- HEADER -->
+<header class="header">
+  <div class="header-left">
+    <div>
+      <div class="logo">CDSIA</div>
+      <div class="logo-sub">Caribbean Distress Signals · Stratiix Pipeline</div>
+    </div>
+    <div class="pulse"></div>
+  </div>
+  <div class="header-right">
+    <div class="clock" id="clock"></div>
+    <button class="scan-btn" id="scan-btn" onclick="runScan()">&#128225; Scan Now</button>
+  </div>
+</header>
+
+<!-- STATS -->
+<div class="stats-bar">
+  <div class="stat cyan"><div class="stat-label">Total Leads</div><div class="stat-val" id="s-total">0</div><div class="stat-sub">All sources</div></div>
+  <div class="stat red"><div class="stat-label">Critical</div><div class="stat-val" id="s-critical">0</div><div class="stat-sub">Act now</div></div>
+  <div class="stat gold"><div class="stat-label">In Pipeline</div><div class="stat-val" id="s-pipeline">0</div><div class="stat-sub">Contacted + meetings</div></div>
+  <div class="stat green"><div class="stat-label">Closed Won</div><div class="stat-val" id="s-won">0</div><div class="stat-sub">Deals closed</div></div>
+</div>
+
+<!-- MAIN -->
+<div class="main">
+
+  <!-- OVERDUE BANNER -->
+  <div class="banner" id="banner">
+    <span>&#x26A1;</span><span id="banner-text"></span>
+  </div>
+
+  <!-- SCANNER PANEL -->
+  <div class="scanner-panel" id="scanner-panel">
+    <div class="scanner-header">
+      <div class="scanner-title">&#128225; CDSIA SCANNING CARIBBEAN SOURCES...</div>
+      <button class="stop-btn" onclick="stopScan()">Stop</button>
+    </div>
+    <div class="progress-bar"><div class="progress-fill" id="progress-fill"></div></div>
+    <div class="scanner-log" id="scanner-log"></div>
+  </div>
+
+  <!-- TOOLBAR -->
+  <div class="toolbar">
+    <div class="toolbar-left">
+      <div class="toolbar-title">MSME Distress Signals</div>
+      <div class="toolbar-sub">Stressed Caribbean businesses · Stratiix consulting opportunities</div>
+    </div>
+  </div>
+
+  <!-- FILTER TABS -->
+  <div class="filter-tabs">
+    <button class="filter-tab active" onclick="setFilter('all',this)">All</button>
+    <button class="filter-tab" onclick="setFilter('live',this)">Live Scans</button>
+    <button class="filter-tab" onclick="setFilter('pipeline',this)">In Pipeline</button>
+    <button class="filter-tab" onclick="setFilter('won',this)">Won</button>
+  </div>
+
+  <!-- LEADS -->
+  <div id="leads-container"></div>
+
+</div>
+
+<script>
+// ================================================================
+// HARDCODED SEED LEADS
+// ================================================================
+const SEED_LEADS = [
+  {
+    id:'CDS001', tier:'seed', org:'Blue Water Guyana', country:'GY Guyana', sector:'Logistics & 3PL',
+    distressType:['Scaling','Execution Chaos'], score:96, urgency:'Critical', brands:['STR'],
+    summary:'Blue Water Guyana launched 3PL operations for ExxonMobil Guyana. Hiring 32-50 local staff. Rapid scaling with new service lines. No operating system in place.',
+    pitch:'Lead with: "Fleet tripling in size with zero governance systems. Stratiix Diagnostic this week."',
+    contact:{name:'Richard DeNobrega (Country Manager)', email:'richard.denobrega@bws.net', phone:''},
+    sourceUrl:'https://www.bws.net/media/news/blue-water-guyana-launches-3pl-operations-for-exxonmobil-guyana'
+  },
+  {
+    id:'CDS002', tier:'seed', org:'Caribbean Tech TrendZ (CTTL)', country:'TT Trinidad & Tobago', sector:'IT Consulting',
+    distressType:['Governance Failure','Founder Bottleneck'], score:88, urgency:'High', brands:['STR'],
+    summary:'19-staff IT consulting firm in Trinidad. Growing client base across Caribbean. At the complexity ceiling where founder-led coordination breaks down.',
+    pitch:'Lead with: "IT firm that sells transformation needs its own transformation. Stratiix OS."',
+    contact:{name:'CTTL Leadership', email:'info@cttl.net', phone:''},
+    sourceUrl:'https://www.cttl.net'
+  },
+  {
+    id:'CDS003', tier:'seed', org:'Ekco Caribbean (T&T Office)', country:'TT Trinidad & Tobago', sector:'Cybersecurity',
+    distressType:['Scaling','CRM Need'], score:87, urgency:'High', brands:['STR'],
+    summary:'Irish cybersecurity firm Ekco opened T&T office Jan 2026 — €10M investment, 18 jobs by 2027. Scaling rapidly with new sales and technical roles.',
+    pitch:'Lead with: "New Caribbean office scaling to 18 staff — Stratiix installs the operating rhythm from day one."',
+    contact:{name:'Mark Donnellan (Head of BD)', email:'mark.donnellan@ekco.io', phone:''},
+    sourceUrl:'https://www.siliconrepublic.com/business/ekco-trinidad-and-tobago-office-caribbean-cybersecurity-ireland'
+  },
+  {
+    id:'AGT007', tier:'agent', org:'Ascendancy Solutions & Trading Ltd', country:'TT Trinidad & Tobago', sector:'Strategic Marketing',
+    distressType:['CRM Need','Digital Gap'], score:84, urgency:'High', brands:['STR'],
+    summary:'Strategic marketing and research firm in Marabella, Trinidad. Already coordinates CRM platforms for clients but likely lacks one for their own pipeline.',
+    pitch:'Lead with: "You recommend CRM to clients — do you use one yourself? Stratiix + Qualia."',
+    contact:{name:'Ascendancy Solutions', email:'admin@ascendancytt.com', phone:'+18682703691'},
+    sourceUrl:'https://www.ascendancytt.com/'
+  },
+  {
+    id:'AGT008', tier:'agent', org:'Xenovia Tech', country:'TT Trinidad & Tobago', sector:'Business Systems',
+    distressType:['CRM Need','Scaling'], score:81, urgency:'High', brands:['STR'],
+    summary:'Trinidad-based business systems engineering firm. Builds CRMs and workflow automation for Caribbean SMEs. Retainer-first model.',
+    pitch:'Lead with: "You build CRMs — what do you use to manage your own clients? Stratiix."',
+    contact:{name:'Xenovia Tech', email:'', phone:'+18682684236'},
+    sourceUrl:'https://www.xenoviatech.com/'
+  },
+  {
+    id:'AGT011', tier:'agent', org:'PRIMUS Guyana', country:'GY Guyana', sector:'Business Management Consulting',
+    distressType:['CRM Need','Scaling'], score:82, urgency:'High', brands:['STR'],
+    summary:'Business management consulting firm in Linden, Guyana. 20+ years experience. Managing $50M+ in client revenue. Growing rapidly with Guyana\'s oil boom.',
+    pitch:'Lead with: "Scaling with Guyana\'s oil economy — Stratiix OS is the governance layer you need now."',
+    contact:{name:'PRIMUS Guyana', email:'primusguyana@primusco.com', phone:''},
+    sourceUrl:'https://primusguyana.com/'
+  },
+];
+
+// ================================================================
+// SCANNER QUERIES + SCORING
+// ================================================================
+const QUERIES = [
+  {q:'Trinidad Tobago business hiring expanding 2026', country:'TT Trinidad & Tobago'},
+  {q:'Trinidad SME startup scaling challenges 2026', country:'TT Trinidad & Tobago'},
+  {q:'Trinidad business restructuring growth 2026', country:'TT Trinidad & Tobago'},
+  {q:'Barbados small business hiring expanding 2026', country:'BB Barbados'},
+  {q:'Barbados business growth challenges 2026', country:'BB Barbados'},
+  {q:'Jamaica SME business hiring expanding 2026', country:'JM Jamaica'},
+  {q:'Jamaica small business challenges growth 2026', country:'JM Jamaica'},
+  {q:'Guyana business hiring expanding operations 2026', country:'GY Guyana'},
+  {q:'Guyana SME startup scaling 2026', country:'GY Guyana'},
+  {q:'Caribbean MSME project management consultant 2026', country:'Caribbean'},
+  {q:'Caribbean business overwhelmed founder bottleneck 2026', country:'Caribbean'},
+];
+
+const SIGNALS = [
+  {w:'hiring', s:15, label:'Actively hiring'},
+  {w:'expanding', s:12, label:'Expanding operations'},
+  {w:'new office', s:14, label:'Opening new office'},
+  {w:'growth', s:8, label:'Growth phase'},
+  {w:'restructur', s:18, label:'Restructuring'},
+  {w:'challeng', s:16, label:'Facing challenges'},
+  {w:'struggl', s:20, label:'Struggling'},
+  {w:'overwhelm', s:20, label:'Overwhelmed'},
+  {w:'project management', s:18, label:'Needs project management'},
+  {w:'consultant', s:15, label:'Seeking consultants'},
+  {w:'operations', s:10, label:'Operations focus'},
+  {w:'staff', s:8, label:'Staff growth'},
+  {w:'launch', s:10, label:'New launch'},
+  {w:'investment', s:12, label:'Received investment'},
+  {w:'recruit', s:14, label:'Recruiting heavily'},
+  {w:'rapid', s:11, label:'Rapid growth'},
+  {w:'transform', s:13, label:'Transformation underway'},
+  {w:'crisis', s:22, label:'Crisis signal'},
+  {w:'backlog', s:17, label:'Backlog issues'},
+  {w:'capacity', s:12, label:'Capacity challenges'},
+];
+
+function scoreText(title, desc) {
+  const text = (title + ' ' + desc).toLowerCase();
+  let score = 50; const found = [];
+  for (const sig of SIGNALS) {
+    if (text.includes(sig.w)) { score += sig.s; found.push(sig.label); }
+  }
+  return { score: Math.min(score, 99), found };
+}
+
+function getPitch(found) {
+  const s = found.join(' ').toLowerCase();
+  if (s.includes('project management')) return 'Lead with: You need project management — Stratiix OS is the permanent solution, not just a hire.';
+  if (s.includes('struggling') || s.includes('crisis')) return 'Lead with: Stratiix Diagnostic — one free session to identify exactly what is breaking and how to fix it fast.';
+  if (s.includes('restructur')) return 'Lead with: Restructuring is the perfect moment to install the right operating system. Stratiix makes the change stick.';
+  if (s.includes('hiring') || s.includes('recruit')) return 'Lead with: Growing teams need operating systems — Stratiix installs the governance layer before chaos sets in.';
+  if (s.includes('expanding') || s.includes('new office')) return 'Lead with: Expansion without systems = expensive mistakes. Stratiix OS gets your operations right before you scale.';
+  if (s.includes('investment')) return 'Lead with: You have the capital — now build the operating system to deploy it right. That is Stratiix.';
+  return 'Lead with: Stratiix Diagnostic — free 45-minute session to map your operational gaps. No commitment.';
+}
+
+function getEmailBody(lead) {
+  const sig = (lead.distressType || []).join(' ').toLowerCase();
+  if (sig.includes('hiring') || sig.includes('recruit'))
+    return 'I noticed ' + lead.org + ' is growing its team. The moment a Caribbean business starts hiring fast is exactly when operational systems become critical.\n\nWe built Stratiix OS for this moment — it installs the governance layer that keeps your team coordinated as you scale.';
+  if (sig.includes('restructur'))
+    return 'I came across ' + lead.org + ' and noticed you are going through a restructuring phase. That is the perfect moment to install the right operating system.\n\nStratiix OS is built for Caribbean businesses in exactly this transition.';
+  if (sig.includes('challeng'))
+    return 'I came across ' + lead.org + ' and the challenges you are navigating. Most business challenges have a systems root cause — and that is exactly what Stratiix is built to fix.';
+  return 'I came across ' + lead.org + ' and think there is a strong fit between what you are building and Stratiix — our operating system for Caribbean businesses ready to scale properly.';
+}
+
+function getWAMsg(lead) {
+  const sig = (lead.distressType || ['growth'])[0].toLowerCase();
+  const ctx = sig.includes('hiring') ? 'growing your team fast' : sig.includes('restructur') ? 'going through a restructuring' : 'navigating some growth challenges';
+  return encodeURIComponent('Hi, this is Andrea from BluWav Group. I came across ' + lead.org + ' and noticed you are ' + ctx + '. We built Stratiix OS specifically for Caribbean businesses at this stage — would you be open to a free 45-min diagnostic session? No commitment, just clarity.');
+}
+
+// ================================================================
+// PERSISTENCE
+// ================================================================
+const LS_STATES = 'cdsia_v1_states';
+const LS_SCANNED = 'cdsia_v1_scanned';
+
+function loadStates() { try { return JSON.parse(localStorage.getItem(LS_STATES) || '{}'); } catch(e) { return {}; } }
+function saveState(id, patch) {
+  const all = loadStates();
+  all[id] = { ...all[id], ...patch, updatedAt: new Date().toISOString() };
+  localStorage.setItem(LS_STATES, JSON.stringify(all));
+}
+function getState(id) { return loadStates()[id] || { status: 'new', notes: '', meetingDate: '' }; }
+
+function loadScanned() { try { return JSON.parse(localStorage.getItem(LS_SCANNED) || '[]'); } catch(e) { return []; } }
+function saveScanned(leads) { localStorage.setItem(LS_SCANNED, JSON.stringify(leads)); }
+
+// ================================================================
+// SCANNER
+// ================================================================
+let _scanning = false;
+
+async function runScan() {
+  if (_scanning) return;
+  _scanning = true;
+  const btn = document.getElementById('scan-btn');
+  const panel = document.getElementById('scanner-panel');
+  const fill = document.getElementById('progress-fill');
+  const log = document.getElementById('scanner-log');
+  btn.disabled = true; btn.textContent = 'Scanning...';
+  panel.classList.add('visible');
+  fill.style.width = '0%'; log.innerHTML = '';
+
+  const addLog = msg => { log.innerHTML += '<div>> ' + msg + '</div>'; log.scrollTop = log.scrollHeight; };
+  addLog('Initialising CDSIA scanner...');
+
+  let newLeads = [];
+  for (let i = 0; i < QUERIES.length; i++) {
+    if (!_scanning) break;
+    const q = QUERIES[i];
+    addLog('Scanning ' + q.country + '...');
+    fill.style.width = Math.round(((i + 1) / QUERIES.length) * 100) + '%';
+    const articles = await fetchArticles(q.q, q.country);
+    for (let j = 0; j < articles.length; j++) {
+      const lead = articleToLead(articles[j], i * 10 + j);
+      if (lead) { newLeads.push(lead); addLog('  + ' + lead.org + ' (' + lead.score + ')'); }
+    }
+    await new Promise(r => setTimeout(r, 200));
+  }
+
+  fill.style.width = '100%';
+
+  // Deduplicate
+  const seen = new Set();
+  newLeads = newLeads.filter(l => {
+    const k = l.org.toLowerCase().substring(0, 20);
+    if (seen.has(k)) return false; seen.add(k); return true;
+  });
+  newLeads.sort((a, b) => b.score - a.score);
+
+  // Merge with existing
+  const existing = loadScanned();
+  const existingOrgs = new Set(existing.map(l => l.org.toLowerCase().substring(0, 20)));
+  const fresh = newLeads.filter(l => !existingOrgs.has(l.org.toLowerCase().substring(0, 20)));
+  saveScanned([...fresh, ...existing].slice(0, 60));
+
+  addLog('Done — ' + fresh.length + ' new leads found');
+  setTimeout(() => {
+    panel.classList.remove('visible');
+    btn.disabled = false; btn.textContent = '📡 Scan Now';
+    _scanning = false;
+    render(); updateStats();
+    toast('Scan complete — ' + fresh.length + ' new leads found');
+  }, 1200);
+}
+
+function stopScan() {
+  _scanning = false;
+  document.getElementById('scanner-panel').classList.remove('visible');
+  const btn = document.getElementById('scan-btn');
+  btn.disabled = false; btn.textContent = '📡 Scan Now';
+  render(); updateStats();
+  toast('Scan stopped');
+}
+
+async function fetchArticles(query, country) {
+  const rssUrl = 'https://news.google.com/rss/search?q=' + encodeURIComponent(query) + '&hl=en-US&gl=US&ceid=US:en';
+  const apiUrl = 'https://api.rss2json.com/v1/api.json?rss_url=' + encodeURIComponent(rssUrl);
+  try {
+    const res = await fetch(apiUrl, { signal: AbortSignal.timeout(10000) });
+    const data = await res.json();
+    if (data.status !== 'ok' || !data.items) return [];
+    return data.items.slice(0, 5).map(item => ({
+      title: item.title || '',
+      description: (item.description || '').replace(/<[^>]+>/g, ''),
+      link: item.link || '',
+      pubDate: item.pubDate || '',
+      country
+    }));
+  } catch(e) { return []; }
+}
+
+function articleToLead(article, idx) {
+  const { score, found } = scoreText(article.title, article.description);
+  if (score < 60) return null;
+  const org = article.title.replace(/\b(says?|reports?|announces?|launches?|opens?|hires?|expands?|faces?|struggles?)\b.*/i, '').replace(/['"]/g, '').trim().split(/[:\-|]/)[0].trim().substring(0, 60) || 'Caribbean Business';
+  return {
+    id: 'SCAN' + Date.now() + '_' + idx,
+    tier: 'live',
+    org,
+    country: article.country,
+    sector: 'Caribbean SME',
+    distressType: found.slice(0, 3),
+    score,
+    urgency: score >= 80 ? 'Critical' : score >= 68 ? 'High' : 'Medium',
+    brands: ['STR'],
+    summary: article.description.substring(0, 220) + (article.description.length > 220 ? '...' : ''),
+    pitch: getPitch(found),
+    contact: { name: '', email: '', phone: '' },
+    sourceUrl: article.link,
+    pubDate: article.pubDate,
+  };
+}
+
+// ================================================================
+// RENDER
+// ================================================================
+let _filter = 'all';
+
+function setFilter(f, btn) {
+  _filter = f;
+  document.querySelectorAll('.filter-tab').forEach(t => t.classList.remove('active'));
+  if (btn) btn.classList.add('active');
+  render();
+}
+
+function allLeads() {
+  return [...SEED_LEADS, ...loadScanned()];
+}
+
+function render() {
+  const states = loadStates();
+  let leads = allLeads();
+
+  // Apply filter
+  if (_filter === 'live') leads = leads.filter(l => l.tier === 'live');
+  else if (_filter === 'pipeline') leads = leads.filter(l => ['contacted','meeting_booked'].includes(states[l.id]?.status));
+  else if (_filter === 'won') leads = leads.filter(l => states[l.id]?.status === 'won');
+
+  // Sort: critical first, then score
+  leads.sort((a, b) => {
+    const o = { Critical: 0, High: 1, Medium: 2 };
+    const ua = o[a.urgency] ?? 3, ub = o[b.urgency] ?? 3;
+    if (ua !== ub) return ua - ub;
+    return b.score - a.score;
+  });
+
+  const container = document.getElementById('leads-container');
+
+  if (!leads.length) {
+    container.innerHTML = '<div class="empty"><div class="empty-icon">📡</div><div class="empty-title">No leads found</div><div class="empty-sub">Click Scan Now to discover stressed Caribbean SMEs</div></div>';
+    return;
+  }
+
+  container.innerHTML = leads.map(l => renderCard(l, states[l.id] || {})).join('');
+  checkReminders(leads, states);
+}
+
+function renderCard(l, state) {
+  const cur = state.status || 'new';
+  const urgClass = l.urgency === 'Critical' ? 'tag-critical' : l.urgency === 'High' ? 'tag-high' : 'tag-medium';
+  const tierBadge = l.tier === 'live' ? '<span class="tag tag-live">Live Scan</span>' : l.tier === 'agent' ? '<span class="tag tag-agent">Agent Lead</span>' : '';
+  const sLabel = { new: 'Qualify', contacted: '✓ Contacted', meeting_booked: '✓ Meeting', won: '✓ Won', lost: '✗ Lost' };
+  const qClass = cur !== 'new' ? 'qualify-btn active' : 'qualify-btn';
+  const cardClass = cur === 'won' ? 'lead-card won' : cur === 'lost' ? 'lead-card lost' : 'lead-card';
+  const pubDate = l.pubDate ? ' · ' + new Date(l.pubDate).toLocaleDateString('en-US', { month: 'short', day: 'numeric' }) : '';
+
+  const statusBtns = `
+    <div class="status-row">
+      <span class="status-label">Status:</span>
+      <button class="s-btn ${cur==='contacted'?'s-contacted':''}" onclick="setStatus('${l.id}','contacted')">Contacted</button>
+      <button class="s-btn ${cur==='meeting_booked'?'s-meeting':''}" onclick="setStatus('${l.id}','meeting_booked')">Meeting Booked</button>
+      <button class="s-btn ${cur==='won'?'s-won':''}" onclick="setStatus('${l.id}','won')">Won</button>
+      <button class="s-btn ${cur==='lost'?'s-lost':''}" onclick="setStatus('${l.id}','lost')">Lost</button>
+    </div>`;
+
+  const waLink = l.contact?.phone?.includes('+')
+    ? `<a class="a-btn wa" href="https://wa.me/${l.contact.phone.replace(/[^0-9]/g,'')}?text=${getWAMsg(l)}" target="_blank">WhatsApp</a>`
+    : `<button class="a-btn wa" onclick="copyWA('${l.id}')">Copy WhatsApp</button>`;
+
+  const actionBtns = `
+    <div class="action-row">
+      <button class="a-btn em" onclick="openEmail('${l.id}')">Draft Email</button>
+      ${waLink}
+      <button class="a-btn" onclick="copyBrief('${l.id}')">Copy Brief</button>
+      ${l.sourceUrl ? `<a class="a-btn" href="${l.sourceUrl}" target="_blank">Source ↗</a>` : ''}
+    </div>`;
+
+  const meetingField = cur === 'meeting_booked'
+    ? `<input type="date" class="meeting-input" value="${state.meetingDate||''}" onchange="saveMeeting('${l.id}',this.value)" placeholder="Meeting date"/>`
+    : state.meetingDate ? `<div style="font-family:var(--mono);font-size:10px;color:var(--gold);margin-bottom:8px;">Meeting: ${state.meetingDate}</div>` : '';
+
+  return `<div class="${cardClass}" id="card-${l.id}">
+    <div class="lead-top">
+      <div>
+        <div class="lead-org">${l.org}</div>
+        <div class="lead-meta">${l.country} · ${l.sector}${pubDate}</div>
+      </div>
+      <div class="lead-score">${l.score}</div>
+    </div>
+    <div class="lead-tags">
+      <span class="tag ${urgClass}">${l.urgency}</span>
+      <span class="tag tag-str">STR</span>
+      ${tierBadge}
+      ${(l.distressType||[]).map(t=>'<span class="tag tag-medium">'+t+'</span>').join('')}
+    </div>
+    <div class="lead-summary">${l.summary}</div>
+    <div class="lead-pitch"><strong>Pitch:</strong> ${l.pitch}</div>
+    <div class="lead-footer">
+      ${l.contact?.name ? '<div class="lead-contact">'+l.contact.name+'</div>' : ''}
+      ${l.contact?.email ? '<div class="lead-contact" style="color:var(--cyan);">'+l.contact.email+'</div>' : ''}
+      <button class="${qClass}" onclick="toggleFollowUp('${l.id}')">${sLabel[cur]||'Qualify'}</button>
+    </div>
+    <div class="followup ${cur!=='new'?'open':''}" id="fup-${l.id}">
+      ${statusBtns}
+      ${actionBtns}
+      ${meetingField}
+      <textarea class="notes" placeholder="Notes — saved automatically..." onblur="saveNotes('${l.id}',this.value)">${state.notes||''}</textarea>
+    </div>
+  </div>`;
+}
+
+function updateStats() {
+  const leads = allLeads();
+  const states = loadStates();
+  document.getElementById('s-total').textContent = leads.length;
+  document.getElementById('s-critical').textContent = leads.filter(l => l.urgency === 'Critical').length;
+  document.getElementById('s-pipeline').textContent = Object.values(states).filter(s => ['contacted','meeting_booked'].includes(s.status)).length;
+  document.getElementById('s-won').textContent = Object.values(states).filter(s => s.status === 'won').length;
+}
+
+function checkReminders(leads, states) {
+  const now = Date.now(), seven = 7 * 24 * 60 * 60 * 1000;
+  const overdue = leads.filter(l => {
+    const s = states[l.id];
+    return s?.status === 'contacted' && s.contactedAt && now - new Date(s.contactedAt).getTime() > seven;
+  }).map(l => l.org);
+  const banner = document.getElementById('banner');
+  if (overdue.length) {
+    document.getElementById('banner-text').textContent = 'Follow-up overdue: ' + overdue.slice(0, 3).join(', ') + (overdue.length > 3 ? ' +' + (overdue.length - 3) + ' more' : '');
+    banner.classList.add('visible');
+  } else {
+    banner.classList.remove('visible');
+  }
+}
+
+// ================================================================
+// FOLLOW-UP ACTIONS
+// ================================================================
+function toggleFollowUp(id) {
+  const state = getState(id);
+  if (state.status === 'new') {
+    saveState(id, { status: 'contacted', contactedAt: new Date().toISOString() });
+    toast('Lead qualified');
+  }
+  const panel = document.getElementById('fup-' + id);
+  if (panel) panel.classList.toggle('open');
+  render(); updateStats();
+}
+
+function setStatus(id, status) {
+  const patch = { status };
+  if (status === 'contacted') patch.contactedAt = new Date().toISOString();
+  if (status === 'won' || status === 'lost') patch.closedAt = new Date().toISOString();
+  saveState(id, patch);
+  render(); updateStats();
+  const labels = { contacted: 'Marked Contacted', meeting_booked: 'Meeting Booked', won: 'Closed Won!', lost: 'Marked Lost' };
+  toast(labels[status] || 'Updated');
+}
+
+function saveNotes(id, val) { saveState(id, { notes: val }); }
+function saveMeeting(id, val) { saveState(id, { meetingDate: val }); render(); toast('Meeting date saved'); }
+
+// ── Email Modal ──
+let _emailId = null;
+function openEmail(id) {
+  _emailId = id;
+  const lead = allLeads().find(l => l.id === id);
+  if (!lead) return;
+  document.getElementById('e-to').value = lead.contact?.email || '';
+  document.getElementById('e-subject').value = 'Stratiix OS — Built for ' + lead.org;
+  document.getElementById('e-body').value = 'Hi,\n\n' + getEmailBody(lead) + '\n\nWould you be open to a free 45-minute Stratiix Diagnostic? No pitch — just a clear map of where your operations stand and what to fix first.\n\nAndrea Tanguay\nFounder & Executive Director, BluWav Group\nStratiix | Qualia Systems | BluWav Growth | Credii';
+  document.getElementById('email-modal').classList.add('open');
+}
+function closeEmail() { document.getElementById('email-modal').classList.remove('open'); _emailId = null; }
+function sendEmail() {
+  const to = document.getElementById('e-to').value;
+  const sub = encodeURIComponent(document.getElementById('e-subject').value);
+  const body = encodeURIComponent(document.getElementById('e-body').value);
+  window.open('mailto:' + to + '?subject=' + sub + '&body=' + body);
+  if (_emailId) saveState(_emailId, { lastAction: 'email' });
+  closeEmail();
+}
+function copyEmail() {
+  const text = 'To: ' + document.getElementById('e-to').value + '\nSubject: ' + document.getElementById('e-subject').value + '\n\n' + document.getElementById('e-body').value;
+  navigator.clipboard.writeText(text).then(() => toast('Email copied'));
+}
+
+function copyWA(id) {
+  const lead = allLeads().find(l => l.id === id);
+  if (!lead) return;
+  navigator.clipboard.writeText(decodeURIComponent(getWAMsg(lead))).then(() => toast('WhatsApp message copied'));
+}
+
+function copyBrief(id) {
+  const lead = allLeads().find(l => l.id === id);
+  if (!lead) return;
+  const state = getState(id);
+  const text = 'COREX LEAD BRIEF\n' + '='.repeat(36) + '\nOrg: ' + lead.org + '\nCountry: ' + lead.country + '\nScore: ' + lead.score + ' | Urgency: ' + lead.urgency + '\nSignals: ' + (lead.distressType || []).join(', ') + '\nContact: ' + (lead.contact?.name || '-') + ' | ' + (lead.contact?.email || '') + ' | ' + (lead.contact?.phone || '') + '\nSource: ' + (lead.sourceUrl || '-') + '\nStatus: ' + (state.status || 'new') + '\nNotes: ' + (state.notes || '-') + '\n' + '='.repeat(36) + '\nPITCH: ' + lead.pitch;
+  navigator.clipboard.writeText(text).then(() => toast('Brief copied'));
+}
+
+// ================================================================
+// TOAST + CLOCK
+// ================================================================
+function toast(msg) {
+  const el = document.createElement('div');
+  el.className = 'toast'; el.textContent = msg;
+  document.body.appendChild(el);
+  setTimeout(() => el.remove(), 3000);
+}
+
+function updateClock() {
+  document.getElementById('clock').textContent = new Date().toLocaleString('en-US', { month: 'short', day: 'numeric', hour: 'numeric', minute: '2-digit', hour12: true }) + ' EDT';
+}
+
+// ================================================================
+// INIT
+// ================================================================
+updateClock();
+setInterval(updateClock, 60000);
+render();
+updateStats();
+</script>
+</body>
+</html>
