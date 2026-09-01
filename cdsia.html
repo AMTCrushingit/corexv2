@@ -244,6 +244,8 @@ body{font-family:'Inter',sans-serif;background:var(--bg);color:var(--text);min-h
 
 <script src="leads.js"></script>
 <script>
+{
+
 // ================================================================
 // DYNAMIC CONTENT GENERATORS (replaces embedded data)
 // ================================================================
@@ -292,13 +294,13 @@ function loadSc(){try{return JSON.parse(localStorage.getItem(LS_SC)||'[]');}catc
 function saveSc(l){localStorage.setItem(LS_SC,JSON.stringify(l));}
 
 // ================================================================
-// SCANNER — Caribbean News Sources
+// SCANNER -- Caribbean News Sources
 // ================================================================
 const GN = 'https://news.google.com/rss/search?hl=en-US&gl=US&ceid=US:en&q=';
 const NEWS_SOURCES = [
-  // Trinidad & Tobago — direct RSS
+  // Trinidad & Tobago -- direct RSS
   {name:'Trinidad Newsday',url:'https://newsday.co.tt/feed/',country:'Trinidad & Tobago',flag:'🇹🇹',mode:'direct'},
-  // Trinidad & Tobago — via Google News site: filter
+  // Trinidad & Tobago -- via Google News site: filter
   {name:'Trinidad Express',url:GN+encodeURIComponent('site:trinidadexpress.com business'),country:'Trinidad & Tobago',flag:'🇹🇹',mode:'gnews'},
   {name:'Trinidad Guardian',url:GN+encodeURIComponent('site:guardian.co.tt business'),country:'Trinidad & Tobago',flag:'🇹🇹',mode:'gnews'},
   // Jamaica
@@ -352,30 +354,30 @@ function scanBrands(found,desc){
 function scanSummary(org,country,brands,found,desc){
   const f=found.join(' ').toLowerCase();
   const hasBLU=brands.includes('BLU'),hasSTR=brands.includes('STR');
-  // Pain point — specific to signal
+  // Pain point -- specific to signal
   let pain='';
   if(f.includes('hiring')||f.includes('recruit'))
-    pain='This business is actively hiring — a classic scaling trap. Adding headcount without installing operating systems first leads to coordination failures, inconsistent client delivery, and a founder who becomes the bottleneck for every decision. Most Caribbean SMEs hit this wall between 8-15 staff.';
+    pain='This business is actively hiring -- a classic scaling trap. Adding headcount without installing operating systems first leads to coordination failures, inconsistent client delivery, and a founder who becomes the bottleneck for every decision. Most Caribbean SMEs hit this wall between 8-15 staff.';
   else if(f.includes('restructur'))
-    pain='This business is restructuring — which means existing systems have already broken down. Restructuring without installing a proper operating system just resets the clock on the same problems. The window to get it right is now.';
+    pain='This business is restructuring -- which means existing systems have already broken down. Restructuring without installing a proper operating system just resets the clock on the same problems. The window to get it right is now.';
   else if(f.includes('struggling')||f.includes('crisis'))
-    pain='This business is showing active distress signals. In most Caribbean SMEs, operational chaos — not market conditions — is the root cause. No clear accountability, no operating rhythms, no visibility into what is actually happening day to day.';
+    pain='This business is showing active distress signals. In most Caribbean SMEs, operational chaos -- not market conditions -- is the root cause. No clear accountability, no operating rhythms, no visibility into what is actually happening day to day.';
   else if(f.includes('expanding')||f.includes('new office'))
-    pain='This business is expanding — opening new locations or adding service lines without governance systems in place. Every expansion multiplies coordination complexity. Without Stratiix OS, the founder ends up managing chaos instead of growth.';
+    pain='This business is expanding -- opening new locations or adding service lines without governance systems in place. Every expansion multiplies coordination complexity. Without Stratiix OS, the founder ends up managing chaos instead of growth.';
   else if(f.includes('launch'))
     pain='This business recently launched. The habits and systems built in the first 12 months determine whether a Caribbean SME scales or stalls. Most founders skip the operating system and pay for it later with chaos, staff turnover, and lost clients.';
   else if(f.includes('marketing')||f.includes('visibility')||f.includes('customers'))
-    pain='This business is focused on getting more customers — but without a structured acquisition system, growth is inconsistent and unpredictable. Most Caribbean SMEs rely on referrals and word-of-mouth with no repeatable process for winning new business.';
+    pain='This business is focused on getting more customers -- but without a structured acquisition system, growth is inconsistent and unpredictable. Most Caribbean SMEs rely on referrals and word-of-mouth with no repeatable process for winning new business.';
   else if(f.includes('investment'))
-    pain='This business has received investment or funding — which means scaling pressure is incoming. Capital without operational systems creates expensive chaos. Stratiix OS ensures the business can actually deploy the capital effectively.';
+    pain='This business has received investment or funding -- which means scaling pressure is incoming. Capital without operational systems creates expensive chaos. Stratiix OS ensures the business can actually deploy the capital effectively.';
   else
-    pain='This Caribbean SME is at a growth inflection point. Without the right operating systems in place, scaling creates more problems than it solves — staff confusion, client dissatisfaction, and founder burnout.';
+    pain='This Caribbean SME is at a growth inflection point. Without the right operating systems in place, scaling creates more problems than it solves -- staff confusion, client dissatisfaction, and founder burnout.';
   // Solution fit
   let fit='';
   if(hasBLU&&hasSTR)
     fit='Double fit: Stratiix Transformation OS removes founder dependency and builds organizational capability. BluWav Growth Sprint ($2,500) gets more customers in 30 days. Both are needed.';
   else if(hasBLU)
-    fit='BluWav Growth Sprint ($2,500) — a clear growth roadmap, visibility improvements, and a repeatable customer acquisition system in 30 days.';
+    fit='BluWav Growth Sprint ($2,500) -- a clear growth roadmap, visibility improvements, and a repeatable customer acquisition system in 30 days.';
   else
     fit='Stratiix Transformation OS diagnoses what is limiting performance and builds the organizational capability to scale beyond the founder. Entry point: free 45-minute Stratiix Diagnostic.';
   const ctx=desc.replace(/<[^>]+>/g,'').substring(0,120).trim();
@@ -385,10 +387,10 @@ function scanSummary(org,country,brands,found,desc){
 function scanPitch(brands,found){
   const hasBLU=brands.includes('BLU'),hasSTR=brands.includes('STR');
   if(hasBLU&&hasSTR) return 'Double fit: Stratiix Transformation OS removes founder dependency. BluWav Growth Sprint ($2,500) gets more customers in 30 days.';
-  if(hasBLU) return 'Lead with: "Get more customers in the next 30 days — BluWav Growth Sprint, $2,500. Guaranteed visibility improvements."';
+  if(hasBLU) return 'Lead with: "Get more customers in the next 30 days -- BluWav Growth Sprint, $2,500. Guaranteed visibility improvements."';
   if(found.includes('hiring')||found.includes('recruit')) return 'Lead with: "Hiring fast without building organizational capability creates founder dependency. Stratiix diagnoses and fixes that. Free 45-min Diagnostic."';
   if(found.includes('restructur')) return 'Lead with: "Restructuring without changing the operating system just resets the clock. Stratiix builds the capability to make the change stick. Free Diagnostic."';
-  return 'Lead with: "Stratiix Diagnostic — free 45-minute session to identify exactly what is limiting your organization's performance. No commitment."';
+  return 'Lead with: "Stratiix Diagnostic -- free 45-minute session to identify exactly what is limiting your organization performance. No commitment."';
 }
 
 let _scanning=false;
@@ -457,13 +459,13 @@ async function runScan(){
   const existKeys=new Set(existing.map(l=>l.org.toLowerCase().replace(/[^a-z0-9]/g,'').substring(0,18)));
   const fresh=newLeads.filter(l=>!existKeys.has(l.org.toLowerCase().replace(/[^a-z0-9]/g,'').substring(0,18)));
   saveSc([...fresh,...existing].slice(0,150));
-  addLog('✅ Done — '+fresh.length+' new leads added');
+  addLog('✅ Done -- '+fresh.length+' new leads added');
   setTimeout(()=>{
     panel.classList.remove('on');
     btn.disabled=false;btn.textContent='📡 Scan for New Leads';
     _scanning=false;
     render();updateStats();
-    toast('✅ Scan complete — '+fresh.length+' new leads found');
+    toast('✅ Scan complete -- '+fresh.length+' new leads found');
   },1200);
 }
 
@@ -480,15 +482,15 @@ function stopScan(){
 // ================================================================
 function getEmailBody(brands,org){
   const hasBLU=brands.includes('BLU'),hasSTR=brands.includes('STR');
-  if(hasBLU&&hasSTR) return 'I came across '+org+' and see a strong fit on two fronts.\n\nFirst — our BluWav Growth Sprint can get you more customers in the next 30 days. Starting at $2,500, it includes a growth roadmap, visibility improvements, and hands-on guidance.\n\nSecond — as you grow, Stratiix OS installs the operational systems to handle the new volume without chaos.\n\nWould you be open to a quick 20-minute call this week?';
-  if(hasBLU) return 'I came across '+org+' and think our BluWav Growth Sprint is a strong fit.\n\nIn 30 days, we help Caribbean businesses get more customers — with a clear growth roadmap, visibility improvements, and expert guidance. Starting at $2,500.\n\nWould you be open to a quick 20-minute call this week?';
-  return 'I came across '+org+' and noticed signals that suggest your operations are under pressure as you grow.\n\nWe built Stratiix OS specifically for Caribbean businesses at this stage — it installs the governance layer that keeps your team coordinated and your clients happy.\n\nWould you be open to a free 45-minute Stratiix Diagnostic? No pitch — just clarity on what to fix first.';
+  if(hasBLU&&hasSTR) return 'I came across '+org+' and see a strong fit on two fronts.\n\nFirst -- our BluWav Growth Sprint can get you more customers in the next 30 days. Starting at $2,500, it includes a growth roadmap, visibility improvements, and hands-on guidance.\n\nSecond -- as you grow, Stratiix OS installs the operational systems to handle the new volume without chaos.\n\nWould you be open to a quick 20-minute call this week?';
+  if(hasBLU) return 'I came across '+org+' and think our BluWav Growth Sprint is a strong fit.\n\nIn 30 days, we help Caribbean businesses get more customers -- with a clear growth roadmap, visibility improvements, and expert guidance. Starting at $2,500.\n\nWould you be open to a quick 20-minute call this week?';
+  return 'I came across '+org+' and noticed signals that suggest your operations are under pressure as you grow.\n\nWe built Stratiix OS specifically for Caribbean businesses at this stage -- it installs the governance layer that keeps your team coordinated and your clients happy.\n\nWould you be open to a free 45-minute Stratiix Diagnostic? No pitch -- just clarity on what to fix first.';
 }
 
 function getWAMsg(lead){
   const hasBLU=lead.brands.includes('BLU');
-  if(hasBLU) return encodeURIComponent('Hi, this is Andrea from BluWav Group. I came across '+lead.org+' and think our 30-Day Growth Sprint could help you get more customers fast — starting at $2,500. Would you be open to a quick chat this week?');
-  return encodeURIComponent('Hi, this is Andrea from BluWav Group. I came across '+lead.org+' and think there is a strong fit with Stratiix OS — our operating system for Caribbean businesses scaling right now. Would you be open to a free 45-min diagnostic session?');
+  if(hasBLU) return encodeURIComponent('Hi, this is Andrea from BluWav Group. I came across '+lead.org+' and think our 30-Day Growth Sprint could help you get more customers fast -- starting at $2,500. Would you be open to a quick chat this week?');
+  return encodeURIComponent('Hi, this is Andrea from BluWav Group. I came across '+lead.org+' and think there is a strong fit with Stratiix OS -- our operating system for Caribbean businesses scaling right now. Would you be open to a free 45-min diagnostic session?');
 }
 
 // ================================================================
@@ -591,7 +593,7 @@ function render(){
   document.getElementById('rcount').textContent=leads.length+' leads';
   const container=document.getElementById('leads');
   if(!leads.length){
-    container.innerHTML='<div class="empty"><div class="empty-icon">📡</div><div class="empty-title">'+(_filter==='all'?'407 verified leads loaded — use filters or search':'No leads match this filter')+'</div><div class="empty-sub">'+(_filter==='all'?'Click Scan for New Leads to add live news leads':'Try a different filter')+'</div></div>';
+    container.innerHTML='<div class="empty"><div class="empty-icon">📡</div><div class="empty-title">'+(_filter==='all'?'407 verified leads loaded -- use filters or search':'No leads match this filter')+'</div><div class="empty-sub">'+(_filter==='all'?'Click Scan for New Leads to add live news leads':'Try a different filter')+'</div></div>';
     return;
   }
   container.innerHTML=leads.map(l=>renderCard(l,states[l.id]||{})).join('');
@@ -656,7 +658,7 @@ function renderCard(l,state){
     </div>
     <div class="fup ${cur!=='new'?'on':''}" id="fup-${l.id}">
       ${sBtns}${aRow}${meetField}
-      <textarea class="notes" placeholder="Notes — saved automatically..." onblur="saveNotes('${l.id}',this.value)">${state.notes||''}</textarea>
+      <textarea class="notes" placeholder="Notes -- saved automatically..." onblur="saveNotes('${l.id}',this.value)">${state.notes||''}</textarea>
     </div>
   </div>`;
 }
@@ -717,7 +719,7 @@ function openEmail(id){
   const brands=lead.brands||[];
   const sector=lead.sector||'';
   document.getElementById('e-to').value=lead.contact?.email||'';
-  document.getElementById('e-sub').value=brands.includes('BLU')?'Get More Customers in 30 Days — BluWav Growth Sprint':'Stratiix Transformation OS — Built for '+lead.org;
+  document.getElementById('e-sub').value=brands.includes('BLU')?'Get More Customers in 30 Days -- BluWav Growth Sprint':'Stratiix Transformation OS -- Built for '+lead.org;
   document.getElementById('e-body').value='Hi,\n\n'+getEmailBody(brands,sector,lead.org)+'\n\nAndrea Tanguay\nFounder & Executive Director, BluWav Group\nStratiix | BluWav Growth | Qualia Systems | Credii\n\nBook a call: bluwavgrowth.com';
   document.getElementById('emodal').classList.add('on');
 }
@@ -766,6 +768,9 @@ function initWhenReady(){
   }
 }
 initWhenReady();
+
+
+}
 </script>
 </body>
 </html>
