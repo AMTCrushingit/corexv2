@@ -251,21 +251,20 @@ function getSummary(org, sector, country, brands){
   const s=sector.toLowerCase();
   const hasSTR=brands.includes('STR'), hasBLU=brands.includes('BLU');
   let pain='', fix='';
-  if(s.includes('consult')) pain=org+' is a consulting firm in '+country+'. The founder is likely the operating system — every client decision, every delivery issue runs through one person. Teams become dependent. Accountability becomes unclear.';
+  if(s.includes('consult')) pain=org+' is a consulting firm in '+country+'. The founder is likely the operating system of the business. Every client decision, every delivery issue runs through one person. Teams become dependent. Accountability becomes unclear.';
   else if(s.includes('it')||s.includes('tech')) pain=org+' is a technology firm in '+country+'. Scaling beyond 10 staff creates a predictable wall: the founder becomes the single point of failure for every technical decision and client escalation.';
-  else if(s.includes('construct')||s.includes('engineer')) pain=org+' is in construction/engineering in '+country+'. Every project runs through the owner — subcontractor coordination, client communication, quality control all depend on one person.';
+  else if(s.includes('construct')||s.includes('engineer')) pain=org+' is in construction/engineering in '+country+'. Every project runs through the owner. Subcontractor coordination, client communication, quality control all depend on one person.';
   else if(s.includes('logistic')) pain=org+' operates in logistics in '+country+'. The operations manager is the only person who knows how everything works. When unavailable, the business stalls.';
-  else if(s.includes('legal')) pain=org+' is a legal firm in '+country+'. The firm's performance depends almost entirely on the founding partner — client relationships, matter management, business development all concentrated in one person.';
-  else if(s.includes('financial')||s.includes('account')) pain=org+' provides financial services in '+country+'. Growth is creating complexity the current systems cannot handle. The founder is the operating system and it's becoming unsustainable.';
+  else if(s.includes('legal')) pain=org+' is a legal firm in '+country+'. The firm performance depends almost entirely on the founding partner. Client relationships, matter management, business development all concentrated in one person.';
+  else if(s.includes('financial')||s.includes('account')) pain=org+' provides financial services in '+country+'. Growth is creating complexity the current systems cannot handle. The founder is the operating system and it is becoming unsustainable.';
   else if(s.includes('hr')||s.includes('human')) pain=org+' provides HR services in '+country+'. Client relationships, candidate pipelines, and service delivery all run through the founder or a small number of key individuals.';
   else if(s.includes('market')||s.includes('advertis')) pain=org+' is a marketing firm in '+country+'. They help clients get visible but their own pipeline is often neglected. No structured new business process.';
   else if(s.includes('tourism')||s.includes('hospital')) pain=org+' operates in tourism/hospitality in '+country+'. Most Caribbean hospitality businesses rely on word-of-mouth with no structured digital presence or booking pipeline.';
-  else if(s.includes('educat')||s.includes('train')) pain=org+' provides training services in '+country+'. Entirely dependent on the founder's personal brand. When at capacity, the business cannot grow.';
-  else if(s.includes('event')) pain=org+' is an events firm in '+country+'. Every event runs through the owner personally — vendor coordination, client communication, on-site management all dependent on one person.';
-  else pain=org+' is a founder-led SME in '+country+'. Growth is creating complexity — decisions concentrated, teams dependent, performance hard to sustain without the founder in every room.';
-
+  else if(s.includes('educat')||s.includes('train')) pain=org+' provides training services in '+country+'. Entirely dependent on the founder personal brand. When at capacity, the business cannot grow.';
+  else if(s.includes('event')) pain=org+' is an events firm in '+country+'. Every event runs through the owner personally. Vendor coordination, client communication, on-site management all dependent on one person.';
+  else pain=org+' is a founder-led SME in '+country+'. Growth is creating complexity. Decisions are concentrated, teams are dependent, and performance is hard to sustain without the founder in every room.';
   if(hasSTR&&hasBLU) fix='Stratiix Transformation OS removes founder dependency. BluWav Growth Sprint ($2,500) gets more customers in 30 days.';
-  else if(hasBLU) fix='BluWav Growth Sprint ($2,500) — growth roadmap, visibility improvements, repeatable customer acquisition in 30 days.';
+  else if(hasBLU) fix='BluWav Growth Sprint ($2,500) delivers a growth roadmap, visibility improvements, and a repeatable customer acquisition system in 30 days.';
   else fix='Stratiix Transformation OS diagnoses what is limiting performance and builds the organizational capability to scale beyond the founder. Free 45-min Diagnostic.';
   return pain+' '+fix;
 }
@@ -273,39 +272,12 @@ function getSummary(org, sector, country, brands){
 function getEmailBody(brands, sector, org){
   const s=sector.toLowerCase();
   const hasSTR=brands.includes('STR'), hasBLU=brands.includes('BLU');
-  if(hasSTR&&hasBLU) return 'I came across '+org+' and see a strong fit on two fronts.
-
-First — Stratiix helps founder-led organizations build the capability to scale beyond the founder. If growth is creating complexity — decisions concentrated, teams dependent — Stratiix diagnoses what is limiting performance and builds the systems to fix it. Entry point: free 45-minute Diagnostic.
-
-Second — our BluWav Growth Sprint gets you more customers in 30 days. Starting at $2,500.
-
-Would you be open to a quick 20-minute call this week?';
-  if(hasBLU) return 'I came across '+org+' and think our BluWav Growth Sprint is a strong fit.
-
-In 30 days, we help Caribbean businesses get more customers — with a clear growth roadmap, visibility improvements, and expert guidance. Starting at $2,500.
-
-Would you be open to a quick 20-minute call this week?';
-  if(s.includes('consult')) return 'I came across '+org+' and think there is a strong fit with Stratiix.
-
-Stratiix helps founder-led consulting firms build the organizational capability to scale beyond the founder. If you are the operating system of your business — every client decision running through you — Stratiix diagnoses what is creating that dependency and builds the systems to change it.
-
-Entry point: free 45-minute Stratiix Diagnostic. No pitch — just clarity.
-
-Would you be open to a call this week?';
-  if(s.includes('it')||s.includes('tech')) return 'I came across '+org+' and think there is a strong fit with Stratiix.
-
-Stratiix helps founder-led technology firms build the organizational capability to scale beyond the founder. If your team depends on you for every technical decision and client escalation, Stratiix diagnoses what is creating that dependency and builds the governance structures to change it.
-
-Entry point: free 45-minute Stratiix Diagnostic.
-
-Would you be open to a call this week?';
-  return 'I came across '+org+' and think there is a strong fit with Stratiix.
-
-Stratiix helps founder-led organizations build the capability to scale beyond the founder. If growth is creating complexity — decisions concentrated, teams dependent, performance hard to sustain — Stratiix diagnoses exactly what is limiting performance and builds the systems to fix it.
-
-Entry point: free 45-minute Stratiix Diagnostic. No pitch — just clarity.
-
-Would you be open to a call this week?';
+  if(hasSTR&&hasBLU) return 'I came across '+org+' and see a strong fit on two fronts.\n\nFirst, Stratiix helps founder-led organizations build the capability to scale beyond the founder. If growth is creating complexity, Stratiix diagnoses what is limiting performance and builds the systems to fix it. Entry point: free 45-minute Diagnostic.\n\nSecond, our BluWav Growth Sprint gets you more customers in 30 days. Starting at $2,500.\n\nWould you be open to a quick 20-minute call this week?';
+  if(hasBLU) return 'I came across '+org+' and think our BluWav Growth Sprint is a strong fit.\n\nIn 30 days, we help Caribbean businesses get more customers with a clear growth roadmap, visibility improvements, and expert guidance. Starting at $2,500.\n\nWould you be open to a quick 20-minute call this week?';
+  if(s.includes('consult')) return 'I came across '+org+' and think there is a strong fit with Stratiix.\n\nStratiix helps founder-led consulting firms build the organizational capability to scale beyond the founder. If you are the operating system of your business, every client decision running through you, Stratiix diagnoses what is creating that dependency and builds the systems to change it.\n\nEntry point: free 45-minute Stratiix Diagnostic. No pitch, just clarity.\n\nWould you be open to a call this week?';
+  if(s.includes('it')||s.includes('tech')) return 'I came across '+org+' and think there is a strong fit with Stratiix.\n\nStratiix helps founder-led technology firms build the organizational capability to scale beyond the founder. If your team depends on you for every technical decision and client escalation, Stratiix diagnoses what is creating that dependency and builds the governance structures to change it.\n\nEntry point: free 45-minute Stratiix Diagnostic.\n\nWould you be open to a call this week?';
+  if(s.includes('construct')||s.includes('engineer')||s.includes('logistic')) return 'I came across '+org+' and think there is a strong fit with Stratiix.\n\nStratiix helps founder-led businesses in construction and logistics build the organizational capability to run operations without the founder being the single point of failure. If every project or delivery runs through you personally, Stratiix diagnoses what is creating that dependency and installs the systems to change it.\n\nEntry point: free 45-minute Stratiix Diagnostic.\n\nWould you be open to a call this week?';
+  return 'I came across '+org+' and think there is a strong fit with Stratiix.\n\nStratiix helps founder-led organizations build the capability to scale beyond the founder. If growth is creating complexity, decisions concentrated, teams dependent, performance hard to sustain, Stratiix diagnoses exactly what is limiting performance and builds the systems to fix it.\n\nEntry point: free 45-minute Stratiix Diagnostic. No pitch, just clarity.\n\nWould you be open to a call this week?';
 }
 
 // ================================================================
