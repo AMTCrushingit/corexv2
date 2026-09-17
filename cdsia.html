@@ -406,7 +406,7 @@ async function runScan(){
   panel.classList.add('on');
   fill.style.width='0%';log.innerHTML='';
   const addLog=msg=>{log.innerHTML+='<div>> '+msg+'</div>';log.scrollTop=log.scrollHeight;};
-  addLog('Scanning '+NEWS_SOURCES.length+' Caribbean news sources...');
+  addLog('Scanning '+NEWS_SOURCES.length+' Caribbean news sources for stressed SMEs...');
 
   let newLeads=[];
   for(let i=0;i<NEWS_SOURCES.length;i++){
@@ -427,7 +427,7 @@ async function runScan(){
           const item=bizItems[j];
           const desc=(item.description||'').replace(/<[^>]+>/g,'');
           const {score,found}=scoreScan(item.title,desc);
-          if(score<65) continue;
+          if(score<58) continue;
           const org=item.title.replace(/\b(says?|reports?|announces?|launches?|opens?|hires?|expands?)\b.*/i,'').replace(/['"]/g,'').trim().split(/[:\--|]/)[0].trim().substring(0,65)||src.name+' Business';
           const brands=scanBrands(found,desc);
           const urgency=score>=82?'Critical':score>=70?'High':'Medium';
