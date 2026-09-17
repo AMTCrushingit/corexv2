@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8"/>
 <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-<title>CDSIA — Caribbean Lead Intelligence</title>
+<title>CDSIA -- Caribbean Lead Intelligence</title>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet"/>
 <style>
 :root {
@@ -179,7 +179,7 @@ body{font-family:'Inter',sans-serif;background:var(--bg);color:var(--text);min-h
   <div class="hdr-l">
     <div class="pulse"></div>
     <div>
-      <div class="logo">CDSIA — Lead Intelligence</div>
+      <div class="logo">CDSIA -- Lead Intelligence</div>
       <div class="logo-sub">Caribbean Distress Signals · Stratiix & BluWav Growth Pipeline · September Sprint</div>
     </div>
   </div>
@@ -428,7 +428,7 @@ async function runScan(){
           const desc=(item.description||'').replace(/<[^>]+>/g,'');
           const {score,found}=scoreScan(item.title,desc);
           if(score<65) continue;
-          const org=item.title.replace(/\b(says?|reports?|announces?|launches?|opens?|hires?|expands?)\b.*/i,'').replace(/['"]/g,'').trim().split(/[:\-–|]/)[0].trim().substring(0,65)||src.name+' Business';
+          const org=item.title.replace(/\b(says?|reports?|announces?|launches?|opens?|hires?|expands?)\b.*/i,'').replace(/['"]/g,'').trim().split(/[:\--|]/)[0].trim().substring(0,65)||src.name+' Business';
           const brands=scanBrands(found,desc);
           const urgency=score>=82?'Critical':score>=70?'High':'Medium';
           const scanSum=scanSummary(org,src.country,brands,found,desc);
