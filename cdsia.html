@@ -629,6 +629,7 @@ function renderCard(l,state){
   const aRow=`<div class="a-row">
     <button class="a-btn em" onclick="openEmail('${l.id}')">✉️ Draft Email</button>
     ${waLink}
+    <a class="a-btn apollo" href="https://app.apollo.io/#/people?organizationName=${encodeURIComponent(l.org)}" target="_blank" rel="noopener" title="Find contact on Apollo.io">🔍 Find Contact</a>
     <button class="a-btn" onclick="copyBrief('${l.id}')">📋 Copy Brief</button>
     ${srcLink?`<a class="a-btn" href="${srcLink}" target="_blank" rel="noopener">🔗 Source ↗</a>`:''}
   </div>`;
