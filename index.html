@@ -581,6 +581,35 @@
     /* ================================================================
        SCROLLBAR
        ================================================================ */
+    /* Award / Trends / Sources cards */
+    .award-card, .trend-card, .source-card, .agent-card {
+      background: var(--bg-dark); border: 1px solid var(--border);
+      border-radius: var(--radius); padding: 16px 18px; margin-bottom: 10px;
+    }
+    .award-card:hover, .trend-card:hover { border-color: rgba(0,232,255,0.2); }
+    .award-title { font-family: var(--font-display); font-size: 14px; font-weight: 700; color: var(--text-primary); margin-bottom: 4px; }
+    .award-org { font-family: var(--font-mono); font-size: 10px; color: var(--text-secondary); margin-bottom: 8px; }
+    .award-meta { display:flex; gap:12px; flex-wrap:wrap; }
+    .award-meta span { font-family: var(--font-mono); font-size: 10px; color: var(--text-muted); }
+    .award-status { font-family: var(--font-mono); font-size: 10px; font-weight: 700; padding: 2px 8px; border-radius: 2px; background: var(--cyan-dim); color: var(--cyan); }
+    .trend-icon { font-size: 24px; margin-bottom: 8px; }
+    .trend-title { font-family: var(--font-display); font-size: 14px; font-weight: 700; color: var(--text-primary); margin-bottom: 4px; }
+    .trend-value { font-family: var(--font-mono); font-size: 18px; font-weight: 700; color: var(--green); margin-bottom: 6px; }
+    .trend-detail { font-size: 12px; color: var(--text-secondary); line-height: 1.6; }
+    .trends-grid { display: grid; grid-template-columns: repeat(3,1fr); gap: 12px; }
+    .agent-card { display:flex; align-items:center; gap:16px; }
+    .agent-avatar { width:44px; height:44px; border-radius:50%; background:var(--cyan-dim); border:2px solid var(--cyan); display:flex; align-items:center; justify-content:center; font-size:18px; flex-shrink:0; }
+    .agent-name { font-family: var(--font-display); font-size: 15px; font-weight: 700; color: var(--text-primary); }
+    .agent-specialty { font-family: var(--font-mono); font-size: 10px; color: var(--cyan); margin-top: 2px; }
+    .agent-region { font-family: var(--font-mono); font-size: 10px; color: var(--text-muted); margin-top: 2px; }
+    .source-grid { display:grid; grid-template-columns:repeat(2,1fr); gap:12px; }
+    .source-card { padding:14px 16px; }
+    .source-name { font-family: var(--font-display); font-size: 13px; font-weight: 700; color: var(--text-primary); margin-bottom:4px; }
+    .source-url { font-family: var(--font-mono); font-size: 10px; color: var(--cyan); margin-bottom:6px; }
+    .source-status { font-family: var(--font-mono); font-size: 10px; }
+    .source-status.ok { color: var(--green); }
+    .source-status.warn { color: var(--gold); }
+
     ::-webkit-scrollbar { width: 4px; height: 4px; }
     ::-webkit-scrollbar-track { background: transparent; }
     ::-webkit-scrollbar-thumb { background: var(--text-muted); border-radius: 2px; }
@@ -697,6 +726,19 @@ Founder &amp; Executive Director access only.
 <div class="nav-item" data-view="digest" onclick="showView('digest',this)">
 <span class="nav-icon">📙</span> Intelligence Digest
         </div>
+<div class="nav-section-label">Intelligence</div>
+<div class="nav-item" data-view="awards" onclick="showView('awards',this)">
+<span class="nav-icon">🏆</span> Award Monitoring
+        </div>
+<div class="nav-item" data-view="trends" onclick="showView('trends',this)">
+<span class="nav-icon">📈</span> Market Trends
+        </div>
+<div class="nav-item" data-view="sources" onclick="showView('sources',this)">
+<span class="nav-icon">📡</span> Procurement Scanner
+        </div>
+<div class="nav-item" data-view="agents" onclick="showView('agents',this)">
+<span class="nav-icon">👥</span> Agent Routing
+        </div>
 </nav>
 <div class="sidebar-bottom">
 <div class="user-info">
@@ -801,6 +843,53 @@ Founder &amp; Executive Director access only.
 </div>
 </div>
 </div>
+
+<!-- VIEW: AWARDS -->
+<div class="view" id="view-awards">
+<div class="section-header">
+<div>
+<div class="section-title">🏆 Award Monitoring</div>
+<div class="section-sub">Recent Caribbean contract awards · Relationship positioning</div>
+</div>
+</div>
+<div id="awards-container"></div>
+</div>
+
+<!-- VIEW: TRENDS -->
+<div class="view" id="view-trends">
+<div class="section-header">
+<div>
+<div class="section-title">📈 Market Trends</div>
+<div class="section-sub">Caribbean digital economy signals · Strategic intelligence</div>
+</div>
+</div>
+<div id="trends-container"></div>
+</div>
+
+<!-- VIEW: PROCUREMENT SCANNER -->
+<div class="view" id="view-sources">
+<div class="section-header">
+<div>
+<div class="section-title">📡 Procurement Scanner</div>
+<div class="section-sub">UNGM · ReliefWeb · Devex · CCCCC · JBDC · IDB · EU-LAC</div>
+</div>
+<button class="run-btn" onclick="runProcurementScan()" style="font-size:10px;padding:5px 12px;">📡 Scan</button>
+</div>
+<div id="source-health-row" style="display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:20px;"></div>
+<div id="sources-container"></div>
+</div>
+
+<!-- VIEW: AGENT ROUTING -->
+<div class="view" id="view-agents">
+<div class="section-header">
+<div>
+<div class="section-title">👥 Agent Routing</div>
+<div class="section-sub">Devon · Aaliya · Marcus · Simone</div>
+</div>
+</div>
+<div id="agents-container"></div>
+</div>
+
 </div><!-- /content-area -->
 </div><!-- /main-content -->
 </div><!-- /app-layout -->
@@ -1007,7 +1096,11 @@ const VIEW_TITLES={
   'cdsia':'CDSIA - MSME Distress Signals',
   'ifin':'IFIN - Funding Intelligence',
   'opportunity-report':'Opportunity Report',
-  'digest':'Intelligence Digest'
+  'digest':'Intelligence Digest',
+  'awards':'🏆 Award Monitoring',
+  'trends':'📈 Market Trends',
+  'sources':'📡 Procurement Scanner',
+  'agents':'👥 Agent Routing'
 };
 
 function showView(name, el){
@@ -1020,6 +1113,10 @@ function showView(name, el){
   if(name==='cotis') renderAgentSignals('cotis');
   if(name==='cdsia') renderCDSIAView();
   if(name==='ifin') renderAgentSignals('ifin');
+  if(name==='awards'){ const el=document.getElementById('awards-container'); if(el) renderAwards(); }
+  if(name==='trends'){ const el=document.getElementById('trends-container'); if(el) renderTrends(); }
+  if(name==='sources'){ const el=document.getElementById('sources-container'); if(el) renderSourcesView(); }
+  if(name==='agents'){ const el=document.getElementById('agents-container'); if(el) renderAgents(); }
 }
 
 function filterQueue(filter, btn){
@@ -1923,6 +2020,181 @@ function generateDigest(){
       </div>
     </div>`;
   showToast('📙 Intelligence Digest generated');
+}
+
+
+// ================================================================
+// V1 DATA — AWARD MONITORING, TRENDS, SOURCES, AGENTS
+// ================================================================
+const AGENTS_DATA=[
+  {name:"Devon",specialty:"Gov / RFP",region:"🌊 Caribbean"},
+  {name:"Aaliya",specialty:"NGO / Donor",region:"🌊 Caribbean"},
+  {name:"Marcus",specialty:"UN / Tech",region:"🌊 Caribbean & LATAM"},
+  {name:"Simone",specialty:"Startup Ecosystems",region:"🌊 Caribbean"}
+];
+
+const AWARD_DATA=[
+  {name:"OECS E-Government Phase 1",org:"OECS Commission",value:"USD 12M",awarded:"2026-06-15",winner:"Accenture Caribbean",status:"Relationship Positioned",notes:"Follow-up for Phase 2 CRM component"},
+  {name:"USAID Digital Literacy TT",org:"USAID / T&T Ministry",value:"USD 800K",awarded:"2026-05-20",winner:"Local NGO Consortium",status:"Monitoring",notes:"Partner org needs CRM — outreach pending"},
+  {name:"GIZ SME Digitization Pilot",org:"GIZ / EU",value:"EUR 1.2M",awarded:"2026-04-10",winner:"TechBridge Caribbean",status:"Follow-up Opportunity",notes:"Phase 2 RFP expected Q4 2026"},
+  {name:"CDB Innovation Grant Round 3",org:"Caribbean Development Bank",value:"USD 3.5M",awarded:"2026-03-28",winner:"Multiple SMEs",status:"Relationship Positioned",notes:"10 winning SMEs need CRM tools"},
+  {name:"JBDC Digital Transformation",org:"JBDC Jamaica",value:"USD 450K",awarded:"2026-02-14",winner:"IBM Jamaica",status:"Monitoring",notes:"Sub-contract CRM opportunity identified"},
+  {name:"Guyana Digital Gov Phase 1",org:"Govt. of Guyana",value:"USD 5.2M",awarded:"2026-01-30",winner:"Deloitte",status:"Follow-up Opportunity",notes:"Phase 2 includes CRM for 12 ministries"},
+  {name:"PAHO Health Info Network",org:"PAHO / WHO",value:"USD 2.1M",awarded:"2025-12-10",winner:"Health Informatics Ltd",status:"Monitoring",notes:"CRM component not yet awarded"},
+  {name:"IDB Startup Accelerator Cohort 1",org:"IDB Lab",value:"USD 1.8M",awarded:"2025-11-05",winner:"Caribbean Ventures",status:"Relationship Positioned",notes:"Cohort 2 RFP expected Aug 2026"}
+];
+
+const TRENDS_DATA=[
+  {title:"Caribbean Digital Transformation Spend",trend:"↑ 34% YoY",detail:"Regional governments increasing digital procurement budgets. OECS, Guyana, and Jamaica leading.",color:"#0ea5e9",icon:"📈"},
+  {title:"NGO CRM Adoption Rate",trend:"↑ 28% YoY",detail:"Caribbean NGOs accelerating CRM adoption driven by donor reporting requirements.",color:"#22c55e",icon:"🌱"},
+  {title:"Startup Ecosystem Growth",trend:"↑ 41% YoY",detail:"Caribbean tech startups growing rapidly. T&T, Barbados, and Jamaica leading fintech and SaaS.",color:"#6366f1",icon:"🚀"},
+  {title:"Donor Funding to Caribbean",trend:"↑ 19% YoY",detail:"USAID, GIZ, IDB, and World Bank increasing Caribbean digital economy investments.",color:"#f59e0b",icon:"💰"}
+];
+
+const DTI_DATA=[
+  {country:"🇹🇹 Trinidad & Tobago",score:74},{country:"🇯🇲 Jamaica",score:71},
+  {country:"🇧🇧 Barbados",score:78},{country:"🇬🇾 Guyana",score:65},
+  {country:"🇱🇨 St. Lucia",score:62},{country:"🇩🇲 Dominica",score:58}
+];
+
+const SOURCES_DATA=[
+  {id:"s1",name:"UNGM / Tenderal",icon:"📋",desc:"UN Global Marketplace & Caribbean RFP Tenders (World Bank, CDB)",type:"rfp",active:true,freq:"6h",lastScraped:"2026-08-06T06:00:00Z",totalLeads:142,todayLeads:4,dailyCounts:[2,5,3,4,6,3,4]},
+  {id:"s2",name:"JBDC / Directories",icon:"🏢",desc:"JBDC, BIDC, T&T Business Registry, Caribbean SME listings",type:"directory",active:true,freq:"24h",lastScraped:"2026-08-06T06:00:00Z",totalLeads:89,todayLeads:3,dailyCounts:[1,3,2,1,4,2,3]},
+  {id:"s3",name:"Devex / ReliefWeb",icon:"💼",desc:"Devex, ReliefWeb, Idealist — Caribbean NGO & nonprofit postings",type:"jobboard",active:true,freq:"12h",lastScraped:"2026-08-06T06:00:00Z",totalLeads:67,todayLeads:3,dailyCounts:[2,1,4,3,2,5,3]},
+  {id:"s4",name:"Donor Portals",icon:"🌱",desc:"USAID, GIZ, Green Climate Fund, CCCCC, IADB donor platforms",type:"donor",active:true,freq:"6h",lastScraped:"2026-08-06T06:00:00Z",totalLeads:118,todayLeads:6,dailyCounts:[3,4,5,6,4,7,6]},
+  {id:"s5",name:"Founder Networks",icon:"📣",desc:"AngelList Caribbean, LinkedIn Startup Founders, TechStartups TT",type:"founder",active:true,freq:"12h",lastScraped:"2026-08-06T06:00:00Z",totalLeads:53,todayLeads:3,dailyCounts:[1,2,3,2,4,1,3]},
+  {id:"s6",name:"EU-LAC / IDB",icon:"🌍",desc:"EU-LAC Digital Programme, IDB Lab, Inter-American Development Bank",type:"donor",active:true,freq:"6h",lastScraped:"2026-08-06T06:00:00Z",totalLeads:74,todayLeads:2,dailyCounts:[2,1,3,3,1,2,2]},
+  {id:"s7",name:"Guyana eProcure",icon:"🏛️",desc:"Guyana Government Procurement Portal",type:"rfp",active:true,freq:"6h",lastScraped:"2026-08-06T06:00:00Z",totalLeads:31,todayLeads:1,dailyCounts:[1,0,1,2,0,1,1]},
+  {id:"s8",name:"OECS Procurement",icon:"🌊",desc:"OECS Commission Procurement & Digital Transformation tenders",type:"rfp",active:false,freq:"12h",lastScraped:"2026-08-05T18:00:00Z",totalLeads:28,todayLeads:0,dailyCounts:[1,1,0,2,1,0,0]}
+];
+
+// ================================================================
+// V1 RENDER FUNCTIONS
+// ================================================================
+function renderAwards(){
+  const statusColors={"Relationship Positioned":"background:rgba(16,185,129,0.12);color:#6ee7b7;","Monitoring":"background:rgba(245,158,11,0.12);color:#fcd34d;","Follow-up Opportunity":"background:rgba(139,92,246,0.15);color:#c4b5fd;"};
+  const el=document.getElementById('awards-container');
+  if(!el) return;
+  el.innerHTML=AWARD_DATA.map(a=>`
+    <div style="padding:14px 16px;border-bottom:1px solid rgba(167,139,250,0.1);display:flex;align-items:center;gap:14px;">
+      <div style="width:36px;height:36px;border-radius:10px;background:rgba(167,139,250,0.12);display:flex;align-items:center;justify-content:center;font-size:18px;flex-shrink:0;">🏆</div>
+      <div style="flex:1;">
+        <div style="font-size:13px;font-weight:600;color:#f5f3ff;">${a.name}</div>
+        <div style="font-size:11px;color:#7c6fa0;">${a.org} · ${a.value} · Awarded ${a.awarded}</div>
+        <div style="font-size:11px;color:#4c3494;margin-top:2px;">Winner: ${a.winner}</div>
+      </div>
+      <div style="text-align:right;">
+        <span class="badge" style="${statusColors[a.status]||'background:#2d1f5e;color:#c4b5fd;'}font-size:10px;">${a.status}</span>
+        <div style="font-size:10px;color:#4c3494;margin-top:4px;max-width:160px;text-align:right;">${a.notes}</div>
+      </div>
+    </div>`).join('');
+}
+
+function renderTrends(){
+  const tg=document.getElementById('trends-grid');
+  if(tg) tg.innerHTML=TRENDS_DATA.map(t=>`
+    <div style="background:#1a1035;border-radius:14px;padding:20px;box-shadow:0 4px 24px rgba(139,92,246,0.1);border-left:4px solid ${t.color};">
+      <div style="display:flex;align-items:center;gap:10px;margin-bottom:10px;">
+        <span style="font-size:24px;">${t.icon}</span>
+        <div><div style="font-size:13px;font-weight:700;color:#f5f3ff;">${t.title}</div><div style="font-size:18px;font-weight:700;color:${t.color};">${t.trend}</div></div>
+      </div>
+      <p style="font-size:12px;color:#7c6fa0;line-height:1.5;">${t.detail}</p>
+    </div>`).join('');
+  const dg=document.getElementById('dti-grid');
+  if(dg) dg.innerHTML=DTI_DATA.map(d=>`
+    <div style="background:#120d24;border-radius:12px;padding:14px;text-align:center;">
+      <div style="font-size:13px;font-weight:600;color:#f5f3ff;margin-bottom:6px;">${d.country}</div>
+      <div style="font-size:26px;font-weight:700;color:#a78bfa;">${d.score}</div>
+      <div style="font-size:11px;color:#7c6fa0;">DTI Score</div>
+      <div style="height:6px;border-radius:3px;background:#e2e8f0;overflow:hidden;margin-top:8px;"><div style="height:100%;border-radius:3px;background:#7c3aed;width:${d.score}%;"></div></div>
+    </div>`).join('');
+}
+
+function renderAgents(){
+  document.getElementById('agents-container').innerHTML=agents.map((a,i)=>`
+    <div style="display:flex;align-items:center;justify-content:space-between;padding:10px 14px;background:#120d24;border-radius:10px;margin-bottom:8px;">
+      <div>
+        <span style="font-size:14px;font-weight:600;color:#f5f3ff;">${a.name}</span>
+        <span style="font-size:12px;color:#7c6fa0;margin-left:8px;">${a.specialty}</span>
+        <span style="font-size:12px;margin-left:8px;">${a.region}</span>
+      </div>
+      <button class="remove-agent-btn" data-idx="${i}" style="background:none;border:none;cursor:pointer;color:#ef4444;font-size:18px;" title="Remove">&times;</button>
+    </div>`).join('');
+}
+
+function renderSourceHealth(){
+  document.getElementById('source-health-row').innerHTML=SOURCES_DATA.map(s=>{
+    const status=s.active?(s.id==='s6'?'🟡 Rate Limited':'🟢 Active'):'🔴 Paused';
+    const maxC=Math.max(...s.dailyCounts,1);
+    const bars=s.dailyCounts.map(c=>`<span class="mini-bar" style="height:${Math.max(4,c/maxC*28)}px;"></span>`).join('');
+    return `<div style="background:#fff;border-radius:14px;padding:14px 16px;box-shadow:0 1px 3px rgba(0,0,0,0.06);">
+      <div style="display:flex;align-items:center;gap:6px;margin-bottom:6px;">
+        <span style="font-size:16px;">${s.icon}</span>
+        <span style="font-size:12px;font-weight:600;color:#f5f3ff;">${s.name}</span>
+      </div>
+      <div style="font-size:11px;color:#7c6fa0;margin-bottom:4px;">${status}</div>
+      <div style="font-size:11px;color:#4c3494;margin-bottom:6px;">Last: ${fmtTime(s.lastScraped)}</div>
+      <div style="display:flex;align-items:center;justify-content:space-between;">
+        <span style="font-size:13px;font-weight:700;color:#a78bfa;">+${s.todayLeads} today</span>
+        <div style="display:flex;align-items:flex-end;height:30px;">${bars}</div>
+      </div>
+    </div>`;
+  }).join('');
+}
+
+function renderSourcesView(){
+  document.getElementById('sources-grid').innerHTML=SOURCES_DATA.map(s=>{
+    const isOn=s.active;
+    const nextH=parseInt(s.freq)||6;
+    const ls=new Date(s.lastScraped);
+    const ns=new Date(ls.getTime()+nextH*3600000);
+    return `<div class="source-card" data-source-id="${s.id}">
+      <div style="display:flex;align-items:start;justify-content:space-between;margin-bottom:12px;">
+        <div>
+          <div style="font-size:20px;margin-bottom:4px;">${s.icon}</div>
+          <h3 style="font-size:16px;font-weight:700;color:#f5f3ff;">${s.name}</h3>
+          <p style="font-size:12px;color:#7c6fa0;margin-top:2px;">${s.desc}</p>
+        </div>
+        <div class="toggle-switch ${isOn?'on':''}" data-source-toggle="${s.id}"></div>
+      </div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:14px;">
+        <div style="background:#120d24;border-radius:10px;padding:10px;">
+          <div style="font-size:11px;color:#7c6fa0;">Scrape Frequency</div>
+          <select class="source-freq" data-sid="${s.id}" style="margin-top:4px;height:32px;font-size:12px;">
+            <option value="6h" ${s.freq==='6h'?'selected':''}>Every 6h</option>
+            <option value="12h" ${s.freq==='12h'?'selected':''}>Every 12h</option>
+            <option value="24h" ${s.freq==='24h'?'selected':''}>Every 24h</option>
+          </select>
+        </div>
+        <div style="background:#120d24;border-radius:10px;padding:10px;">
+          <div style="font-size:11px;color:#7c6fa0;">Leads Found</div>
+          <div style="font-size:20px;font-weight:700;color:#f5f3ff;font-variant-numeric:tabular-nums;">${s.totalLeads} <span style="font-size:12px;font-weight:500;color:#22c55e;">+${s.todayLeads} today</span></div>
+        </div>
+      </div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:14px;">
+        <div><div style="font-size:11px;color:#7c6fa0;margin-bottom:4px;">Last Scraped</div><div style="font-size:12px;color:#c4b5fd;font-weight:500;">${fmtTime(s.lastScraped)}</div></div>
+        <div><div style="font-size:11px;color:#7c6fa0;margin-bottom:4px;">Next Scheduled</div><div style="font-size:12px;color:#c4b5fd;font-weight:500;">${fmtTime(ns.toISOString())}</div></div>
+      </div>
+      <div style="margin-bottom:12px;">
+        <label style="font-size:11px;color:#7c6fa0;display:block;margin-bottom:4px;">Filter Keywords</label>
+        <input type="text" class="source-keywords" data-sid="${s.id}" value="CRM, digital, software, nonprofit" style="font-size:12px;height:34px;" />
+      </div>
+      <div style="margin-bottom:14px;">
+        <label style="font-size:11px;color:#7c6fa0;display:block;margin-bottom:4px;">Webhook / RSS URL</label>
+        <input type="url" class="source-webhook" data-sid="${s.id}" placeholder="https://..." style="font-size:12px;height:34px;" />
+      </div>
+      <div style="display:flex;gap:8px;">
+        <button class="btn-secondary test-conn-btn" data-sid="${s.id}" style="font-size:12px;padding:6px 14px;"><i data-lucide="plug" class="w-3 h-3"></i> Test</button>
+        <button class="btn-primary scrape-now-btn" data-sid="${s.id}" style="font-size:12px;padding:6px 14px;"><i data-lucide="refresh-cw" class="w-3 h-3"></i> Scan Now</button>
+      </div>
+    </div>`;
+  }).join('');
+  refreshIcons();
+}
+
+function runProcurementScan(){
+  showToast('📡 Procurement Scanner running...');
+  setTimeout(()=>showToast('✅ Procurement scan complete'),2000);
 }
 
 // ================================================================
