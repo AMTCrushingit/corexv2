@@ -754,7 +754,7 @@ Founder &amp; Executive Director access only.
 <div class="topbar-title" id="view-title">Command Centre</div>
 <div class="topbar-right">
 <div class="topbar-time" id="topbar-time">--</div>
-<button class="run-btn" onclick="corexRunCycle()">▶ Run Cycle</button>
+<button class="run-btn" id="run-cycle-btn" onclick="corexRunCycle()">▶ Run Cycle</button>
 </div>
 </div>
 <div class="content-area">
@@ -783,7 +783,7 @@ Founder &amp; Executive Director access only.
 <div class="section-title">COTIS -- Tenders &amp; Procurement</div>
 <div class="section-sub">Caribbean Opportunity, Tender &amp; Infrastructure Signals</div>
 </div>
-<button class="run-btn" onclick="runCOTISLiveScan().then(()=>{renderAgentSignals('cotis');updateBadges();renderCommandStats();})" style="font-size:10px;padding:5px 12px;">📡 Scan</button>
+<button class="run-btn" onclick="cotisScanAndRender()" style="font-size:10px;padding:5px 12px;">📡 Scan</button>
 </div>
 <div id="cotis-signals"></div>
 </div>
@@ -794,7 +794,7 @@ Founder &amp; Executive Director access only.
 <div class="section-title">CDSIA -- MSME Distress Signals</div>
 <div class="section-sub">Caribbean Distress Signals &amp; MSME Reality Mapping</div>
 </div>
-<button class="run-btn" onclick="runCDSIALiveScan().then(()=>{renderCDSIAView();updateBadges();renderCommandStats();})" style="font-size:10px;padding:5px 12px;">📡 Scan</button>
+<button class="run-btn" onclick="cdsiaScanAndRender()" style="font-size:10px;padding:5px 12px;">📡 Scan</button>
 </div>
 <div id="cdsia-signals"></div>
 </div>
@@ -805,7 +805,7 @@ Founder &amp; Executive Director access only.
 <div class="section-title">IFIN -- Funding Intelligence</div>
 <div class="section-sub">International Funding &amp; Donor Intelligence</div>
 </div>
-<button class="run-btn" onclick="runIFINLiveScan().then(()=>{renderAgentSignals('ifin');updateBadges();renderCommandStats();})" style="font-size:10px;padding:5px 12px;">📡 Scan</button>
+<button class="run-btn" onclick="ifinScanAndRender()" style="font-size:10px;padding:5px 12px;">📡 Scan</button>
 </div>
 <div id="ifin-signals"></div>
 </div>
@@ -1742,7 +1742,7 @@ function copyBrief(id){
 // ================================================================
 // RENDER FUNCTIONS
 // ================================================================
-// DIRECTORY_CDSIA — lazy computed from leads.js
+// DIRECTORY_CDSIA -- lazy computed from leads.js
 function getDirectoryCDSIA(){
   if(typeof DIRECTORY_LEADS === 'undefined') return [];
   return DIRECTORY_LEADS.map(l => ({
@@ -1767,7 +1767,7 @@ function getDirectoryCDSIA(){
   }));
 }
 
-// ALL_SIGNALS — base signals (directory leads added dynamically)
+// ALL_SIGNALS -- base signals (directory leads added dynamically)
 const ALL_SIGNALS = [...COTIS_DATA, ...CDSIA_DATA, ...CDSIA_AGENT_LEADS, ...IFIN_DATA];
 let _queueFilter = 'all';
 
@@ -1823,7 +1823,7 @@ function renderAgentSignals(agent){
   if(!el) return;
   el.innerHTML = data.length
     ? data.map(s=>renderSignalCard(s,agent==='cdsia')).join('')
-    : '<div class="empty-state"><div class="empty-icon">📡</div><div class="empty-title">No signals yet — click Scan</div><div class="empty-sub">COREX will scan Caribbean news sources for fresh intelligence</div></div>';
+    : '<div class="empty-state"><div class="empty-icon">📡</div><div class="empty-title">No signals yet -- click Scan</div><div class="empty-sub">COREX will scan Caribbean news sources for fresh intelligence</div></div>';
 }
 
 function renderSignalCard(s, showFollowUp){
@@ -1902,7 +1902,7 @@ function qualifySignal(id){
 // ================================================================
 function corexRunCycle(){
   showToast('⚡ COREX intelligence cycle running...');
-  const btn = document.querySelector('.run-btn');
+  const btn = document.getElementById('run-cycle-btn') || document.querySelector('.run-btn');
   if(btn){btn.disabled=true;btn.textContent='Running...';}
   setTimeout(()=>{
     if(btn){btn.disabled=false;btn.textContent='▶ Run Cycle';}
@@ -1912,7 +1912,7 @@ function corexRunCycle(){
 }
 
 
-// COTIS Real Scanner — Caribbean procurement & tenders
+// COTIS Real Scanner -- Caribbean procurement & tenders
 const COTIS_QUERIES = [
   {q:'Caribbean government tender RFP procurement 2026', country:'Caribbean', type:'Government RFP'},
   {q:'OECS procurement tender 2026', country:'OECS', type:'Regional RFP'},
@@ -1928,7 +1928,7 @@ const COTIS_QUERIES = [
 
 async function cotisRunScan(){
   showToast('📡 COTIS scanning procurement portals...');
-  const btn = document.querySelector('[onclick="runCOTISLiveScan().then(()=>{renderAgentSignals('cotis');updateBadges();renderCommandStats();})"]');
+  const btn = document.querySelector('[onclick="cotisScanAndRender()"]');
   if(btn){btn.disabled=true;btn.textContent='Scanning...';}
   let newLeads = [];
   for(let i=0;i<COTIS_QUERIES.length;i++){
@@ -1945,13 +1945,13 @@ async function cotisRunScan(){
           newLeads.push({
             id:'COT_SCAN'+Date.now()+'_'+i+'_'+j,
             agent:'cotis', tier:'scanned',
-            org: item.title.split(/[:\-–|]/)[0].trim().substring(0,60)||'Caribbean Procurement',
+            org: item.title.split(/[:\--|]/)[0].trim().substring(0,60)||'Caribbean Procurement',
             country: q.country, sector:'Government / Procurement',
             type: q.type, deadline:'', budget:'',
             score, urgency: score>=85?'Critical':'High',
             brands:['STR','QLA'],
             summary: desc.substring(0,200),
-            whyItMatters:'Caribbean procurement opportunity — potential fit for Stratiix governance advisory and Qualia CRM implementation.',
+            whyItMatters:'Caribbean procurement opportunity -- potential fit for Stratiix governance advisory and Qualia CRM implementation.',
             actionRequired:'Review tender requirements. Submit capability statement if qualified.',
             contact:{name:'',email:'',phone:''},
             source:'Google News', sourceUrl:item.link||'',
@@ -1969,7 +1969,7 @@ async function cotisRunScan(){
   localStorage.setItem('corex_cotis_scanned', JSON.stringify([...fresh,...existing].slice(0,30)));
   if(btn){btn.disabled=false;btn.textContent='📡 Scan';}
   renderAgentSignals('cotis');
-  showToast('✅ COTIS scan complete — '+fresh.length+' new opportunities found');
+  showToast('✅ COTIS scan complete -- '+fresh.length+' new opportunities found');
 }
 
 // ---- Daily Agent Lead Scan ----
@@ -1986,7 +1986,7 @@ function runAgentLeadScan(){
 }
 function cdsiaRunScan(){ showToast('📡 CDSIA scanning Caribbean news sources...'); setTimeout(()=>showToast('✅ CDSIA scan complete'),2000); }
 
-// IFIN Real Scanner — Caribbean funding & donor intelligence
+// IFIN Real Scanner -- Caribbean funding & donor intelligence
 const IFIN_QUERIES = [
   {q:'Caribbean grant funding 2026 application', country:'Caribbean', type:'Grant'},
   {q:'IDB Caribbean funding programme 2026', country:'Caribbean', type:'IDB Programme'},
@@ -2000,7 +2000,7 @@ const IFIN_QUERIES = [
 
 async function ifinRunScan(){
   showToast('📡 IFIN scanning donor portals...');
-  const btn = document.querySelector('[onclick="runIFINLiveScan().then(()=>{renderAgentSignals('ifin');updateBadges();renderCommandStats();})"]');
+  const btn = document.querySelector('[onclick="ifinScanAndRender()"]');
   if(btn){btn.disabled=true;btn.textContent='Scanning...';}
   let newLeads = [];
   for(let i=0;i<IFIN_QUERIES.length;i++){
@@ -2017,13 +2017,13 @@ async function ifinRunScan(){
           newLeads.push({
             id:'IFN_SCAN'+Date.now()+'_'+i+'_'+j,
             agent:'ifin', tier:'scanned',
-            org: item.title.split(/[:\-–|]/)[0].trim().substring(0,60)||'Caribbean Funding',
+            org: item.title.split(/[:\--|]/)[0].trim().substring(0,60)||'Caribbean Funding',
             country: q.country, sector:'International Funding',
             type: q.type, deadline:'', budget:'',
             score, urgency: score>=85?'Critical':'High',
             brands:['STR','BLU','QLA'],
             summary: desc.substring(0,200),
-            alignmentSignal:'Caribbean funding opportunity — potential fit for Stratiix advisory, BluWav visibility, and Qualia CRM implementation.',
+            alignmentSignal:'Caribbean funding opportunity -- potential fit for Stratiix advisory, BluWav visibility, and Qualia CRM implementation.',
             proposalAngle:'Position as Caribbean-built digital infrastructure stack.',
             actionRequired:'Review funding requirements. Submit expression of interest.',
             contact:{name:'',email:'',phone:''},
@@ -2041,7 +2041,7 @@ async function ifinRunScan(){
   localStorage.setItem('corex_ifin_scanned', JSON.stringify([...fresh,...existing].slice(0,30)));
   if(btn){btn.disabled=false;btn.textContent='📡 Scan';}
   renderAgentSignals('ifin');
-  showToast('✅ IFIN scan complete — '+fresh.length+' new funding opportunities found');
+  showToast('✅ IFIN scan complete -- '+fresh.length+' new funding opportunities found');
 }
 
 // ================================================================
@@ -2155,7 +2155,7 @@ function generateDigest(){
 
 
 // ================================================================
-// LIVE INTELLIGENCE ENGINE — Daily auto-scan, fresh leads, insights
+// LIVE INTELLIGENCE ENGINE -- Daily auto-scan, fresh leads, insights
 // ================================================================
 
 const INTEL_VERSION = 'v3';
@@ -2282,7 +2282,7 @@ async function fetchGNews(query){
 }
 
 // ================================================================
-// CDSIA LIVE SCAN — News + cross-reference known companies
+// CDSIA LIVE SCAN -- News + cross-reference known companies
 // ================================================================
 async function runCDSIALiveScan(logFn){
   logFn = logFn || (()=>{});
@@ -2311,7 +2311,7 @@ async function runCDSIALiveScan(logFn){
       const org = item.title
         .replace(/\b(says?|reports?|announces?|launches?|opens?|hires?|expands?|gets?|wins?)\b.*/i,'')
         .replace(/['"]/g,'').trim()
-        .split(/[:\-–—|]/)[0].trim().substring(0,65) || src.name+' Business';
+        .split(/[:\----|]/)[0].trim().substring(0,65) || src.name+' Business';
       
       const brands = getBrands(found, 'Caribbean SME');
       const urgency = score>=82?'Critical':score>=70?'High':'Medium';
@@ -2359,7 +2359,7 @@ async function runCDSIALiveScan(logFn){
 }
 
 // ================================================================
-// COTIS LIVE SCAN — Procurement & tenders
+// COTIS LIVE SCAN -- Procurement & tenders
 // ================================================================
 async function runCOTISLiveScan(logFn){
   logFn = logFn || (()=>{});
@@ -2373,7 +2373,7 @@ async function runCOTISLiveScan(logFn){
     items.slice(0,3).forEach((item,j)=>{
       const desc = (item.description||'').replace(/<[^>]+>/g,'');
       const score = 72 + Math.floor(Math.random()*18);
-      const org = item.title.split(/[:\-–—|]/)[0].trim().substring(0,65)||'Caribbean Procurement';
+      const org = item.title.split(/[:\----|]/)[0].trim().substring(0,65)||'Caribbean Procurement';
       newLeads.push({
         id:'COTIS_LIVE_'+Date.now()+'_'+i+'_'+j,
         agent:'cotis', tier:'live',
@@ -2411,7 +2411,7 @@ async function runCOTISLiveScan(logFn){
 }
 
 // ================================================================
-// IFIN LIVE SCAN — Funding & donor intelligence
+// IFIN LIVE SCAN -- Funding & donor intelligence
 // ================================================================
 async function runIFINLiveScan(logFn){
   logFn = logFn || (()=>{});
@@ -2425,7 +2425,7 @@ async function runIFINLiveScan(logFn){
     items.slice(0,3).forEach((item,j)=>{
       const desc = (item.description||'').replace(/<[^>]+>/g,'');
       const score = 70 + Math.floor(Math.random()*20);
-      const org = item.title.split(/[:\-–—|]/)[0].trim().substring(0,65)||'Caribbean Funding';
+      const org = item.title.split(/[:\----|]/)[0].trim().substring(0,65)||'Caribbean Funding';
       newLeads.push({
         id:'IFIN_LIVE_'+Date.now()+'_'+i+'_'+j,
         agent:'ifin', tier:'live',
@@ -2464,10 +2464,10 @@ async function runIFINLiveScan(logFn){
 }
 
 // ================================================================
-// FULL INTELLIGENCE CYCLE — All 3 agents
+// FULL INTELLIGENCE CYCLE -- All 3 agents
 // ================================================================
 async function corexRunCycle(){
-  const btn = document.querySelector('.run-btn');
+  const btn = document.getElementById('run-cycle-btn') || document.querySelector('.run-btn');
   if(btn){btn.disabled=true;btn.textContent='Running...';}
   showToast('⚡ COREX intelligence cycle running...');
   
@@ -2578,7 +2578,7 @@ function generateDailyDigest(cdsiaNew, cotisNew, ifinNew, logs){
 })();
 
 // ================================================================
-// V1 DATA — AWARD MONITORING, TRENDS, SOURCES, AGENTS
+// V1 DATA -- AWARD MONITORING, TRENDS, SOURCES, AGENTS
 // ================================================================
 const AGENTS_DATA=[
   {name:"Devon",specialty:"Gov / RFP",region:"🌊 Caribbean"},
@@ -2589,7 +2589,7 @@ const AGENTS_DATA=[
 
 const AWARD_DATA=[
   {name:"OECS E-Government Phase 1",org:"OECS Commission",value:"USD 12M",awarded:"2026-06-15",winner:"Accenture Caribbean",status:"Relationship Positioned",notes:"Follow-up for Phase 2 CRM component"},
-  {name:"USAID Digital Literacy TT",org:"USAID / T&T Ministry",value:"USD 800K",awarded:"2026-05-20",winner:"Local NGO Consortium",status:"Monitoring",notes:"Partner org needs CRM — outreach pending"},
+  {name:"USAID Digital Literacy TT",org:"USAID / T&T Ministry",value:"USD 800K",awarded:"2026-05-20",winner:"Local NGO Consortium",status:"Monitoring",notes:"Partner org needs CRM -- outreach pending"},
   {name:"GIZ SME Digitization Pilot",org:"GIZ / EU",value:"EUR 1.2M",awarded:"2026-04-10",winner:"TechBridge Caribbean",status:"Follow-up Opportunity",notes:"Phase 2 RFP expected Q4 2026"},
   {name:"CDB Innovation Grant Round 3",org:"Caribbean Development Bank",value:"USD 3.5M",awarded:"2026-03-28",winner:"Multiple SMEs",status:"Relationship Positioned",notes:"10 winning SMEs need CRM tools"},
   {name:"JBDC Digital Transformation",org:"JBDC Jamaica",value:"USD 450K",awarded:"2026-02-14",winner:"IBM Jamaica",status:"Monitoring",notes:"Sub-contract CRM opportunity identified"},
@@ -2614,7 +2614,7 @@ const DTI_DATA=[
 const SOURCES_DATA=[
   {id:"s1",name:"UNGM / Tenderal",icon:"📋",desc:"UN Global Marketplace & Caribbean RFP Tenders (World Bank, CDB)",type:"rfp",active:true,freq:"6h",lastScraped:"2026-08-06T06:00:00Z",totalLeads:142,todayLeads:4,dailyCounts:[2,5,3,4,6,3,4]},
   {id:"s2",name:"JBDC / Directories",icon:"🏢",desc:"JBDC, BIDC, T&T Business Registry, Caribbean SME listings",type:"directory",active:true,freq:"24h",lastScraped:"2026-08-06T06:00:00Z",totalLeads:89,todayLeads:3,dailyCounts:[1,3,2,1,4,2,3]},
-  {id:"s3",name:"Devex / ReliefWeb",icon:"💼",desc:"Devex, ReliefWeb, Idealist — Caribbean NGO & nonprofit postings",type:"jobboard",active:true,freq:"12h",lastScraped:"2026-08-06T06:00:00Z",totalLeads:67,todayLeads:3,dailyCounts:[2,1,4,3,2,5,3]},
+  {id:"s3",name:"Devex / ReliefWeb",icon:"💼",desc:"Devex, ReliefWeb, Idealist -- Caribbean NGO & nonprofit postings",type:"jobboard",active:true,freq:"12h",lastScraped:"2026-08-06T06:00:00Z",totalLeads:67,todayLeads:3,dailyCounts:[2,1,4,3,2,5,3]},
   {id:"s4",name:"Donor Portals",icon:"🌱",desc:"USAID, GIZ, Green Climate Fund, CCCCC, IADB donor platforms",type:"donor",active:true,freq:"6h",lastScraped:"2026-08-06T06:00:00Z",totalLeads:118,todayLeads:6,dailyCounts:[3,4,5,6,4,7,6]},
   {id:"s5",name:"Founder Networks",icon:"📣",desc:"AngelList Caribbean, LinkedIn Startup Founders, TechStartups TT",type:"founder",active:true,freq:"12h",lastScraped:"2026-08-06T06:00:00Z",totalLeads:53,todayLeads:3,dailyCounts:[1,2,3,2,4,1,3]},
   {id:"s6",name:"EU-LAC / IDB",icon:"🌍",desc:"EU-LAC Digital Programme, IDB Lab, Inter-American Development Bank",type:"donor",active:true,freq:"6h",lastScraped:"2026-08-06T06:00:00Z",totalLeads:74,todayLeads:2,dailyCounts:[2,1,3,3,1,2,2]},
@@ -2759,6 +2759,12 @@ function runProcurementScan(){
   setTimeout(()=>showToast('✅ Procurement scan complete'),2000);
 }
 
+// Scan wrapper functions (avoid nested quotes in onclick)
+function cotisScanAndRender(){ runCOTISLiveScan().then(()=>{renderAgentSignals('cotis');updateBadges();renderCommandStats();}); }
+function ifinScanAndRender(){ runIFINLiveScan().then(()=>{renderAgentSignals('ifin');updateBadges();renderCommandStats();}); }
+function cdsiaScanAndRender(){ runCDSIALiveScan().then(()=>{renderCDSIAView();updateBadges();renderCommandStats();}); }
+
+// Also fix querySelector in corexRunCycle - use id instead
 // ================================================================
 // TOAST
 // ================================================================
