@@ -896,6 +896,19 @@ Founder &amp; Executive Director access only.
 </div><!-- /corex-app -->
 <script src="leads.js"></script>
 <script>
+// Global error handler - catch any JS errors
+window.onerror = function(msg, src, line, col, err){
+  console.error('[COREX ERROR]', msg, 'line:', line);
+  // Show error in UI if app is blank
+  const app = document.getElementById('corex-app');
+  if(app && app.style.display !== 'none'){
+    const stats = document.getElementById('command-stats');
+    if(stats && !stats.innerHTML){
+      stats.innerHTML = '<div style="color:red;font-family:monospace;font-size:11px;padding:10px;">JS Error: '+msg+' (line '+line+')</div>';
+    }
+  }
+  return false;
+};
 // ================================================================
 // COREX v2 -- Caribbean Intelligence Engine
 // ================================================================
@@ -1025,25 +1038,43 @@ function showApp(){
   document.getElementById('corex-gate').style.display='none';
   document.getElementById('corex-app').style.display='block';
   startInactivity();
-  initApp();
+  try {
+    initApp();
+  } catch(e) {
+    console.error('[COREX] initApp failed:', e);
+  }
+  // Fallback: if stats still empty after 3s, force render
+  setTimeout(function(){
+    const stats = document.getElementById('command-stats');
+    if(stats && !stats.innerHTML){
+      console.log('[COREX] Fallback render triggered');
+      try{ renderCommandStats(); }catch(e){ console.error(e); }
+      try{ renderAllSignals(); }catch(e){ console.error(e); }
+      try{ updateBadges(); }catch(e){ console.error(e); }
+    }
+  }, 3000);
 }
 
 function initApp(){
   updateClock();
-  setInterval(updateClock,60000);
-  function startWhenReady(){
-    if(typeof DIRECTORY_LEADS!=='undefined'||document.readyState==='complete'){
+  setInterval(updateClock, 60000);
+  // Render immediately with whatever data is available
+  renderCommandStats();
+  renderAllSignals();
+  renderCDSIAView();
+  updateBadges();
+  // If leads.js hasn't loaded yet, retry after 1 second
+  if(typeof DIRECTORY_LEADS === 'undefined'){
+    setTimeout(()=>{
       renderCommandStats();
       renderAllSignals();
       renderCDSIAView();
       updateBadges();
-      setTimeout(runAgentLeadScan,1000);
-      setInterval(renderCommandStats,30000);
-    } else {
-      setTimeout(startWhenReady,100);
-    }
+    }, 1500);
   }
-  startWhenReady();
+  // Run agent lead scan
+  setTimeout(runAgentLeadScan, 2000);
+  setInterval(renderCommandStats, 30000);
 }
 
 function updateBadges(){
