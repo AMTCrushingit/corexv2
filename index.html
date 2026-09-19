@@ -920,6 +920,16 @@ const MAX_ATTEMPTS = 3;
 const LOCKOUT_MS = 30 * 60 * 1000;
 const INACTIVITY_MS = 8 * 60 * 60 * 1000; // 8 hours
 
+// ---- Live Intelligence Keys ----
+const INTEL_VERSION = 'v3';
+const SCAN_KEY = 'corex_last_full_scan';
+const CDSIA_LIVE_KEY = 'corex_cdsia_live';
+const COTIS_LIVE_KEY = 'corex_cotis_scanned';
+const IFIN_LIVE_KEY = 'corex_ifin_scanned';
+const DIGEST_KEY = 'corex_daily_digest';
+const LEADS_KEY = 'corex_v2_lead_states';
+const SCANNED_KEY = 'corex_v2_scanned_leads';
+
 // ---- Gate State ----
 function gateGetAttempts(){ return parseInt(localStorage.getItem('corex_v2_attempts')||'0'); }
 function gateSetAttempts(n){ localStorage.setItem('corex_v2_attempts',String(n)); }
@@ -1479,8 +1489,7 @@ const IFIN_DATA = [
 // ================================================================
 // CDSIA PERSISTENCE (localStorage)
 // ================================================================
-const LEADS_KEY = 'corex_v2_lead_states';
-const SCANNED_KEY = 'corex_v2_scanned_leads';
+
 
 function loadLeadStates(){ try{ return JSON.parse(localStorage.getItem(LEADS_KEY)||'{}'); } catch(e){ return {}; } }
 function saveLeadState(id, state){ const all=loadLeadStates(); all[id]={...all[id],...state,updatedAt:new Date().toISOString()}; localStorage.setItem(LEADS_KEY,JSON.stringify(all)); }
@@ -2189,12 +2198,7 @@ function generateDigest(){
 // LIVE INTELLIGENCE ENGINE -- Daily auto-scan, fresh leads, insights
 // ================================================================
 
-const INTEL_VERSION = 'v3';
-const SCAN_KEY = 'corex_last_full_scan';
-const CDSIA_LIVE_KEY = 'corex_cdsia_live';
-const COTIS_LIVE_KEY = 'corex_cotis_scanned';
-const IFIN_LIVE_KEY = 'corex_ifin_scanned';
-const DIGEST_KEY = 'corex_daily_digest';
+// LIVE KEYS moved to top of script
 
 // ---- Caribbean News Sources (confirmed working) ----
 const LIVE_NEWS_SOURCES = [
