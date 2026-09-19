@@ -894,6 +894,7 @@ Founder &amp; Executive Director access only.
 </div><!-- /main-content -->
 </div><!-- /app-layout -->
 </div><!-- /corex-app -->
+<script src="leads.js"></script>
 <script>
 // ================================================================
 // COREX v2 -- Caribbean Intelligence Engine
@@ -1066,24 +1067,27 @@ function showApp(){
 function initApp(){
   updateClock();
   setInterval(updateClock,60000);
-  renderCommandStats();
-  renderAllSignals();
-  renderCDSIAView();
-  updateBadges();
-  setTimeout(runAgentLeadScan,1000);
-  setInterval(renderCommandStats,30000);
-  // Set CDSIA as default view
-  setTimeout(()=>{
-    const cdsia = document.querySelector('[data-view="cdsia"]');
-    if(cdsia) showView('cdsia', cdsia);
-  }, 100);
+  function startWhenReady(){
+    if(typeof DIRECTORY_LEADS!=='undefined'||document.readyState==='complete'){
+      renderCommandStats();
+      renderAllSignals();
+      renderCDSIAView();
+      updateBadges();
+      setTimeout(runAgentLeadScan,1000);
+      setInterval(renderCommandStats,30000);
+    } else {
+      setTimeout(startWhenReady,100);
+    }
+  }
+  startWhenReady();
 }
 
 function updateBadges(){
-  const scanned = loadScannedLeads();
-  document.getElementById('cotis-badge').textContent = COTIS_DATA.length;
-  document.getElementById('cdsia-badge').textContent = CDSIA_DATA.length+CDSIA_AGENT_LEADS.length+scanned.length;
-  document.getElementById('ifin-badge').textContent = IFIN_DATA.length;
+  const cotisScan=JSON.parse(localStorage.getItem('corex_cotis_scanned')||'[]');
+  const ifinScan=JSON.parse(localStorage.getItem('corex_ifin_scanned')||'[]');
+  document.getElementById('cotis-badge').textContent=COTIS_DATA.length+cotisScan.length;
+  document.getElementById('cdsia-badge').textContent=CDSIA_DATA.length+CDSIA_AGENT_LEADS.length+DIRECTORY_CDSIA.length;
+  document.getElementById('ifin-badge').textContent=IFIN_DATA.length+ifinScan.length;
 }
 
 
@@ -1774,7 +1778,29 @@ function copyBrief(id){
 // ================================================================
 // RENDER FUNCTIONS
 // ================================================================
-const ALL_SIGNALS = [...COTIS_DATA, ...CDSIA_DATA, ...CDSIA_AGENT_LEADS, ...IFIN_DATA];
+// Merge directory leads into CDSIA pipeline
+const DIRECTORY_CDSIA = (typeof DIRECTORY_LEADS !== 'undefined') ? DIRECTORY_LEADS.map(l => ({
+  ...l,
+  id: l.id,
+  agent: 'cdsia',
+  tier: l.tier || 'directory',
+  org: l.org,
+  country: l.country,
+  sector: l.sector,
+  distressType: l.signals || [],
+  score: l.score || 72,
+  urgency: l.urgency || 'High',
+  brands: l.brands || ['STR'],
+  summary: l.pitch || '',
+  whyItMatters: l.pitch || '',
+  actionRequired: l.pitch || '',
+  contact: {name: '', email: '', phone: ''},
+  source: 'Caribbean Business Directory',
+  sourceUrl: l.src || '',
+  qualified: false
+})) : [];
+
+const ALL_SIGNALS = [...COTIS_DATA, ...CDSIA_DATA, ...CDSIA_AGENT_LEADS, ...IFIN_DATA, ...DIRECTORY_CDSIA];
 let _queueFilter = 'all';
 
 function renderCommandStats(){
@@ -1805,12 +1831,23 @@ function renderAllSignals(){
 }
 
 function renderAgentSignals(agent){
-  const data = agent==='cotis'?COTIS_DATA:agent==='cdsia'?CDSIA_DATA:IFIN_DATA;
+  let data;
+  if(agent==='cotis'){
+    const scanned = JSON.parse(localStorage.getItem('corex_cotis_scanned')||'[]');
+    data = [...COTIS_DATA, ...scanned];
+  } else if(agent==='cdsia'){
+    data = [...CDSIA_DATA, ...CDSIA_AGENT_LEADS, ...DIRECTORY_CDSIA];
+  } else {
+    const scanned = JSON.parse(localStorage.getItem('corex_ifin_scanned')||'[]');
+    data = [...IFIN_DATA, ...scanned];
+  }
+  // Sort by score
+  data.sort((a,b)=>b.score-a.score);
   const el = document.getElementById(agent+'-signals');
   if(!el) return;
   el.innerHTML = data.length
-    ? data.map(s=>renderSignalCard(s,false)).join('')
-    : '<div class="empty-state"><div class="empty-icon">X</div><div class="empty-title">No signals yet</div><div class="empty-sub">Click Scan to discover new signals</div></div>';
+    ? data.map(s=>renderSignalCard(s,agent==='cdsia')).join('')
+    : '<div class="empty-state"><div class="empty-icon">📡</div><div class="empty-title">No signals yet</div><div class="empty-sub">Click Scan to discover new signals</div></div>';
 }
 
 function renderSignalCard(s, showFollowUp){
@@ -1843,7 +1880,8 @@ function renderSignalCard(s, showFollowUp){
   </div>` : '';
   const qBtn = showFollowUp
     ? `<button class="qualify-btn ${cur!=='detected'?'done':''}" onclick="qualifyAndOpen('${s.id}')">${cur!=='detected'?'+ '+sLabel[cur]:'Qualify'}</button>`
-    : `<button class="qualify-btn ${s.qualified?'done':''}" onclick="qualifySignal('${s.id}')" ${s.qualified?'disabled':''}>${s.qualified?'Qualified':'Qualify'}</button>`;
+    : `<button class="qualify-btn ${s.qualified?'done':''}" onclick="qualifySignal('${s.id}')" ${s.qualified?'disabled':''}>${s.qualified?'Qualified':'Qualify'}</button>
+      <a href="https://app.apollo.io/#/people?organizationName=${encodeURIComponent(s.org)}" target="_blank" rel="noopener" style="font-family:var(--font-mono);font-size:10px;color:var(--text-secondary);text-decoration:none;padding:4px 8px;border:1px solid var(--border);border-radius:var(--radius);">🔍 Find Contact</a>`;
   return `<div class="signal-card" id="signal-${s.id}" style="${cur==='won'?'opacity:0.6':cur==='lost'?'opacity:0.4':''}">
     <div class="signal-header">
       <div>
@@ -1897,7 +1935,66 @@ function corexRunCycle(){
   },2000);
 }
 
-function cotisRunScan(){ showToast('📡 COTIS scanning procurement portals...'); setTimeout(()=>showToast('✅ COTIS scan complete'),2000); }
+
+// COTIS Real Scanner — Caribbean procurement & tenders
+const COTIS_QUERIES = [
+  {q:'Caribbean government tender RFP procurement 2026', country:'Caribbean', type:'Government RFP'},
+  {q:'OECS procurement tender 2026', country:'OECS', type:'Regional RFP'},
+  {q:'Jamaica government tender procurement 2026', country:'Jamaica', type:'Government RFP'},
+  {q:'Trinidad Tobago government tender RFP 2026', country:'Trinidad & Tobago', type:'Government RFP'},
+  {q:'Guyana government contract procurement 2026', country:'Guyana', type:'Government RFP'},
+  {q:'Barbados government tender procurement 2026', country:'Barbados', type:'Government RFP'},
+  {q:'Caribbean development bank tender 2026', country:'Caribbean', type:'Donor Programme'},
+  {q:'IDB Caribbean project tender 2026', country:'Caribbean', type:'Donor Programme'},
+  {q:'USAID Caribbean procurement 2026', country:'Caribbean', type:'Grant'},
+  {q:'EU Caribbean tender procurement 2026', country:'Caribbean', type:'EU Programme'},
+];
+
+async function cotisRunScan(){
+  showToast('📡 COTIS scanning procurement portals...');
+  const btn = document.querySelector('[onclick="cotisRunScan()"]');
+  if(btn){btn.disabled=true;btn.textContent='Scanning...';}
+  let newLeads = [];
+  for(let i=0;i<COTIS_QUERIES.length;i++){
+    const q = COTIS_QUERIES[i];
+    const rssUrl = 'https://news.google.com/rss/search?q='+encodeURIComponent(q.q)+'&hl=en-US&gl=US&ceid=US:en';
+    const apiUrl = 'https://api.rss2json.com/v1/api.json?rss_url='+encodeURIComponent(rssUrl);
+    try{
+      const res = await fetch(apiUrl,{signal:AbortSignal.timeout(8000)});
+      const data = await res.json();
+      if(data.status==='ok'&&data.items){
+        data.items.slice(0,3).forEach((item,j)=>{
+          const desc=(item.description||'').replace(/<[^>]+>/g,'');
+          const score = 70 + Math.floor(Math.random()*20);
+          newLeads.push({
+            id:'COT_SCAN'+Date.now()+'_'+i+'_'+j,
+            agent:'cotis', tier:'scanned',
+            org: item.title.split(/[:\-–|]/)[0].trim().substring(0,60)||'Caribbean Procurement',
+            country: q.country, sector:'Government / Procurement',
+            type: q.type, deadline:'', budget:'',
+            score, urgency: score>=85?'Critical':'High',
+            brands:['STR','QLA'],
+            summary: desc.substring(0,200),
+            whyItMatters:'Caribbean procurement opportunity — potential fit for Stratiix governance advisory and Qualia CRM implementation.',
+            actionRequired:'Review tender requirements. Submit capability statement if qualified.',
+            contact:{name:'',email:'',phone:''},
+            source:'Google News', sourceUrl:item.link||'',
+            qualified:false, scannedAt:new Date().toISOString()
+          });
+        });
+      }
+    }catch(e){}
+    await new Promise(r=>setTimeout(r,200));
+  }
+  // Merge with existing COTIS
+  const existing = JSON.parse(localStorage.getItem('corex_cotis_scanned')||'[]');
+  const existingOrgs = new Set(existing.map(l=>l.org.toLowerCase().substring(0,20)));
+  const fresh = newLeads.filter(l=>!existingOrgs.has(l.org.toLowerCase().substring(0,20)));
+  localStorage.setItem('corex_cotis_scanned', JSON.stringify([...fresh,...existing].slice(0,30)));
+  if(btn){btn.disabled=false;btn.textContent='📡 Scan';}
+  renderAgentSignals('cotis');
+  showToast('✅ COTIS scan complete — '+fresh.length+' new opportunities found');
+}
 
 // ---- Daily Agent Lead Scan ----
 function runAgentLeadScan(){
@@ -1912,7 +2009,64 @@ function runAgentLeadScan(){
   }, 2000);
 }
 function cdsiaRunScan(){ showToast('📡 CDSIA scanning Caribbean news sources...'); setTimeout(()=>showToast('✅ CDSIA scan complete'),2000); }
-function ifinRunScan(){ showToast('📡 IFIN scanning donor portals...'); setTimeout(()=>showToast('✅ IFIN scan complete'),2000); }
+
+// IFIN Real Scanner — Caribbean funding & donor intelligence
+const IFIN_QUERIES = [
+  {q:'Caribbean grant funding 2026 application', country:'Caribbean', type:'Grant'},
+  {q:'IDB Caribbean funding programme 2026', country:'Caribbean', type:'IDB Programme'},
+  {q:'USAID Caribbean grant 2026', country:'Caribbean', type:'USAID Grant'},
+  {q:'GIZ Caribbean funding 2026', country:'Caribbean', type:'GIZ Programme'},
+  {q:'EU Caribbean development fund 2026', country:'Caribbean', type:'EU Fund'},
+  {q:'Caribbean startup accelerator funding 2026', country:'Caribbean', type:'Accelerator'},
+  {q:'World Bank Caribbean project 2026', country:'Caribbean', type:'World Bank'},
+  {q:'CDB Caribbean development bank funding 2026', country:'Caribbean', type:'CDB Programme'},
+];
+
+async function ifinRunScan(){
+  showToast('📡 IFIN scanning donor portals...');
+  const btn = document.querySelector('[onclick="ifinRunScan()"]');
+  if(btn){btn.disabled=true;btn.textContent='Scanning...';}
+  let newLeads = [];
+  for(let i=0;i<IFIN_QUERIES.length;i++){
+    const q = IFIN_QUERIES[i];
+    const rssUrl = 'https://news.google.com/rss/search?q='+encodeURIComponent(q.q)+'&hl=en-US&gl=US&ceid=US:en';
+    const apiUrl = 'https://api.rss2json.com/v1/api.json?rss_url='+encodeURIComponent(rssUrl);
+    try{
+      const res = await fetch(apiUrl,{signal:AbortSignal.timeout(8000)});
+      const data = await res.json();
+      if(data.status==='ok'&&data.items){
+        data.items.slice(0,3).forEach((item,j)=>{
+          const desc=(item.description||'').replace(/<[^>]+>/g,'');
+          const score = 72 + Math.floor(Math.random()*18);
+          newLeads.push({
+            id:'IFN_SCAN'+Date.now()+'_'+i+'_'+j,
+            agent:'ifin', tier:'scanned',
+            org: item.title.split(/[:\-–|]/)[0].trim().substring(0,60)||'Caribbean Funding',
+            country: q.country, sector:'International Funding',
+            type: q.type, deadline:'', budget:'',
+            score, urgency: score>=85?'Critical':'High',
+            brands:['STR','BLU','QLA'],
+            summary: desc.substring(0,200),
+            alignmentSignal:'Caribbean funding opportunity — potential fit for Stratiix advisory, BluWav visibility, and Qualia CRM implementation.',
+            proposalAngle:'Position as Caribbean-built digital infrastructure stack.',
+            actionRequired:'Review funding requirements. Submit expression of interest.',
+            contact:{name:'',email:'',phone:''},
+            source:'Google News', sourceUrl:item.link||'',
+            qualified:false, scannedAt:new Date().toISOString()
+          });
+        });
+      }
+    }catch(e){}
+    await new Promise(r=>setTimeout(r,200));
+  }
+  const existing = JSON.parse(localStorage.getItem('corex_ifin_scanned')||'[]');
+  const existingOrgs = new Set(existing.map(l=>l.org.toLowerCase().substring(0,20)));
+  const fresh = newLeads.filter(l=>!existingOrgs.has(l.org.toLowerCase().substring(0,20)));
+  localStorage.setItem('corex_ifin_scanned', JSON.stringify([...fresh,...existing].slice(0,30)));
+  if(btn){btn.disabled=false;btn.textContent='📡 Scan';}
+  renderAgentSignals('ifin');
+  showToast('✅ IFIN scan complete — '+fresh.length+' new funding opportunities found');
+}
 
 // ================================================================
 // GENERATE REPORTS
