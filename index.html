@@ -1086,7 +1086,7 @@ function updateBadges(){
   const cotisScan=JSON.parse(localStorage.getItem('corex_cotis_scanned')||'[]');
   const ifinScan=JSON.parse(localStorage.getItem('corex_ifin_scanned')||'[]');
   document.getElementById('cotis-badge').textContent=COTIS_DATA.length+cotisScan.length;
-  document.getElementById('cdsia-badge').textContent=CDSIA_DATA.length+CDSIA_AGENT_LEADS.length+DIRECTORY_CDSIA.length;
+  document.getElementById('cdsia-badge').textContent=CDSIA_DATA.length+CDSIA_AGENT_LEADS.length+getDirectoryCDSIA().length;
   document.getElementById('ifin-badge').textContent=IFIN_DATA.length+ifinScan.length;
 }
 
@@ -1778,29 +1778,33 @@ function copyBrief(id){
 // ================================================================
 // RENDER FUNCTIONS
 // ================================================================
-// Merge directory leads into CDSIA pipeline
-const DIRECTORY_CDSIA = (typeof DIRECTORY_LEADS !== 'undefined') ? DIRECTORY_LEADS.map(l => ({
-  ...l,
-  id: l.id,
-  agent: 'cdsia',
-  tier: l.tier || 'directory',
-  org: l.org,
-  country: l.country,
-  sector: l.sector,
-  distressType: l.signals || [],
-  score: l.score || 72,
-  urgency: l.urgency || 'High',
-  brands: l.brands || ['STR'],
-  summary: l.pitch || '',
-  whyItMatters: l.pitch || '',
-  actionRequired: l.pitch || '',
-  contact: {name: '', email: '', phone: ''},
-  source: 'Caribbean Business Directory',
-  sourceUrl: l.src || '',
-  qualified: false
-})) : [];
+// DIRECTORY_CDSIA — lazy computed from leads.js
+function getDirectoryCDSIA(){
+  if(typeof DIRECTORY_LEADS === 'undefined') return [];
+  return DIRECTORY_LEADS.map(l => ({
+    ...l,
+    id: l.id,
+    agent: 'cdsia',
+    tier: l.tier || 'directory',
+    org: l.org,
+    country: l.country,
+    sector: l.sector,
+    distressType: l.signals || [],
+    score: l.score || 72,
+    urgency: l.urgency || 'High',
+    brands: l.brands || ['STR'],
+    summary: l.pitch || '',
+    whyItMatters: l.pitch || '',
+    actionRequired: l.pitch || '',
+    contact: {name: '', email: '', phone: ''},
+    source: 'Caribbean Business Directory',
+    sourceUrl: l.src || '',
+    qualified: false
+  }));
+}
 
-const ALL_SIGNALS = [...COTIS_DATA, ...CDSIA_DATA, ...CDSIA_AGENT_LEADS, ...IFIN_DATA, ...DIRECTORY_CDSIA];
+// ALL_SIGNALS — base signals (directory leads added dynamically)
+const ALL_SIGNALS = [...COTIS_DATA, ...CDSIA_DATA, ...CDSIA_AGENT_LEADS, ...IFIN_DATA];
 let _queueFilter = 'all';
 
 function renderCommandStats(){
@@ -1821,7 +1825,9 @@ function renderCommandStats(){
 
 function renderAllSignals(){
   const scanned = loadScannedLeads();
-  const allSig = [...ALL_SIGNALS, ...scanned];
+  const cotisScan = JSON.parse(localStorage.getItem('corex_cotis_scanned')||'[]');
+  const ifinScan = JSON.parse(localStorage.getItem('corex_ifin_scanned')||'[]');
+  const allSig = [...ALL_SIGNALS, ...getDirectoryCDSIA(), ...scanned, ...cotisScan, ...ifinScan];
   const filtered = _queueFilter==='all' ? allSig : _queueFilter==='agent' ? allSig.filter(s=>s.tier==='agent') : allSig.filter(s=>s.agent===_queueFilter&&s.tier!=='agent'&&s.tier!=='scanned');
   const sorted = [...filtered].sort((a,b)=>b.score-a.score);
   document.getElementById('queue-count').textContent = sorted.length+' signals';
@@ -1836,7 +1842,7 @@ function renderAgentSignals(agent){
     const scanned = JSON.parse(localStorage.getItem('corex_cotis_scanned')||'[]');
     data = [...COTIS_DATA, ...scanned];
   } else if(agent==='cdsia'){
-    data = [...CDSIA_DATA, ...CDSIA_AGENT_LEADS, ...DIRECTORY_CDSIA];
+    data = [...CDSIA_DATA, ...CDSIA_AGENT_LEADS, ...getDirectoryCDSIA()];
   } else {
     const scanned = JSON.parse(localStorage.getItem('corex_ifin_scanned')||'[]');
     data = [...IFIN_DATA, ...scanned];
@@ -2245,35 +2251,43 @@ function renderAwards(){
 }
 
 function renderTrends(){
-  const tg=document.getElementById('trends-grid');
-  if(tg) tg.innerHTML=TRENDS_DATA.map(t=>`
-    <div style="background:#1a1035;border-radius:14px;padding:20px;box-shadow:0 4px 24px rgba(139,92,246,0.1);border-left:4px solid ${t.color};">
-      <div style="display:flex;align-items:center;gap:10px;margin-bottom:10px;">
-        <span style="font-size:24px;">${t.icon}</span>
-        <div><div style="font-size:13px;font-weight:700;color:#f5f3ff;">${t.title}</div><div style="font-size:18px;font-weight:700;color:${t.color};">${t.trend}</div></div>
-      </div>
-      <p style="font-size:12px;color:#7c6fa0;line-height:1.5;">${t.detail}</p>
-    </div>`).join('');
-  const dg=document.getElementById('dti-grid');
-  if(dg) dg.innerHTML=DTI_DATA.map(d=>`
-    <div style="background:#120d24;border-radius:12px;padding:14px;text-align:center;">
-      <div style="font-size:13px;font-weight:600;color:#f5f3ff;margin-bottom:6px;">${d.country}</div>
-      <div style="font-size:26px;font-weight:700;color:#a78bfa;">${d.score}</div>
-      <div style="font-size:11px;color:#7c6fa0;">DTI Score</div>
-      <div style="height:6px;border-radius:3px;background:#e2e8f0;overflow:hidden;margin-top:8px;"><div style="height:100%;border-radius:3px;background:#7c3aed;width:${d.score}%;"></div></div>
-    </div>`).join('');
+  const el = document.getElementById('trends-container');
+  if(!el) return;
+  const trends = typeof TRENDS_DATA !== 'undefined' ? TRENDS_DATA : [];
+  if(!trends.length){
+    el.innerHTML='<div class="empty-state"><div class="empty-icon">📈</div><div class="empty-title">No trend data</div></div>';
+    return;
+  }
+  el.innerHTML = '<div class="trends-grid">' + trends.map(t => `
+    <div class="trend-card">
+      <div class="trend-icon">${t.icon||'📊'}</div>
+      <div class="trend-title">${t.title}</div>
+      <div class="trend-value" style="color:${t.color||'var(--green)'}">${t.trend}</div>
+      <div class="trend-detail">${t.detail}</div>
+    </div>
+  `).join('') + '</div>';
 }
 
 function renderAgents(){
-  document.getElementById('agents-container').innerHTML=agents.map((a,i)=>`
-    <div style="display:flex;align-items:center;justify-content:space-between;padding:10px 14px;background:#120d24;border-radius:10px;margin-bottom:8px;">
+  const el = document.getElementById('agents-container');
+  if(!el) return;
+  const agents = typeof AGENTS_DATA !== 'undefined' ? AGENTS_DATA : [
+    {name:'Devon', specialty:'Gov / RFP', region:'Caribbean'},
+    {name:'Aaliya', specialty:'NGO / Donor', region:'Caribbean'},
+    {name:'Marcus', specialty:'UN / Tech', region:'Caribbean & LATAM'},
+    {name:'Simone', specialty:'Startup Ecosystems', region:'Caribbean'}
+  ];
+  const emojis = {Devon:'👨‍💼', Aaliya:'👩‍💼', Marcus:'👨‍💻', Simone:'👩‍🎓'};
+  el.innerHTML = agents.map(a => `
+    <div class="agent-card">
+      <div class="agent-avatar">${emojis[a.name]||'👤'}</div>
       <div>
-        <span style="font-size:14px;font-weight:600;color:#f5f3ff;">${a.name}</span>
-        <span style="font-size:12px;color:#7c6fa0;margin-left:8px;">${a.specialty}</span>
-        <span style="font-size:12px;margin-left:8px;">${a.region}</span>
+        <div class="agent-name">${a.name}</div>
+        <div class="agent-specialty">${a.specialty}</div>
+        <div class="agent-region">${a.region}</div>
       </div>
-      <button class="remove-agent-btn" data-idx="${i}" style="background:none;border:none;cursor:pointer;color:#ef4444;font-size:18px;" title="Remove">&times;</button>
-    </div>`).join('');
+    </div>
+  `).join('');
 }
 
 function renderSourceHealth(){
@@ -2297,7 +2311,7 @@ function renderSourceHealth(){
 }
 
 function renderSourcesView(){
-  document.getElementById('sources-grid').innerHTML=SOURCES_DATA.map(s=>{
+  document.getElementById('sources-container').innerHTML=SOURCES_DATA.map(s=>{
     const isOn=s.active;
     const nextH=parseInt(s.freq)||6;
     const ls=new Date(s.lastScraped);
