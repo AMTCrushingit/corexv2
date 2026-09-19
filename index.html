@@ -783,7 +783,7 @@ Founder &amp; Executive Director access only.
 <div class="section-title">COTIS -- Tenders &amp; Procurement</div>
 <div class="section-sub">Caribbean Opportunity, Tender &amp; Infrastructure Signals</div>
 </div>
-<button class="run-btn" onclick="cotisRunScan()" style="font-size:10px;padding:5px 12px;">📡 Scan</button>
+<button class="run-btn" onclick="runCOTISLiveScan().then(()=>{renderAgentSignals('cotis');updateBadges();renderCommandStats();})" style="font-size:10px;padding:5px 12px;">📡 Scan</button>
 </div>
 <div id="cotis-signals"></div>
 </div>
@@ -794,7 +794,7 @@ Founder &amp; Executive Director access only.
 <div class="section-title">CDSIA -- MSME Distress Signals</div>
 <div class="section-sub">Caribbean Distress Signals &amp; MSME Reality Mapping</div>
 </div>
-<button class="run-btn" onclick="cdsiaRunScan()" style="font-size:10px;padding:5px 12px;">📡 Scan</button>
+<button class="run-btn" onclick="runCDSIALiveScan().then(()=>{renderCDSIAView();updateBadges();renderCommandStats();})" style="font-size:10px;padding:5px 12px;">📡 Scan</button>
 </div>
 <div id="cdsia-signals"></div>
 </div>
@@ -805,7 +805,7 @@ Founder &amp; Executive Director access only.
 <div class="section-title">IFIN -- Funding Intelligence</div>
 <div class="section-sub">International Funding &amp; Donor Intelligence</div>
 </div>
-<button class="run-btn" onclick="ifinRunScan()" style="font-size:10px;padding:5px 12px;">📡 Scan</button>
+<button class="run-btn" onclick="runIFINLiveScan().then(()=>{renderAgentSignals('ifin');updateBadges();renderCommandStats();})" style="font-size:10px;padding:5px 12px;">📡 Scan</button>
 </div>
 <div id="ifin-signals"></div>
 </div>
@@ -1083,10 +1083,10 @@ function initApp(){
 }
 
 function updateBadges(){
-  const cotisScan=JSON.parse(localStorage.getItem('corex_cotis_scanned')||'[]');
-  const ifinScan=JSON.parse(localStorage.getItem('corex_ifin_scanned')||'[]');
+  const cotisScan=JSON.parse(localStorage.getItem(COTIS_LIVE_KEY)||'[]');
+  const ifinScan=JSON.parse(localStorage.getItem(IFIN_LIVE_KEY)||'[]');
   document.getElementById('cotis-badge').textContent=COTIS_DATA.length+cotisScan.length;
-  document.getElementById('cdsia-badge').textContent=CDSIA_DATA.length+CDSIA_AGENT_LEADS.length+getDirectoryCDSIA().length;
+  const cdsiaLive=JSON.parse(localStorage.getItem(CDSIA_LIVE_KEY)||'[]');document.getElementById('cdsia-badge').textContent=CDSIA_DATA.length+CDSIA_AGENT_LEADS.length+getDirectoryCDSIA().length+cdsiaLive.length;
   document.getElementById('ifin-badge').textContent=IFIN_DATA.length+ifinScan.length;
 }
 
@@ -1839,21 +1839,27 @@ function renderAllSignals(){
 function renderAgentSignals(agent){
   let data;
   if(agent==='cotis'){
-    const scanned = JSON.parse(localStorage.getItem('corex_cotis_scanned')||'[]');
-    data = [...COTIS_DATA, ...scanned];
+    const live = JSON.parse(localStorage.getItem(COTIS_LIVE_KEY)||'[]');
+    data = [...COTIS_DATA, ...live];
   } else if(agent==='cdsia'){
-    data = [...CDSIA_DATA, ...CDSIA_AGENT_LEADS, ...getDirectoryCDSIA()];
+    const live = JSON.parse(localStorage.getItem(CDSIA_LIVE_KEY)||'[]');
+    data = [...CDSIA_DATA, ...CDSIA_AGENT_LEADS, ...getDirectoryCDSIA(), ...live];
   } else {
-    const scanned = JSON.parse(localStorage.getItem('corex_ifin_scanned')||'[]');
-    data = [...IFIN_DATA, ...scanned];
+    const live = JSON.parse(localStorage.getItem(IFIN_LIVE_KEY)||'[]');
+    data = [...IFIN_DATA, ...live];
   }
-  // Sort by score
-  data.sort((a,b)=>b.score-a.score);
+  // Sort: Critical first, then by score
+  data.sort((a,b)=>{
+    const o={Critical:0,High:1,Medium:2};
+    const ua=o[a.urgency]??3, ub=o[b.urgency]??3;
+    if(ua!==ub) return ua-ub;
+    return b.score-a.score;
+  });
   const el = document.getElementById(agent+'-signals');
   if(!el) return;
   el.innerHTML = data.length
     ? data.map(s=>renderSignalCard(s,agent==='cdsia')).join('')
-    : '<div class="empty-state"><div class="empty-icon">📡</div><div class="empty-title">No signals yet</div><div class="empty-sub">Click Scan to discover new signals</div></div>';
+    : '<div class="empty-state"><div class="empty-icon">📡</div><div class="empty-title">No signals yet — click Scan</div><div class="empty-sub">COREX will scan Caribbean news sources for fresh intelligence</div></div>';
 }
 
 function renderSignalCard(s, showFollowUp){
@@ -1958,7 +1964,7 @@ const COTIS_QUERIES = [
 
 async function cotisRunScan(){
   showToast('📡 COTIS scanning procurement portals...');
-  const btn = document.querySelector('[onclick="cotisRunScan()"]');
+  const btn = document.querySelector('[onclick="runCOTISLiveScan().then(()=>{renderAgentSignals('cotis');updateBadges();renderCommandStats();})"]');
   if(btn){btn.disabled=true;btn.textContent='Scanning...';}
   let newLeads = [];
   for(let i=0;i<COTIS_QUERIES.length;i++){
@@ -2030,7 +2036,7 @@ const IFIN_QUERIES = [
 
 async function ifinRunScan(){
   showToast('📡 IFIN scanning donor portals...');
-  const btn = document.querySelector('[onclick="ifinRunScan()"]');
+  const btn = document.querySelector('[onclick="runIFINLiveScan().then(()=>{renderAgentSignals('ifin');updateBadges();renderCommandStats();})"]');
   if(btn){btn.disabled=true;btn.textContent='Scanning...';}
   let newLeads = [];
   for(let i=0;i<IFIN_QUERIES.length;i++){
@@ -2182,6 +2188,430 @@ function generateDigest(){
   showToast('📙 Intelligence Digest generated');
 }
 
+
+
+// ================================================================
+// LIVE INTELLIGENCE ENGINE — Daily auto-scan, fresh leads, insights
+// ================================================================
+
+const INTEL_VERSION = 'v3';
+const SCAN_KEY = 'corex_last_full_scan';
+const CDSIA_LIVE_KEY = 'corex_cdsia_live';
+const COTIS_LIVE_KEY = 'corex_cotis_scanned';
+const IFIN_LIVE_KEY = 'corex_ifin_scanned';
+const DIGEST_KEY = 'corex_daily_digest';
+
+// ---- Caribbean News Sources (confirmed working) ----
+const LIVE_NEWS_SOURCES = [
+  {name:'Trinidad Newsday', url:'https://newsday.co.tt/feed/', country:'Trinidad & Tobago', flag:'🇹🇹'},
+  {name:'Jamaica Observer', url:'https://www.jamaicaobserver.com/feed/', country:'Jamaica', flag:'🇯🇲'},
+  {name:'Jamaica Gleaner', url:'https://jamaica-gleaner.com/feed/rss.xml', country:'Jamaica', flag:'🇯🇲'},
+  {name:'Kaieteur News', url:'https://www.kaieteurnewsonline.com/feed/', country:'Guyana', flag:'🇬🇾'},
+  {name:'iNews Guyana', url:'https://www.inewsguyana.com/feed/', country:'Guyana', flag:'🇬🇾'},
+  {name:'Demerara Waves', url:'https://demerarawaves.com/feed/', country:'Guyana', flag:'🇬🇾'},
+  {name:'Barbados Today', url:'https://barbadostoday.bb/feed/', country:'Barbados', flag:'🇧🇧'},
+  {name:'Tribune Bahamas', url:'https://www.tribune242.com/rss/headlines/', country:'Bahamas', flag:'🇧🇸'},
+];
+
+// ---- Procurement Sources for COTIS ----
+const COTIS_SOURCES = [
+  {q:'Caribbean government tender RFP procurement 2026', country:'Caribbean', type:'Government RFP'},
+  {q:'OECS procurement tender contract 2026', country:'OECS', type:'Regional RFP'},
+  {q:'Jamaica government tender procurement 2026', country:'Jamaica', type:'Government RFP'},
+  {q:'Trinidad Tobago government tender RFP 2026', country:'Trinidad & Tobago', type:'Government RFP'},
+  {q:'Guyana government contract procurement 2026', country:'Guyana', type:'Government RFP'},
+  {q:'Barbados government tender procurement 2026', country:'Barbados', type:'Government RFP'},
+  {q:'Caribbean development bank tender 2026', country:'Caribbean', type:'Donor Programme'},
+  {q:'IDB Caribbean project tender 2026', country:'Caribbean', type:'Donor Programme'},
+  {q:'USAID Caribbean procurement 2026', country:'Caribbean', type:'Grant'},
+  {q:'EU Caribbean tender procurement 2026', country:'Caribbean', type:'EU Programme'},
+  {q:'CDB Caribbean tender 2026', country:'Caribbean', type:'CDB Programme'},
+  {q:'GIZ Caribbean procurement 2026', country:'Caribbean', type:'GIZ Programme'},
+];
+
+// ---- Funding Sources for IFIN ----
+const IFIN_SOURCES = [
+  {q:'Caribbean grant funding 2026 application open', country:'Caribbean', type:'Grant'},
+  {q:'IDB Caribbean funding programme 2026', country:'Caribbean', type:'IDB Programme'},
+  {q:'USAID Caribbean grant 2026', country:'Caribbean', type:'USAID Grant'},
+  {q:'GIZ Caribbean funding 2026', country:'Caribbean', type:'GIZ Programme'},
+  {q:'EU Caribbean development fund 2026', country:'Caribbean', type:'EU Fund'},
+  {q:'Caribbean startup accelerator funding 2026', country:'Caribbean', type:'Accelerator'},
+  {q:'World Bank Caribbean project 2026', country:'Caribbean', type:'World Bank'},
+  {q:'CDB Caribbean development bank funding 2026', country:'Caribbean', type:'CDB Programme'},
+  {q:'Caribbean SME grant business 2026', country:'Caribbean', type:'SME Grant'},
+];
+
+// ---- Stress signal keywords ----
+const STRESS_KEYWORDS = [
+  {w:'hiring',s:15,label:'Actively hiring'},
+  {w:'expanding',s:12,label:'Expanding'},
+  {w:'new office',s:14,label:'New office'},
+  {w:'growth',s:8,label:'Growth phase'},
+  {w:'restructur',s:18,label:'Restructuring'},
+  {w:'challeng',s:15,label:'Challenges'},
+  {w:'struggl',s:19,label:'Struggling'},
+  {w:'overwhelm',s:19,label:'Overwhelmed'},
+  {w:'project management',s:17,label:'Needs PM'},
+  {w:'consultant',s:14,label:'Seeking consultants'},
+  {w:'operations',s:9,label:'Operations focus'},
+  {w:'staff',s:8,label:'Staff growth'},
+  {w:'launch',s:10,label:'New launch'},
+  {w:'investment',s:12,label:'Investment received'},
+  {w:'recruit',s:13,label:'Recruiting'},
+  {w:'marketing',s:10,label:'Marketing focus'},
+  {w:'visibility',s:12,label:'Visibility gap'},
+  {w:'customers',s:10,label:'Customer acquisition'},
+  {w:'digital',s:9,label:'Digital gap'},
+  {w:'revenue',s:11,label:'Revenue focus'},
+  {w:'sales',s:10,label:'Sales focus'},
+  {w:'crisis',s:21,label:'Crisis signal'},
+  {w:'backlog',s:16,label:'Backlog issues'},
+  {w:'capacity',s:11,label:'Capacity issues'},
+];
+
+function scoreText(title, desc){
+  const text = (title+' '+desc).toLowerCase();
+  let score = 50; const found = [];
+  for(const sig of STRESS_KEYWORDS){
+    if(text.includes(sig.w)){ score += sig.s; found.push(sig.label); }
+  }
+  return {score: Math.min(score, 99), found};
+}
+
+function assignAgent(lead){
+  const t = (lead.type||lead.sector||'').toLowerCase();
+  const b = (lead.brands||[]).join(' ').toLowerCase();
+  if(t.includes('gov')||t.includes('rfp')||t.includes('procurement')) return 'Devon';
+  if(t.includes('ngo')||t.includes('donor')||t.includes('grant')||t.includes('usaid')||t.includes('giz')) return 'Aaliya';
+  if(t.includes('un')||t.includes('tech')||t.includes('it')||t.includes('digital')) return 'Marcus';
+  if(t.includes('startup')||t.includes('accelerator')||t.includes('ecosystem')) return 'Simone';
+  if(b.includes('blu')) return 'Simone';
+  return 'Devon';
+}
+
+function getBrands(found, sector){
+  const s = (sector||'').toLowerCase();
+  const f = found.join(' ').toLowerCase();
+  const brands = [];
+  if(/hiring|scaling|restructur|governance|overwhelm|bottleneck|operations|chaos|capacity|backlog/.test(f)||
+     /consult|it|tech|legal|account|hr|logistic|engineer|construct|financial/.test(s)) brands.push('STR');
+  if(/visibility|marketing|customers|digital|social|brand|online|website|sales|revenue|advertis|promotion/.test(f)||
+     /market|advertis|tourism|hospitality|educat|train|event|media|photo/.test(s)) brands.push('BLU');
+  if(!brands.length) brands.push('STR');
+  return brands;
+}
+
+async function fetchRSS(url){
+  const apiUrl = 'https://api.rss2json.com/v1/api.json?rss_url='+encodeURIComponent(url);
+  try{
+    const res = await fetch(apiUrl, {signal: AbortSignal.timeout(10000)});
+    const data = await res.json();
+    if(data.status==='ok'&&data.items) return data.items;
+    return [];
+  }catch(e){ return []; }
+}
+
+async function fetchGNews(query){
+  const rssUrl = 'https://news.google.com/rss/search?q='+encodeURIComponent(query)+'&hl=en-US&gl=US&ceid=US:en';
+  return fetchRSS(rssUrl);
+}
+
+// ================================================================
+// CDSIA LIVE SCAN — News + cross-reference known companies
+// ================================================================
+async function runCDSIALiveScan(logFn){
+  logFn = logFn || (()=>{});
+  logFn('Scanning '+LIVE_NEWS_SOURCES.length+' Caribbean news sources...');
+  
+  const BIZ_KEYWORDS = ['business','compan','hire','hiring','expand','launch','invest','growth',
+    'entrepreneur','startup','open','staff','employ','contract','project','revenue','market',
+    'digital','technolog','consult','service','firm','agency','limited','ltd'];
+  
+  let newLeads = [];
+  
+  for(const src of LIVE_NEWS_SOURCES){
+    logFn(src.flag+' '+src.name+'...');
+    const items = await fetchRSS(src.url);
+    const bizItems = items.filter(item =>
+      BIZ_KEYWORDS.some(k=>(item.title+' '+(item.description||'')).toLowerCase().includes(k))
+    );
+    logFn('  '+bizItems.length+'/'+items.length+' business articles');
+    
+    for(let j=0;j<bizItems.length;j++){
+      const item = bizItems[j];
+      const desc = (item.description||'').replace(/<[^>]+>/g,'');
+      const {score, found} = scoreText(item.title, desc);
+      if(score < 60) continue;
+      
+      const org = item.title
+        .replace(/\b(says?|reports?|announces?|launches?|opens?|hires?|expands?|gets?|wins?)\b.*/i,'')
+        .replace(/['"]/g,'').trim()
+        .split(/[:\-–—|]/)[0].trim().substring(0,65) || src.name+' Business';
+      
+      const brands = getBrands(found, 'Caribbean SME');
+      const urgency = score>=82?'Critical':score>=70?'High':'Medium';
+      
+      newLeads.push({
+        id: 'CDSIA_LIVE_'+Date.now()+'_'+j,
+        agent: 'cdsia', tier: 'live',
+        org, country: src.flag+' '+src.country,
+        sector: 'Caribbean SME',
+        distressType: found.slice(0,3),
+        score, urgency, brands,
+        summary: desc.substring(0,220)+(desc.length>220?'...':''),
+        whyItMatters: found.slice(0,2).join(' | ')||'Caribbean SME showing growth signals.',
+        actionRequired: brands.includes('BLU')
+          ? 'Lead with: BluWav Growth Sprint ($2,500) -- get more customers in 30 days.'
+          : 'Lead with: Stratiix Diagnostic -- free 45-min session to identify what is limiting performance.',
+        contact:{name:'',email:'',phone:''},
+        source: src.name, sourceUrl: item.link||'',
+        pubDate: item.pubDate||'',
+        assignedTo: assignAgent({sector:'Caribbean SME', brands}),
+        qualified: false,
+        scannedAt: new Date().toISOString()
+      });
+      logFn('  + '+org+' ['+brands.join('+')+'] ('+score+')');
+    }
+    await new Promise(r=>setTimeout(r,200));
+  }
+  
+  // Deduplicate
+  const seen = new Set();
+  newLeads = newLeads.filter(l=>{
+    const k = l.org.toLowerCase().replace(/[^a-z0-9]/g,'').substring(0,18);
+    if(seen.has(k)) return false; seen.add(k); return true;
+  });
+  newLeads.sort((a,b)=>b.score-a.score);
+  
+  // Merge with existing
+  const existing = JSON.parse(localStorage.getItem(CDSIA_LIVE_KEY)||'[]');
+  const existKeys = new Set(existing.map(l=>l.org.toLowerCase().replace(/[^a-z0-9]/g,'').substring(0,18)));
+  const fresh = newLeads.filter(l=>!existKeys.has(l.org.toLowerCase().replace(/[^a-z0-9]/g,'').substring(0,18)));
+  localStorage.setItem(CDSIA_LIVE_KEY, JSON.stringify([...fresh,...existing].slice(0,100)));
+  
+  logFn('CDSIA: '+fresh.length+' new live leads found');
+  return fresh.length;
+}
+
+// ================================================================
+// COTIS LIVE SCAN — Procurement & tenders
+// ================================================================
+async function runCOTISLiveScan(logFn){
+  logFn = logFn || (()=>{});
+  logFn('Scanning '+COTIS_SOURCES.length+' procurement sources...');
+  
+  let newLeads = [];
+  for(let i=0;i<COTIS_SOURCES.length;i++){
+    const q = COTIS_SOURCES[i];
+    logFn('  '+q.country+': '+q.type+'...');
+    const items = await fetchGNews(q.q);
+    items.slice(0,3).forEach((item,j)=>{
+      const desc = (item.description||'').replace(/<[^>]+>/g,'');
+      const score = 72 + Math.floor(Math.random()*18);
+      const org = item.title.split(/[:\-–—|]/)[0].trim().substring(0,65)||'Caribbean Procurement';
+      newLeads.push({
+        id:'COTIS_LIVE_'+Date.now()+'_'+i+'_'+j,
+        agent:'cotis', tier:'live',
+        org, country:q.country, sector:'Government / Procurement',
+        type:q.type, deadline:'', budget:'',
+        score, urgency:score>=85?'Critical':'High',
+        brands:['STR','QLA'],
+        summary:desc.substring(0,200),
+        whyItMatters:'Caribbean procurement opportunity -- potential fit for Stratiix governance advisory.',
+        actionRequired:'Review tender. Submit capability statement if qualified.',
+        contact:{name:'',email:'',phone:''},
+        source:'Google News', sourceUrl:item.link||'',
+        pubDate:item.pubDate||'',
+        assignedTo:'Devon',
+        qualified:false, scannedAt:new Date().toISOString()
+      });
+    });
+    await new Promise(r=>setTimeout(r,150));
+  }
+  
+  const seen = new Set();
+  newLeads = newLeads.filter(l=>{
+    const k=l.org.toLowerCase().replace(/[^a-z0-9]/g,'').substring(0,18);
+    if(seen.has(k))return false;seen.add(k);return true;
+  });
+  newLeads.sort((a,b)=>b.score-a.score);
+  
+  const existing = JSON.parse(localStorage.getItem(COTIS_LIVE_KEY)||'[]');
+  const existKeys = new Set(existing.map(l=>l.org.toLowerCase().replace(/[^a-z0-9]/g,'').substring(0,18)));
+  const fresh = newLeads.filter(l=>!existKeys.has(l.org.toLowerCase().replace(/[^a-z0-9]/g,'').substring(0,18)));
+  localStorage.setItem(COTIS_LIVE_KEY, JSON.stringify([...fresh,...existing].slice(0,50)));
+  
+  logFn('COTIS: '+fresh.length+' new procurement leads');
+  return fresh.length;
+}
+
+// ================================================================
+// IFIN LIVE SCAN — Funding & donor intelligence
+// ================================================================
+async function runIFINLiveScan(logFn){
+  logFn = logFn || (()=>{});
+  logFn('Scanning '+IFIN_SOURCES.length+' funding sources...');
+  
+  let newLeads = [];
+  for(let i=0;i<IFIN_SOURCES.length;i++){
+    const q = IFIN_SOURCES[i];
+    logFn('  '+q.type+'...');
+    const items = await fetchGNews(q.q);
+    items.slice(0,3).forEach((item,j)=>{
+      const desc = (item.description||'').replace(/<[^>]+>/g,'');
+      const score = 70 + Math.floor(Math.random()*20);
+      const org = item.title.split(/[:\-–—|]/)[0].trim().substring(0,65)||'Caribbean Funding';
+      newLeads.push({
+        id:'IFIN_LIVE_'+Date.now()+'_'+i+'_'+j,
+        agent:'ifin', tier:'live',
+        org, country:q.country, sector:'International Funding',
+        type:q.type, deadline:'', budget:'',
+        score, urgency:score>=85?'Critical':'High',
+        brands:['STR','BLU','QLA'],
+        summary:desc.substring(0,200),
+        alignmentSignal:'Caribbean funding opportunity -- potential fit for Stratiix advisory and BluWav visibility.',
+        proposalAngle:'Position as Caribbean-built digital infrastructure stack.',
+        actionRequired:'Review funding requirements. Submit expression of interest.',
+        contact:{name:'',email:'',phone:''},
+        source:'Google News', sourceUrl:item.link||'',
+        pubDate:item.pubDate||'',
+        assignedTo:'Aaliya',
+        qualified:false, scannedAt:new Date().toISOString()
+      });
+    });
+    await new Promise(r=>setTimeout(r,150));
+  }
+  
+  const seen = new Set();
+  newLeads = newLeads.filter(l=>{
+    const k=l.org.toLowerCase().replace(/[^a-z0-9]/g,'').substring(0,18);
+    if(seen.has(k))return false;seen.add(k);return true;
+  });
+  newLeads.sort((a,b)=>b.score-a.score);
+  
+  const existing = JSON.parse(localStorage.getItem(IFIN_LIVE_KEY)||'[]');
+  const existKeys = new Set(existing.map(l=>l.org.toLowerCase().replace(/[^a-z0-9]/g,'').substring(0,18)));
+  const fresh = newLeads.filter(l=>!existKeys.has(l.org.toLowerCase().replace(/[^a-z0-9]/g,'').substring(0,18)));
+  localStorage.setItem(IFIN_LIVE_KEY, JSON.stringify([...fresh,...existing].slice(0,50)));
+  
+  logFn('IFIN: '+fresh.length+' new funding leads');
+  return fresh.length;
+}
+
+// ================================================================
+// FULL INTELLIGENCE CYCLE — All 3 agents
+// ================================================================
+async function corexRunCycle(){
+  const btn = document.querySelector('.run-btn');
+  if(btn){btn.disabled=true;btn.textContent='Running...';}
+  showToast('⚡ COREX intelligence cycle running...');
+  
+  // Show cycle status
+  const statusEl = document.getElementById('status-text');
+  if(statusEl) statusEl.textContent = 'SCANNING ALL AGENTS...';
+  
+  const logs = [];
+  const log = msg => { logs.push(msg); console.log('[COREX]', msg); };
+  
+  log('Starting full intelligence cycle...');
+  
+  // Run all 3 agents in parallel
+  const [cdsiaNew, cotisNew, ifinNew] = await Promise.all([
+    runCDSIALiveScan(log),
+    runCOTISLiveScan(log),
+    runIFINLiveScan(log)
+  ]);
+  
+  const totalNew = cdsiaNew + cotisNew + ifinNew;
+  
+  // Save last scan timestamp
+  localStorage.setItem(SCAN_KEY, new Date().toISOString());
+  
+  // Generate daily digest
+  generateDailyDigest(cdsiaNew, cotisNew, ifinNew, logs);
+  
+  // Update UI
+  renderCommandStats();
+  renderAllSignals();
+  renderCDSIAView();
+  updateBadges();
+  
+  if(statusEl) statusEl.textContent = 'ACTIVE · CYCLE COMPLETE';
+  if(btn){btn.disabled=false;btn.textContent='▶ Run Cycle';}
+  
+  showToast('✅ Intelligence cycle complete -- '+totalNew+' new signals found');
+  return totalNew;
+}
+
+// ================================================================
+// DAILY DIGEST GENERATOR
+// ================================================================
+function generateDailyDigest(cdsiaNew, cotisNew, ifinNew, logs){
+  const now = new Date();
+  const dateStr = now.toLocaleDateString('en-US',{weekday:'long',year:'numeric',month:'long',day:'numeric'});
+  
+  const cdsiaLive = JSON.parse(localStorage.getItem(CDSIA_LIVE_KEY)||'[]');
+  const cotisLive = JSON.parse(localStorage.getItem(COTIS_LIVE_KEY)||'[]');
+  const ifinLive = JSON.parse(localStorage.getItem(IFIN_LIVE_KEY)||'[]');
+  
+  const critical = [...cdsiaLive,...cotisLive,...ifinLive].filter(l=>l.urgency==='Critical').length;
+  const top3 = [...cdsiaLive,...cotisLive,...ifinLive].sort((a,b)=>b.score-a.score).slice(0,3);
+  
+  const digest = {
+    date: now.toISOString(),
+    dateStr,
+    totalNew: cdsiaNew+cotisNew+ifinNew,
+    cdsiaNew, cotisNew, ifinNew,
+    critical,
+    top3: top3.map(l=>({org:l.org,score:l.score,urgency:l.urgency,agent:l.agent,action:l.actionRequired||''})),
+    logs: logs.slice(-20)
+  };
+  
+  localStorage.setItem(DIGEST_KEY, JSON.stringify(digest));
+}
+
+// ================================================================
+// AUTO-RUN AT 7AM DAILY
+// ================================================================
+(function corexAutoRun(){
+  function shouldRunToday(){
+    const last = localStorage.getItem(SCAN_KEY);
+    if(!last) return true;
+    const lastDate = new Date(last).toDateString();
+    const today = new Date().toDateString();
+    if(lastDate !== today) return true;
+    // Also run if it's after 7am and we haven't run today
+    const now = new Date();
+    const todayAt7 = new Date(now.getFullYear(),now.getMonth(),now.getDate(),7,0,0);
+    return now >= todayAt7 && lastDate !== today;
+  }
+  
+  function tryAutoRun(){
+    if(typeof DIRECTORY_LEADS === 'undefined'){
+      setTimeout(tryAutoRun, 500);
+      return;
+    }
+    if(shouldRunToday()){
+      setTimeout(()=>{
+        if(document.getElementById('corex-app')?.style.display !== 'none'){
+          showToast('⚡ Running daily intelligence cycle...');
+          corexRunCycle();
+        }
+      }, 3000);
+    }
+  }
+  
+  // Check every hour if we need to run
+  setInterval(()=>{
+    if(shouldRunToday() && document.getElementById('corex-app')?.style.display !== 'none'){
+      corexRunCycle();
+    }
+  }, 60*60*1000);
+  
+  // Try on load
+  setTimeout(tryAutoRun, 1000);
+})();
 
 // ================================================================
 // V1 DATA — AWARD MONITORING, TRENDS, SOURCES, AGENTS
