@@ -1016,42 +1016,6 @@ function corexAutoLockResume(){
 }
 function corexLock(){ gateClearAuth(); triggerAutoLock(); }
 
-// ---- Auto-run at 7am ----
-(function corexAutoRun(){
-  const KEY='corex_v2_last_auto_run';
-  function shouldRun(){
-    const now=new Date(); const todayAt7=new Date(now.getFullYear(),now.getMonth(),now.getDate(),7,0,0);
-    if(now<todayAt7)return false;
-    const last=localStorage.getItem(KEY);
-    if(!last)return true;
-    return new Date(last)<todayAt7;
-  }
-  function runAuto(){
-    localStorage.setItem(KEY,new Date().toISOString());
-    const maxWait=30000; let waited=0;
-    const check=setInterval(()=>{
-      waited+=1000;
-      if(document.getElementById('corex-app')?.style.display!=='none'){
-        clearInterval(check);
-        setTimeout(()=>{ corexRunCycle(); },2000);
-        // Run daily agent lead scan
-        setTimeout(()=>{ if(typeof runAgentLeadScan==='function') runAgentLeadScan(); },3000);
-        // Auto-generate Opportunity Report at 7am
-        setTimeout(()=>{
-          if(typeof generateOpportunityReport==='function'){
-            generateOpportunityReport();
-            // Switch to report view so it's ready when you open COREX
-            showView('opportunity-report', document.querySelector('[data-view="opportunity-report"]'));
-            showToast('📘 Morning Opportunity Report ready');
-          }
-        },5000);
-      }
-      if(waited>=maxWait)clearInterval(check);
-    },1000);
-  }
-  if(shouldRun()) runAuto();
-  setInterval(()=>{ if(shouldRun()) runAuto(); },60*60*1000);
-})();
 
 
 // ================================================================
